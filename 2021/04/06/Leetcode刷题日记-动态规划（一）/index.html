@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"charming-c.github.io","root":"/","scheme":"Muse","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="动态规划（一）Leetcode 第940题 – 不同的子序列II题目描述：  给定一个字符串 S，计算 S 的不同非空子序列的个数。 因为结果可能很大，所以返回答案模 10^9 + 7. ​    示例 1： ​    输入：”abc” ​    输出：7​    解释：7 个不同的子序列分别是 “a”, “b”, “c”, “ab”, “ac”, “bc”, 以及 “abc”。  如果明确了这是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Leetcode刷题日记--动态规划（一）">
+<meta property="og:url" content="https://charming-c.github.io/2021/04/06/Leetcode%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Charming-Zone">
+<meta property="og:description" content="动态规划（一）Leetcode 第940题 – 不同的子序列II题目描述：  给定一个字符串 S，计算 S 的不同非空子序列的个数。 因为结果可能很大，所以返回答案模 10^9 + 7. ​    示例 1： ​    输入：”abc” ​    输出：7​    解释：7 个不同的子序列分别是 “a”, “b”, “c”, “ab”, “ac”, “bc”, 以及 “abc”。  如果明确了这是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEgy1gpafyun8jnj32cn0rskb6.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEgy1gpbdou46ihj31hc0rrala.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEgy1gpcm9gidftj30do0a0weg.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEgy1gpcmdlpfsuj32hx0rs4ds.jpg">
+<meta property="article:published_time" content="2021-04-06T14:29:09.000Z">
+<meta property="article:modified_time" content="2021-04-13T16:09:49.183Z">
+<meta property="article:author" content="charming">
+<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="动态规划">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008eGmZEgy1gpafyun8jnj32cn0rskb6.jpg">
+
+
+<link rel="canonical" href="https://charming-c.github.io/2021/04/06/Leetcode%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Leetcode刷题日记--动态规划（一） | Charming-Zone</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Charming-Zone</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客世界！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%EF%BC%88%E4%B8%80%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">动态规划（一）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Leetcode-%E7%AC%AC940%E9%A2%98-%E2%80%93-%E4%B8%8D%E5%90%8C%E7%9A%84%E5%AD%90%E5%BA%8F%E5%88%97II"><span class="nav-number">1.1.</span> <span class="nav-text">Leetcode 第940题 – 不同的子序列II</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Leetcode-%E7%AC%AC1458%E9%A2%98-%E2%80%93-%E4%B8%A4%E4%B8%AA%E5%AD%90%E5%BA%8F%E5%88%97%E7%9A%84%E6%9C%80%E5%A4%A7%E7%82%B9%E7%A7%AF"><span class="nav-number">1.2.</span> <span class="nav-text">Leetcode 第1458题 – 两个子序列的最大点积</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Leetcode-%E7%AC%AC787%E9%A2%98-%E2%80%93-K%E7%AB%99%E4%B8%AD%E8%BD%AC%E5%86%85%E6%9C%80%E4%BE%BF%E5%AE%9C%E7%9A%84%E8%88%AA%E7%8F%AD"><span class="nav-number">1.3.</span> <span class="nav-text">Leetcode 第787题 – K站中转内最便宜的航班</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Leetcode-%E9%A2%98%E8%A7%A3%E7%AC%AC-32-%E9%A2%98-%E2%80%93-%E6%9C%80%E9%95%BF%E6%9C%89%E6%95%88%E6%8B%AC%E5%8F%B7"><span class="nav-number">1.4.</span> <span class="nav-text">Leetcode 题解第 32 题 – 最长有效括号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Leetcode-%E7%AC%AC42%E9%A2%98-%E2%80%93-%E6%8E%A5%E9%9B%A8%E6%B0%B4"><span class="nav-number">1.5.</span> <span class="nav-text">Leetcode 第42题 – 接雨水</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="charming"
+      src="/images/icon2.jpg">
+  <p class="site-author-name" itemprop="name">charming</p>
+  <div class="site-description" itemprop="description">所思，所感，所想。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/charming-c" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;charming-c" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://charming-c.github.io/2021/04/06/Leetcode%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon2.jpg">
+      <meta itemprop="name" content="charming">
+      <meta itemprop="description" content="所思，所感，所想。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Charming-Zone">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Leetcode刷题日记--动态规划（一）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-06 22:29:09" itemprop="dateCreated datePublished" datetime="2021-04-06T22:29:09+08:00">2021-04-06</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-14 00:09:49" itemprop="dateModified" datetime="2021-04-14T00:09:49+08:00">2021-04-14</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="动态规划（一）"><a href="#动态规划（一）" class="headerlink" title="动态规划（一）"></a>动态规划（一）</h1><h2 id="Leetcode-第940题-–-不同的子序列II"><a href="#Leetcode-第940题-–-不同的子序列II" class="headerlink" title="Leetcode 第940题 – 不同的子序列II"></a>Leetcode 第940题 – 不同的子序列II</h2><p>题目描述：</p>
+<blockquote>
+<p>给定一个字符串 S，计算 S 的不同非空子序列的个数。</p>
+<p>因为结果可能很大，所以返回答案模 10^9 + 7.</p>
+<p>​    示例 1：</p>
+<p>​    输入：”abc”</p>
+<p>​    输出：7<br>​    解释：7 个不同的子序列分别是 “a”, “b”, “c”, “ab”, “ac”, “bc”, 以及 “abc”。</p>
+</blockquote>
+<p>如果明确了这是一道动态规划的问题，那这道题其实是非常简单的，首先可以知道，运用动态规划的思想，一个长度为N的字符串其实是可以将其简单拆解成计算前面长度为N-1的子串的个数，再将子串个数乘以2就好了，当然这只是简单的分析，因为从实际出发，结果不尽然准确。</p>
+<a id="more"></a>
+
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEgy1gpafyun8jnj32cn0rskb6.jpg" alt="IMG_BBE9437BDB7C-1"></p>
+<p>（这里我们先假设是存在空子串的）对于具体的例子我们显然就可以看到，当在末尾新增加的字符之前从未出现过，则子串个数就很好解释了，等于之前所有的子串再加上之前所有的子串末尾拼上新加的字符（新字符位置为N），即<br>$$<br>                                                                                    f(N) = f(N - 1) * 2<br>$$<br>当新拼接的字符之前出现过时，假设新字符的位置时N，最近一次出现相同字符的位置为M，我们发现，在M位置时，我们其实已经将M-1位置的子串拼接过了，所以最后的结果为：<br>$$<br>                                                                        f(N) = f(N-1) * 2 - f(M-1)<br>$$<br>那么动态规划过程中，在面对子问题时的决策我们也解决完毕了，接下来就是代码生成的思路了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">distinctSubseqII</span><span class="params">(String S)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">int</span> MOD = <span class="number">1_000_000_007</span>;</span><br><span class="line">            <span class="keyword">int</span> N = S.length();</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 这里默认第零个位置为空字符，数值为1，那么申请的数组内存大小就是N+1</span></span><br><span class="line">            <span class="keyword">int</span>[] dp = <span class="keyword">new</span> <span class="keyword">int</span>[N + <span class="number">1</span>];</span><br><span class="line">            dp[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 这里其实就是生成一处索引，记录所有字符出现的位置，方便在需要的时候找到M-1的位置</span></span><br><span class="line">            <span class="keyword">int</span>[] last = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">26</span>];</span><br><span class="line">            <span class="comment">// 将初值赋值为-1</span></span><br><span class="line">            Arrays.fill(last, -<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 这里依次遍历目标字符串</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; ++i) &#123;</span><br><span class="line">                <span class="comment">// 先确定在last里出现的那个位置的字母</span></span><br><span class="line">                <span class="keyword">int</span> x = S.charAt(i) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                </span><br><span class="line">                <span class="comment">// 二话不说先将其前一个位置乘一倍</span></span><br><span class="line">                dp[i + <span class="number">1</span>] = dp[i] * <span class="number">2</span> % MOD;</span><br><span class="line">                </span><br><span class="line">                <span class="comment">// 如果之前这个字符出现过，那么就要减去出现的位置数值</span></span><br><span class="line">                <span class="keyword">if</span> (last[x] &gt;= <span class="number">0</span>)</span><br><span class="line">                    dp[i + <span class="number">1</span>] -= dp[last[x]];</span><br><span class="line">                dp[i + <span class="number">1</span>] %= MOD;</span><br><span class="line">                <span class="comment">// 每次都要刷新一下位置，因为是要找里N位置最近的出现的相同字符</span></span><br><span class="line">                last[x] = i;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 这里注意一下这里的i其实是对应与N-1哟</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 多算了一个&quot;&quot;字符，减去</span></span><br><span class="line">            dp[N]--;</span><br><span class="line">            <span class="comment">// 如果算出负数加上模就好了</span></span><br><span class="line">            <span class="keyword">if</span> (dp[N] &lt; <span class="number">0</span>) dp[N] += MOD;</span><br><span class="line">            <span class="keyword">return</span> dp[N];</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Leetcode-第1458题-–-两个子序列的最大点积"><a href="#Leetcode-第1458题-–-两个子序列的最大点积" class="headerlink" title="Leetcode 第1458题 – 两个子序列的最大点积"></a>Leetcode 第1458题 – 两个子序列的最大点积</h2><p>题目描述：</p>
+<blockquote>
+<p>给你两个数组 nums1 和 nums2 。</p>
+<p>请你返回 nums1 和 nums2 中两个长度相同的 非空 子序列的最大点积。</p>
+<p>数组的非空子序列是通过删除原数组中某些元素（可能一个也不删除）后剩余数字组成的序列，但不能改变数字间相对顺序。比方说，[2,3,5] 是 [1,2,3,4,5] 的一个子序列而 [1,5,3] 不是。</p>
+<p>示例 1：</p>
+<p>输入：nums1 = [2,1,-2,5], nums2 = [3,0,-6]<br>输出：18<br>解释：从 nums1 中得到子序列 [2,-2] ，从 nums2 中得到子序列 [3,-6] 。<br>它们的点积为 (2 * 3 + (-2) * (-6)) = 18 。</p>
+</blockquote>
+<p>这道题其实由于是子序列，是规定好了数字的相关顺序的，这样就比较好处理这样的问题了，运用动态规划的思想，其实很很容易就找到思路，建表 dp[m] [n],对应每个位置，第i，j位置上的值就是nums1，nums2两个字数组的最大点积。我们可以画个图来看看具体的思路：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEgy1gpbdou46ihj31hc0rrala.jpg" alt="IMG_9502A9144EAB-1"></p>
+<p>很显然，红圈里面的数dp[i] [j]的最终数值与它边缘的三个数以及自身nums1[i] * nums2[j]有关，看代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">maxDotProduct</span><span class="params">(<span class="keyword">int</span>[] nums1, <span class="keyword">int</span>[] nums2)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> m = nums2.length;</span><br><span class="line">        <span class="keyword">int</span> n = nums1.length;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(m == <span class="number">0</span> || n == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span>[][] dp = <span class="keyword">new</span> <span class="keyword">int</span>[m][n];</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = nums1[<span class="number">0</span>] * nums2[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;m; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j&lt;n; j++) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 这里先讲第一行、第一列迭代成最大的值</span></span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span>)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(j != <span class="number">0</span>) </span><br><span class="line">                         dp[i][j] = Math.max(dp[i][j-<span class="number">1</span>], nums1[j] * nums2[i]);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(j == <span class="number">0</span>)&#123;</span><br><span class="line">                    dp[i][j] = Math.max(dp[i-<span class="number">1</span>][j], nums1[j] * nums2[i]);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 先默认dp[i][j]是来自上一行或者上一列最大的值</span></span><br><span class="line">                dp[i][j] = Math.max(dp[i-<span class="number">1</span>][j], dp[i][j-<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 如果本位置点击小于等于0，则可直接比较dp[i-1][j-1]</span></span><br><span class="line">                <span class="keyword">if</span>(nums1[j] * nums2[i] &lt;= <span class="number">0</span>)&#123;</span><br><span class="line">                    dp[i][j] = Math.max(dp[i-<span class="number">1</span>][j-<span class="number">1</span>], dp[i][j]);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="comment">// 如果大于0，就得比较三种情况了</span></span><br><span class="line">                    <span class="keyword">int</span> temp = Math.max(dp[i-<span class="number">1</span>][j-<span class="number">1</span>]+nums1[j] * nums2[i],nums1[j] * nums2[i]);</span><br><span class="line">                    dp[i][j] = Math.max(dp[i][j], temp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> dp[m-<span class="number">1</span>][n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Leetcode-第787题-–-K站中转内最便宜的航班"><a href="#Leetcode-第787题-–-K站中转内最便宜的航班" class="headerlink" title="Leetcode 第787题 – K站中转内最便宜的航班"></a>Leetcode 第787题 – K站中转内最便宜的航班</h2><p>题目描述：</p>
+<blockquote>
+<p>有 n 个城市通过 m 个航班连接。每个航班都从城市 u 开始，以价格 w 抵达 v。</p>
+<p>现在给定所有的城市和航班，以及出发城市 src 和目的地 dst，你的任务是找到从 src 到 dst 最多经过 k 站中转的最便宜的价格。 如果没有这样的路线，则输出 -1。</p>
+<p>示例 1：</p>
+<p>输入:<br>n = 3, edges = [[0,1,100],[1,2,100],[0,2,500]]<br>src = 0, dst = 2, k = 1<br>输出: 200<br>解释:<br>城市航班图如下:</p>
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEgy1gpcm9gidftj30do0a0weg.jpg" alt="img"></p>
+<p>从城市 0 到城市 2 在 1 站中转以内的最便宜价格是 200，如图中红色所示。</p>
+</blockquote>
+<p>看到这个题目我第一眼想到的就是DFS，运用一个数组存放不同城市之间有没有航班，以及花费，最后依次递归到最底部去寻找最少的开销，同时用K做约束条件：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEgy1gpcmdlpfsuj32hx0rs4ds.jpg" alt="IMG_1104279CFCA5-1"></p>
+<p>这里有两条路线可以从0 到达 2，中转分别是 1， 0</p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">findCheapestPrice</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span>[][] flights, <span class="keyword">int</span> src, <span class="keyword">int</span> dst, <span class="keyword">int</span> K)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[][] map = <span class="keyword">new</span> <span class="keyword">int</span>[n][n];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i  = <span class="number">0</span>; i&lt;n; i++)&#123;</span><br><span class="line">            Arrays.fill(map[i],-<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> len = flights.length;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;len; i++)&#123;</span><br><span class="line">            map[flights[i][<span class="number">0</span>]][flights[i][<span class="number">1</span>]] = flights[i][<span class="number">2</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> ans = Integer.MAX_VALUE;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j&lt;n; j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(map[src][j] != -<span class="number">1</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(searchPath(n,map,j,dst,map[src][j],K) != -<span class="number">1</span>)&#123;</span><br><span class="line">                    ans = Math.min(ans,searchPath(n,map,j,dst,map[src][j],K));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(ans == Integer.MAX_VALUE) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">searchPath</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span>[][] map, <span class="keyword">int</span> start, <span class="keyword">int</span> end, <span class="keyword">int</span> pay, <span class="keyword">int</span> k)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(start == end &amp;&amp; k &gt;= <span class="number">0</span>) <span class="keyword">return</span> pay;</span><br><span class="line">        <span class="keyword">if</span>(k&lt;<span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> ans = Integer.MAX_VALUE;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;n; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(map[start][i] &gt; <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">int</span> temp = searchPath(n, map, i, end, pay + map[start][i], k-<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">if</span>(temp != -<span class="number">1</span>)&#123;</span><br><span class="line">                    ans = Math.min(temp, ans);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(ans == Integer.MAX_VALUE) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是这里单纯的暴力递归，结果自然可想而知，超时了，很难受。。。</p>
+<p>于是思考优化算法：</p>
+<p></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span>[][] graph;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span>[] visited;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> res = Integer.MAX_VALUE;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">findCheapestPrice</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span>[][] flights, <span class="keyword">int</span> src, <span class="keyword">int</span> dst, <span class="keyword">int</span> K)</span> </span>&#123;</span><br><span class="line">            K = Math.min(K, n - <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.graph = <span class="keyword">new</span> <span class="keyword">int</span>[n][n];</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span>[] flight : flights) &#123;</span><br><span class="line">                graph[flight[<span class="number">0</span>]][flight[<span class="number">1</span>]] = flight[<span class="number">2</span>];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.visited = <span class="keyword">new</span> <span class="keyword">boolean</span>[n];</span><br><span class="line">            <span class="comment">// 开始深度优先遍历，注意：这里传 K + 1，这是因为 K 次经停，总共 K + 1 个站</span></span><br><span class="line">            dfs(src, dst, K + <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (res == Integer.MAX_VALUE) &#123;</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> res;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 从 src 出发，到 dst 为止，最多经过 k 站（这里 k 包括 src）</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> src  起点站</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> dst  终点站</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> k    经过的站点数限制</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> cost 已经花费的价格</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> src, <span class="keyword">int</span> dst, <span class="keyword">int</span> k, <span class="keyword">int</span> cost)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (src == dst) &#123;</span><br><span class="line">                res = cost;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (k == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; graph[src].length; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (graph[src][i] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (visited[i]) &#123;</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 剪枝：跳过可能产生较高费用的路径，从而选出最少价格</span></span><br><span class="line">                    <span class="keyword">if</span> (cost + graph[src][i] &gt; res) &#123;</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    visited[i] = <span class="keyword">true</span>;</span><br><span class="line">                    dfs(i, dst, k - <span class="number">1</span>, cost + graph[src][i]);</span><br><span class="line">                    visited[i] = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>官方题解的这个答案就很灵性，建立全局变量的索引，用一个res去存储已经选出来的最开销，最后可以剪枝优化，还省去了部分搜索，同时用一个Visited数组存放路径经过的节点，防止出现重复计算。</p>
+<p>官方题解剩下两个答案我看不懂。。。</p>
+<h2 id="Leetcode-题解第-32-题-–-最长有效括号"><a href="#Leetcode-题解第-32-题-–-最长有效括号" class="headerlink" title="Leetcode 题解第 32 题 – 最长有效括号"></a>Leetcode 题解第 32 题 – 最长有效括号</h2><p>题目描述：</p>
+<blockquote>
+<p>给你一个只包含 ‘(‘ 和 ‘)’ 的字符串，找出最长有效（格式正确且连续）括号子串的长度。</p>
+<p>示例 1：</p>
+<p>输入：s = “(()”<br>输出：2<br>解释：最长有效括号子串是 “()”<br>示例 2：</p>
+<p>输入：s = “)()())”<br>输出：4<br>解释：最长有效括号子串是 “()()”</p>
+</blockquote>
+<p>题目分析：</p>
+<p>像这种题目要求你求最长、最大等多过程迭代的问题大概率是可以用动态规划解决的</p>
+<p>这道题如果把描述改一下，改成格式正确且不用连续的子串的长度，那这道题就可以采用前面几个题目一样的思路去解决，就是慢慢往后迭代，如果可以找到匹配的就往dp数组里加数字</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">longestValidParentheses</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = s.length();</span><br><span class="line">        <span class="keyword">if</span>(len == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span>[][] dp = <span class="keyword">new</span> <span class="keyword">int</span>[len][<span class="number">2</span>];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;len; i++)</span><br><span class="line">            Arrays.fill(dp[i],<span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span>(s.charAt(<span class="number">0</span>) == <span class="string">&#x27;(&#x27;</span>) dp[<span class="number">0</span>][<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i&lt;len; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(dp[i-<span class="number">1</span>][<span class="number">1</span>] &gt;= <span class="number">1</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(s.charAt(i) == <span class="string">&#x27;)&#x27;</span>)&#123;</span><br><span class="line">                    dp[i][<span class="number">1</span>] = dp[i-<span class="number">1</span>][<span class="number">1</span>] - <span class="number">1</span>;</span><br><span class="line">                    dp[i][<span class="number">0</span>] = dp[i-<span class="number">1</span>][<span class="number">0</span>] + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    dp[i][<span class="number">1</span>] = dp[i-<span class="number">1</span>][<span class="number">1</span>] + <span class="number">1</span>;</span><br><span class="line">                    dp[i][<span class="number">0</span>] = dp[i-<span class="number">1</span>][<span class="number">0</span>];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                dp[i][<span class="number">0</span>] = dp[i-<span class="number">1</span>][<span class="number">0</span>];</span><br><span class="line">                <span class="keyword">if</span>(s.charAt(i) == <span class="string">&#x27;)&#x27;</span>)&#123;</span><br><span class="line">                    dp[i][<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">                    </span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    dp[i][<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">                    </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[len-<span class="number">1</span>][<span class="number">0</span>] * <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我使用了一个二维数组去保存状态，dp[i] [0]表示当前位置有效的括号的数量, dp[i] [1]表示这个位置之前的’(‘的数量，然后分情况找状态转移方程就可以了，这里分情况就依赖于两个变量，一个是dp[i-1] [1] ,这个表示当前位置的括号怎么与前面的接触，一个就是当前位置的括号，显然正括号和反括号的处理逻辑是不一样的。</p>
+<p>当然这道题肯定不是这么写，因为上面的解法是将整个字符串的子串取出来去找最多的正确匹配，子串并不一定在原来的字符串中是连续的，所以我们得换一个动态规划的角度去思考。</p>
+<p>新的角度就是，既然是连续的子串，我们动态规划就做切割处理，每一个子问题是有边界的，我们并不是完全依赖于当前的位置，一路迭代一路去保存最大的值，而是在数组里去找到符合规则的子串，再将数值填上，这样当我们跃至子问题时仍然可以用子问题的答案求解切割的串的答案，然后利用一个变量一路去记录最大的值就好了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">longestValidParentheses</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = s.length();</span><br><span class="line">        <span class="keyword">if</span> (len == <span class="number">0</span> || len == <span class="number">1</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span>[] dp = <span class="keyword">new</span> <span class="keyword">int</span>[len];</span><br><span class="line">        Arrays.fill(dp, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (s.charAt(<span class="number">0</span>) == <span class="string">&#x27;(&#x27;</span> &amp;&amp; s.charAt(<span class="number">1</span>) == <span class="string">&#x27;)&#x27;</span>) dp[<span class="number">1</span>] = <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">int</span> ans = dp[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (s.charAt(i) == <span class="string">&#x27;)&#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (s.charAt(i - <span class="number">1</span>) == <span class="string">&#x27;(&#x27;</span>) &#123;</span><br><span class="line">                    dp[i] = dp[i - <span class="number">2</span>] + <span class="number">2</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (s.charAt(i - <span class="number">1</span>) == <span class="string">&#x27;)&#x27;</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (i - dp[i - <span class="number">1</span>] - <span class="number">1</span> &gt; <span class="number">0</span> &amp;&amp; s.charAt(i - dp[i - <span class="number">1</span>] - <span class="number">1</span>) == <span class="string">&#x27;(&#x27;</span>) &#123;</span><br><span class="line">                        dp[i] = dp[i - <span class="number">1</span>] + dp[i - dp[i - <span class="number">1</span>] - <span class="number">2</span>] + <span class="number">2</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (i - dp[i - <span class="number">1</span>] - <span class="number">1</span> == <span class="number">0</span> &amp;&amp; s.charAt(i - dp[i - <span class="number">1</span>] - <span class="number">1</span>) == <span class="string">&#x27;(&#x27;</span>) &#123;</span><br><span class="line">                        dp[i] = dp[i - <span class="number">1</span>] + <span class="number">2</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                ans = Math.max(ans, dp[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的dp[i]的意思是当前位置的前临近子串最长的有效括号长度，那这样就很好找他的状态转移方程大致可将情况分为这几种：</p>
+<ul>
+<li>当s.charAt(i) == ‘(‘，这里就很好处理，因为没有任何一个有效的连续子串会以’(‘结尾，所以默认都做零</li>
+<li>当s.charAt(i) == ‘)’，这里就要分情况讨论了：<ul>
+<li>如果s.charAt(i-1) == ‘(‘，那么dp[i] = dp[i-2] + 2</li>
+<li>如果s.charAt(i-1) == ‘)’，这里就会复杂一点，核心逻辑就是先将前一个’)’的连续有效的括号的位置省略掉，即去看i - dp[i-1] -1 这个位置的值，这里可以想像把中间已经匹配成功的子串丢掉，我们可以理解就是当前位置与i - dp[i-1] -1 相邻，看该位置是否是’(‘:<ul>
+<li>是，则dp[i] = dp[i - 1] + dp[i - dp[i - 1] - 2] + 2;</li>
+<li>不是，则这个匹配子串不合法，可以直接置为0</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>这是核心逻辑，再处理一些边界条件就好了。</p>
+<h2 id="Leetcode-第42题-–-接雨水"><a href="#Leetcode-第42题-–-接雨水" class="headerlink" title="Leetcode 第42题 – 接雨水"></a>Leetcode 第42题 – 接雨水</h2><p>题目描述：</p>
+<blockquote>
+<p>给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。</p>
+<p>示例 1：</p>
+<p>输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]<br>输出：6<br>解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 </p>
+</blockquote>
+<p>题目分析：</p>
+<p>这道题在我看了答案以后真的就不配叫做一到困难题，当然不看答案我好像也没想到思路</p>
+<p>其实思路很简单，我们从左往右遍历，找到左边最高的墙，然后从右往左遍历，找到右边最高的墙，然后每一块位置应该正确接的雨水的数量就是左边与右边的墙的较小值减去本位置的高度就好了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">trap</span><span class="params">(<span class="keyword">int</span>[] height)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = height.length;</span><br><span class="line">        <span class="keyword">if</span>(len == <span class="number">0</span> || len == <span class="number">1</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span>[] left = <span class="keyword">new</span> <span class="keyword">int</span>[len];</span><br><span class="line">        <span class="keyword">int</span>[] right = <span class="keyword">new</span> <span class="keyword">int</span>[len];</span><br><span class="line"></span><br><span class="line">        left[<span class="number">0</span>] = height[<span class="number">0</span>];</span><br><span class="line">        right[len-<span class="number">1</span>] = height[len-<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i&lt;len; i++)&#123;</span><br><span class="line">            left[i] = Math.max(left[i-<span class="number">1</span>],height[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = len - <span class="number">2</span>; j&gt;=<span class="number">0</span>; j--)&#123;</span><br><span class="line">            right[j] = Math.max(right[j+<span class="number">1</span>],height[j]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;len; i++)&#123;</span><br><span class="line">            ans += Math.min(left[i],right[i]) - height[i];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/leetcode/" rel="tag"><i class = "fa fa-tags"></i> leetcode</a>
+              <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="tag"><i class = "fa fa-tags"></i> 动态规划</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/03/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" rel="prev" title="Java内存模型与线程">
+                  <i class="fa fa-chevron-left"></i> Java内存模型与线程
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">charming</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">67k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:01</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+<br /> 
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("09/01/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

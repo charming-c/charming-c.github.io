@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"charming-c.github.io","root":"/","scheme":"Muse","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="1.什么是git？git是一个分布式的版本控制工具，git的设计简单，是完全分布式的，允许成千上万的并行开发的分支（branch），有能力管理超大规模的项目，是首选的版本控制工具。  版本控制：一种记录一个或者若干文件内容的变化，以便查阅特定的版本修订情况的系统 分布式版本控制系统：把代码仓库完整的镜像下来，包括完整的历史记录。每一次克隆操作实际上都是一次对代码仓库的完整备份  当我们在使用git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git简介">
+<meta property="og:url" content="https://charming-c.github.io/2020/12/10/git%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:site_name" content="Charming-Zone">
+<meta property="og:description" content="1.什么是git？git是一个分布式的版本控制工具，git的设计简单，是完全分布式的，允许成千上万的并行开发的分支（branch），有能力管理超大规模的项目，是首选的版本控制工具。  版本控制：一种记录一个或者若干文件内容的变化，以便查阅特定的版本修订情况的系统 分布式版本控制系统：把代码仓库完整的镜像下来，包括完整的历史记录。每一次克隆操作实际上都是一次对代码仓库的完整备份  当我们在使用git">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli3to5yt4j314g03mwf9.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli3x2idrmj314u0ay76o.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli413hr5dj317e0gujtn.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli45heht1j33340mmq9s.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1glljf3ubkfj318f0hjaee.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli4ydr3pzj30u00ufdlq.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1glljwvkko2j30dy0i4wfq.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gllk9eypvij31210jt42i.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli5672o9lj308d0473yf.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli58b6b3mj30dq06h3yj.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli5a76lkcj30br066jre.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli5awchx8j30br04fwef.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gllkyky485j30qo07adgr.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1glllgrj6rlj314a0qpgw0.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEgy1gmxvej76dvj30zg0b63zs.jpg">
+<meta property="article:published_time" content="2020-12-09T16:36:12.000Z">
+<meta property="article:modified_time" content="2021-04-13T16:09:49.183Z">
+<meta property="article:author" content="charming">
+<meta property="article:tag" content="计算机">
+<meta property="article:tag" content="工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gli3to5yt4j314g03mwf9.jpg">
+
+
+<link rel="canonical" href="https://charming-c.github.io/2020/12/10/git%E7%AE%80%E4%BB%8B/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>git简介 | Charming-Zone</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Charming-Zone</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客世界！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFgit%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">1.什么是git？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%88%9D%E6%AC%A1%E8%BF%90%E8%A1%8Cgit%E5%89%8D%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">2.初次运行git前的配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-git%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">3.git的工作流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-git%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">4.git的简单使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%85%B3%E4%BA%8E%E5%BF%BD%E7%95%A5%E6%96%87%E4%BB%B6-gitignore"><span class="nav-number">5.</span> <span class="nav-text">5.关于忽略文件.gitignore</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-git%E7%9A%84%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">6.git的分支管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%88%86%E6%94%AF%E7%9A%84%E7%AE%80%E5%8D%95%E5%9B%BE%E8%A7%A3"><span class="nav-number">6.1.</span> <span class="nav-text">1.分支的简单图解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%88%86%E6%94%AF%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">6.2.</span> <span class="nav-text">2.分支的使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E5%85%B3%E4%BA%8Egit%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">7.</span> <span class="nav-text">7.关于git远程仓库的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%93%E5%BA%93%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">7.1.</span> <span class="nav-text">仓库服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%EF%BC%9A"><span class="nav-number">7.2.</span> <span class="nav-text">添加远程仓库：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E4%B8%AD%E6%8A%93%E5%8F%96%E5%92%8C%E6%8B%89%E5%8F%96%EF%BC%9A"><span class="nav-number">7.3.</span> <span class="nav-text">从远程仓库中抓取和拉取：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E9%80%81%E5%88%B0%E8%BF%9C%E7%A8%8B%E5%88%86%E6%94%AF%EF%BC%9A"><span class="nav-number">7.4.</span> <span class="nav-text">推送到远程分支：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-git-%E4%B8%8Egithub%E7%9A%84%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C"><span class="nav-number">8.</span> <span class="nav-text">8.git 与github的多人协作</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="charming"
+      src="/images/icon2.jpg">
+  <p class="site-author-name" itemprop="name">charming</p>
+  <div class="site-description" itemprop="description">所思，所感，所想。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/charming-c" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;charming-c" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://charming-c.github.io/2020/12/10/git%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon2.jpg">
+      <meta itemprop="name" content="charming">
+      <meta itemprop="description" content="所思，所感，所想。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Charming-Zone">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          git简介
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-12-10 00:36:12" itemprop="dateCreated datePublished" datetime="2020-12-10T00:36:12+08:00">2020-12-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-14 00:09:49" itemprop="dateModified" datetime="2021-04-14T00:09:49+08:00">2021-04-14</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="1-什么是git？"><a href="#1-什么是git？" class="headerlink" title="1.什么是git？"></a>1.什么是git？</h1><p>git是一个分布式的版本控制工具，git的设计简单，是完全分布式的，允许成千上万的并行开发的分支（branch），有能力管理超大规模的项目，是首选的版本控制工具。</p>
+<ul>
+<li>版本控制：一种记录一个或者若干文件内容的变化，以便查阅特定的版本修订情况的系统</li>
+<li>分布式版本控制系统：把代码仓库完整的镜像下来，包括完整的历史记录。每一次克隆操作实际上都是一次对代码仓库的完整备份</li>
+</ul>
+<p>当我们在使用git来管理我们的代码时，就可以很轻易的回溯到我们任意时间点所做的修改和提交，由于git的特性，我们可以很轻易就可以看到自己的修改，同时还可以利用分支管理在相同的时间做并行开发</p>
+<a id="more"></a>
+
+<h1 id="2-初次运行git前的配置"><a href="#2-初次运行git前的配置" class="headerlink" title="2.初次运行git前的配置"></a>2.初次运行git前的配置</h1><p>git自带一个git config工具可以用来帮助我们控制git的外观和行为的配置变量，一般来说，这些变量储存在三个位置上：</p>
+<ol>
+<li>/etc/gitconfig文件：包含系统上每一个用户以及他们仓库的通用配置，如果在执行git config上加上–system选项，那么修改的就是这个文件的配置变量，这个的作用范围最广</li>
+<li>～/.gitconfig:只针对电脑的当前用户。可以传递–global参数来修改这个文件里的配置变量</li>
+<li>当前使用的git仓库里的.git会有一个config文件：这个只针对该仓库，可以传递–local选项修改，默认也是这个</li>
+</ol>
+<p>每一个级别会覆盖上一个级别的配置，也就是说你给某个git仓库的user.name修改后，上面的两个gitconfig的相应配置变量就对这个git仓库无效了</p>
+<p>可以使用 <code>git config --list --show-origin</code>查看所有的配置以及他们所在的文件</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli3to5yt4j314g03mwf9.jpg" alt="屏幕快照 2020-12-10 上午1.11.41"></p>
+<p>这个是我的所有git目录，当然我不是在某个git仓库里执行的命令,所以找不到第三个gitconfig，而我们进入一个git目录就会发现：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli3x2idrmj314u0ay76o.jpg" alt="屏幕快照 2020-12-10 上午1.14.54"></p>
+<p>内容会多出一些，关于仓库的远程连接，一般在安装好git以后，我们只需要执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;your username&quot;</span><br><span class="line">git config --global user.email yourEmail</span><br></pre></td></tr></table></figure>
+
+<p>把自己的用户信息写进gitconfig里，这样，当我们在git仓库里做修改或着提交时候就知道你的信息了</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli413hr5dj317e0gujtn.jpg" alt="屏幕快照 2020-12-10 上午1.18.34"></p>
+<p>​    比如这几个提交，我们就可以轻易的知道来自于哪里了</p>
+<h1 id="3-git的工作流程"><a href="#3-git的工作流程" class="headerlink" title="3.git的工作流程"></a>3.git的工作流程</h1><p>git的三个工作区域对应着三个工作状态：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli45heht1j33340mmq9s.jpg" alt="6A5682E0F6FBFF11C78ADA00C48A2B3F"></p>
+<p>工作流程：</p>
+<ol>
+<li>在工作目录里修改文件（modified）；<ol>
+<li>我们在工作区修改了文件，而没有用git add加入到暂存区时，就是modified</li>
+</ol>
+</li>
+<li>暂存文件，将文件快照放入暂存区（staged）；<ol>
+<li>使用git add添加以后，就变成了staged</li>
+</ol>
+</li>
+<li>提交更新，找到暂存区的工作文件，将文件永久的存储到git的仓库目录里（committed）</li>
+</ol>
+<p>git关于本地文件的状态：</p>
+<p>编辑某些文件以后，由于自上次的提交后，你对他们做了修改，git将他们标记为已修改文件。在工作时，你可以选择性地将这些修改过的文件放入暂存区，然后提交所有已经暂存的修改，如此反复：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1glljf3ubkfj318f0hjaee.jpg" alt="IMG_125B9A301149-1"></p>
+<h1 id="4-git的简单使用"><a href="#4-git的简单使用" class="headerlink" title="4.git的简单使用"></a>4.git的简单使用</h1><ul>
+<li><p>git init 初始化一个空的git仓库，这时候相应的文件夹下会自动生成.git的文件夹，里面就有刚刚说的gitconfig</p>
+</li>
+<li><p>git status:查看文件的工作状态</p>
+</li>
+<li><p>git add 跟踪文件，运行</p>
+<ul>
+<li>此时被add的文件已经被跟踪，处于暂存的状态，显示为changes to be committed</li>
+</ul>
+</li>
+<li><p>git commit -m “提交所做的注解” 提交更新到仓库</p>
+</li>
+<li><p>git diff:显示暂未暂存的改动，并非所有改动</p>
+</li>
+<li><p>git rm 文件名：删除掉暂存区的文件,一般加上后缀–cached表示不删除原文件，只是从git暂存区删除，而-f则是直接删除掉这个文件</p>
+</li>
+<li><p>git log:查看提交的历史，可以查看一个项目提交历史的各个人的提交</p>
+</li>
+<li><p>版本回退：在git log里可以看到 commit后面跟着的这一大串散列码，这就是git的版本号，我们可以使用git reset –hard 版本号回退到之前的任何一个版本（本地是reset，远程是revert）</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli4ydr3pzj30u00ufdlq.jpg" alt="屏幕快照 2020-12-10 上午1.50.46"></p>
+</li>
+</ul>
+<h1 id="5-关于忽略文件-gitignore"><a href="#5-关于忽略文件-gitignore" class="headerlink" title="5.关于忽略文件.gitignore"></a>5.关于忽略文件.gitignore</h1><p>有时候会有一些文件无需要纳入git管理，通常是一些自动生成的文件，比如.exe或者一些日志文件，这种情况下我们可以创建一个名为.gitignore文件</p>
+<p>例如：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1glljwvkko2j30dy0i4wfq.jpg" alt="屏幕快照 2020-12-13 上午12.44.50"></p>
+<p>倒数第二行意思就是git忽略所有.o或者.a结尾的文件，一般这类文件都是在编译过程中出现的，最后一行就时忽略所有～结尾的文件。</p>
+<p>最简单的情况下，一个仓库可能只有根目录下有一个.gitignore文件，会递归的调用到整个仓库中，而当子目录下也有额外的.gitignore文件。子目录中的.gitignore文件的规则只作用于它所在的目录。</p>
+<p>文件.gitignore的格式规范如下：</p>
+<ol>
+<li>所有空行和#开头的行都被视为注释而忽略掉</li>
+<li>使用标准的glob模式匹配，会递归的调用到整个文件区（？）</li>
+<li>匹配模式可以以（/）开头防止递归</li>
+<li>匹配模式可以以（/）结尾指定目录</li>
+<li>要忽略指定模式以外的文件或者目录，可以在模式前加！取反</li>
+</ol>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gllk9eypvij31210jt42i.jpg" alt="IMG_7193A70E1EED-1"></p>
+<p>关于glob模式：</p>
+<p>一种在shell里简化了的正则表达式，用*等匹配模式来匹配文件，在解析路径模式时，大括号内用逗号进行分割，分割的部分可以包含/，所以a{/b/c,bcd}会被展开为a/b/c和abcd</p>
+<p>在路径匹配模式里，以下字符有一些特殊的作用：</p>
+<ul>
+<li><p>*：匹配单路径下0个或者多个字符串</p>
+</li>
+<li><p>？：匹配一个字符串</p>
+</li>
+<li><p>[…]：匹配指定范围内的字符串，如果[]中第一个字符是！或者^ ，则匹配不在范围内的任意字符串</p>
+</li>
+</ul>
+<p>知道这么多差不多够用了</p>
+<h1 id="6-git的分支管理"><a href="#6-git的分支管理" class="headerlink" title="6.git的分支管理"></a>6.git的分支管理</h1><h2 id="1-分支的简单图解"><a href="#1-分支的简单图解" class="headerlink" title="1.分支的简单图解"></a>1.分支的简单图解</h2><p>在版本回退里，我们可以回溯到之前的任意一个版本里，而这些版本都处在一条时间线上，这条时间线就是一条分支</p>
+<p>默认的分支是main（之前是master，后来由于这个词有歧视黑人的意思，就换了这里的图都是用的master），本身可以把它看成一个指针，head指针就是一个特殊的指针，这里就指向master指针</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli5672o9lj308d0473yf.jpg" alt="image-20201210015840577"></p>
+<p>我们在每次提交的时候，都会多出一个节点，指针也会随之移动，当我们创建一个新的分支，也就是创建一个新的指针，我们可以通过命令将head指针移动到新的指针上：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli58b6b3mj30dq06h3yj.jpg" alt="image-20201210020044381"></p>
+<p>我们还可以将两个分支合并：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli5a76lkcj30br066jre.jpg" alt="image-20201210020232237"></p>
+<p>还可以在这里把dev分支给删掉</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gli5awchx8j30br04fwef.jpg" alt="image-20201210020314110"></p>
+<h2 id="2-分支的使用"><a href="#2-分支的使用" class="headerlink" title="2.分支的使用"></a>2.分支的使用</h2><ol>
+<li>git branch 查看当前所有分支，及所在分支</li>
+<li>git branch 分支名 ：创建新的分支</li>
+<li>git checkout 分支名：切换到别的分支</li>
+<li>（处于某个分支下）git merge 分支名，这就是将两个分支合并，此时两个分支就处在同一个节点下</li>
+<li>git branch -d ：删除分支</li>
+</ol>
+<h1 id="7-关于git远程仓库的使用"><a href="#7-关于git远程仓库的使用" class="headerlink" title="7.关于git远程仓库的使用"></a>7.关于git远程仓库的使用</h1><h2 id="仓库服务器"><a href="#仓库服务器" class="headerlink" title="仓库服务器"></a>仓库服务器</h2><p>如果想查看你已经配置的远程仓库的服务器，可以运行<code>git remote</code>命令，会列出你的远程服务器的简写，一般来说链接了远程仓库，至少能够看到origin，这是给你克隆的仓库服务器的默认名字，也可以指定选项-v，会显示需要读写远程仓库使用的git保存的简写与其对应的url</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gllkyky485j30qo07adgr.jpg" alt="屏幕快照 2020-12-13 上午1.21.19"></p>
+<h2 id="添加远程仓库："><a href="#添加远程仓库：" class="headerlink" title="添加远程仓库："></a>添加远程仓库：</h2><p>可以使用git clone自动自行添加远程仓库的，也可以自行配置，比如：</p>
+<p><code>git remote add &lt;shortname&gt; &lt;url&gt;</code>:添加一个新的远程git仓库，同时指定一个方便实用的简写</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1glllgrj6rlj314a0qpgw0.jpg" alt="IMG_6B07EE8387AE-1"></p>
+<p>果你想要查看它，可以剪出一个指向改点的本地分支</p>
+<h2 id="从远程仓库中抓取和拉取："><a href="#从远程仓库中抓取和拉取：" class="headerlink" title="从远程仓库中抓取和拉取："></a>从远程仓库中抓取和拉取：</h2><p>git fetch  &lt; remote&gt; 会将远程的仓库的数据下载到本地仓库，但不会自动合并并修改当前的工作，需要手动合并，如果当前分支设置了跟踪的远程分支，可以使用git pull自动抓取远程分支的数据合并到本地</p>
+<h2 id="推送到远程分支："><a href="#推送到远程分支：" class="headerlink" title="推送到远程分支："></a>推送到远程分支：</h2><p>git push &lt; remote&gt; &lt; branch&gt;,如果要将master分支推送到origin服务器，那么就可以运行<code>git push origin master</code></p>
+<p>比如第一次对远程仓库进行操作，使本地与github同步</p>
+<blockquote>
+<p>git remote add origin +git地址 (添加远程仓库到本地)</p>
+<p>git pull –rebase origin main(更新远程仓库的更新（mian分支)到本地）</p>
+<p>git push -u origin main将本地仓库与远程合并</p>
+</blockquote>
+<h1 id="8-git-与github的多人协作"><a href="#8-git-与github的多人协作" class="headerlink" title="8.git 与github的多人协作"></a>8.git 与github的多人协作</h1><p>在一个github的仓库里，我们一般会有一个主分支，会有许多许多开发分支，每个人可以自己拉取一个分支，也可以都在一个分支里开发，开发者单独在这样的分支里开发自己的代码和功能，最后提交到拉取的分支上，最后再pull request一下，等待确认无误，再merge到主分支上，这就是一个规范的多人协作开发的流程。</p>
+<p>将项目克隆到本地打开以后，在本地的仓库里建立新分支并连接远程分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b dev origin&#x2F;dev</span><br></pre></td></tr></table></figure>
+
+<p>之后就可以在本地的dev分支进行提交（add, commit, push)，可能会出现提交不成功，应该是因为远程分支的版本比本地的更新，这个时候只需要git pull一下，将远程更新拉取到本地就行，这里可能出现的问题有两种：</p>
+<ol>
+<li><p>如图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEgy1gmxvej76dvj30zg0b63zs.jpg" alt="屏幕快照 2021-01-23 下午7.49.34">只需要在按提示在命令行输入 gi t branch –set-upstream-to=origin/dev dev 就可以，这样会把本地的dev分支追踪到远程仓库的dev分支</p>
+</li>
+<li><p>注意这个时候也有可能会出现冲突，可以使用git status查看那些文件有问题，进入文件查看几个相应的地方出现的&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; =========&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;这样的东西，删掉冲突的地方再add就可以了</p>
+</li>
+</ol>
+<p>完毕后，我们就将自己在本地dev上的更改提交到了github的远程仓库上，这个时候只需要在github上提交一个pull request，注意是在dev分支向main分支上提pull request，就完成自己的提交任务。</p>
+<p>在项目开发的过程中，可能会有其他的人的提交被main分支merge上了，我们需要在本地切换到main分支上，git pull一下，同步更新，之后再进入dev分支，也要调用git merge origin/main 合并主分支上的最新更新，如果有冲突，就像前面那样处理冲突，在就可以git add 等，最后git merge -continue</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/" rel="tag"><i class = "fa fa-tags"></i> 计算机</a>
+              <a href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag"><i class = "fa fa-tags"></i> 工具</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/14/java-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%B7%E4%BA%94-%E5%85%AD%E7%AB%A0/" rel="prev" title="java-核心技术卷五,六章">
+                  <i class="fa fa-chevron-left"></i> java-核心技术卷五,六章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/12/18/Android%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%BA%93-Room/" rel="next" title="Android本地数据库-Room">
+                  Android本地数据库-Room <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">charming</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">67k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:01</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+<br /> 
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("09/01/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

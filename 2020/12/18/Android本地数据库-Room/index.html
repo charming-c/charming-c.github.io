@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"charming-c.github.io","root":"/","scheme":"Muse","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="Room介绍Room 在 SQLite 上提供了一个抽象层，以便在充分利用 SQLite 的强大功能的同时，能够流畅地访问数据库。处理大量结构化数据的应用可极大地受益于在本地保留这些数据。最常见的用例是缓存相关数据。这样，当设备无法访问网络时，用户仍可在离线状态下浏览相应内容。设备重新连接到网络后，用户发起的所有内容更改都会同步到服务器。 SQLite是一个软件库，实现了自给自足的、无服务器的、零">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android本地数据库-Room">
+<meta property="og:url" content="https://charming-c.github.io/2020/12/18/Android%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%BA%93-Room/index.html">
+<meta property="og:site_name" content="Charming-Zone">
+<meta property="og:description" content="Room介绍Room 在 SQLite 上提供了一个抽象层，以便在充分利用 SQLite 的强大功能的同时，能够流畅地访问数据库。处理大量结构化数据的应用可极大地受益于在本地保留这些数据。最常见的用例是缓存相关数据。这样，当设备无法访问网络时，用户仍可在离线状态下浏览相应内容。设备重新连接到网络后，用户发起的所有内容更改都会同步到服务器。 SQLite是一个软件库，实现了自给自足的、无服务器的、零">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gltmqa0tsjj30go0f2dgo.jpg">
+<meta property="article:published_time" content="2020-12-18T05:25:51.000Z">
+<meta property="article:modified_time" content="2021-04-13T16:09:49.182Z">
+<meta property="article:author" content="charming">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="开发">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1gltmqa0tsjj30go0f2dgo.jpg">
+
+
+<link rel="canonical" href="https://charming-c.github.io/2020/12/18/Android%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%BA%93-Room/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android本地数据库-Room | Charming-Zone</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Charming-Zone</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客世界！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Room%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">Room介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96"><span class="nav-number">1.1.</span> <span class="nav-text">一、添加依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%BC%96%E5%86%99Entity%E7%B1%BB%EF%BC%88%E8%BF%99%E4%B8%AA%E7%B1%BB%E5%B0%B1%E6%98%AF%E5%8E%BB%E5%8C%85%E8%A3%85%E5%85%B7%E4%BD%93%E7%9A%84%E6%95%B0%E6%8D%AE%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">二、编写Entity类（这个类就是去包装具体的数据）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%BC%96%E5%86%99Dao%E7%B1%BB"><span class="nav-number">1.3.</span> <span class="nav-text">三、编写Dao类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BC%96%E5%86%99Database%E7%B1%BB%EF%BC%88%E7%BB%A7%E6%89%BF%E8%87%AARoomDatabase%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">四、编写Database类（继承自RoomDatabase）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%85%B7%E4%BD%93%E4%BD%BF%E7%94%A8"><span class="nav-number">1.5.</span> <span class="nav-text">五、具体使用</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="charming"
+      src="/images/icon2.jpg">
+  <p class="site-author-name" itemprop="name">charming</p>
+  <div class="site-description" itemprop="description">所思，所感，所想。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/charming-c" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;charming-c" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://charming-c.github.io/2020/12/18/Android%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%BA%93-Room/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon2.jpg">
+      <meta itemprop="name" content="charming">
+      <meta itemprop="description" content="所思，所感，所想。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Charming-Zone">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android本地数据库-Room
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-12-18 13:25:51" itemprop="dateCreated datePublished" datetime="2020-12-18T13:25:51+08:00">2020-12-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-14 00:09:49" itemprop="dateModified" datetime="2021-04-14T00:09:49+08:00">2021-04-14</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Room介绍"><a href="#Room介绍" class="headerlink" title="Room介绍"></a>Room介绍</h1><p>Room 在 SQLite 上提供了一个抽象层，以便在充分利用 SQLite 的强大功能的同时，能够流畅地访问数据库。处理大量结构化数据的应用可极大地受益于在本地保留这些数据。最常见的用例是缓存相关数据。这样，当设备无法访问网络时，用户仍可在离线状态下浏览相应内容。设备重新连接到网络后，用户发起的所有内容更改都会同步到服务器。</p>
+<p>SQLite是一个软件库，实现了自给自足的、无服务器的、零配置的、事务性的 SQL 数据库引擎。一个完整的 SQLite 数据库是存储在一个单一的跨平台的磁盘文件。SQLite 可在 UNIX（Linux, Mac OS, Android, iOS）和 Windows（Win32）中运行。</p>
+<a id="more"></a>
+
+<p>具体的数据库一般是什么样呢，其实数据库就主要是有各种表组成，最后在表里面进行增删查改，实行数据的获取和删除等功能，那表一般来说就是这样的：</p>
+<table>
+<thead>
+<tr>
+<th>学生表</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>学号</td>
+<td>姓名</td>
+<td>年龄</td>
+</tr>
+<tr>
+<td>S001</td>
+<td>张三</td>
+<td>24</td>
+</tr>
+<tr>
+<td>S002</td>
+<td>李四</td>
+<td>25</td>
+</tr>
+<tr>
+<td>S003</td>
+<td>王二麻子</td>
+<td>26</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>课程表</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>课程号</td>
+<td>课程名</td>
+<td>学分</td>
+</tr>
+<tr>
+<td>C001</td>
+<td>Linux</td>
+<td>25</td>
+</tr>
+<tr>
+<td>C002</td>
+<td>Python</td>
+<td>25</td>
+</tr>
+<tr>
+<td>C003</td>
+<td>MySQL</td>
+<td>25</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>选课表</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>学号</td>
+<td>课程号</td>
+<td>成绩</td>
+</tr>
+<tr>
+<td>S001</td>
+<td>C001</td>
+<td>90</td>
+</tr>
+<tr>
+<td>S002</td>
+<td>C001</td>
+<td>97</td>
+</tr>
+<tr>
+<td>S003</td>
+<td>C001</td>
+<td>94</td>
+</tr>
+</tbody></table>
+<p>Room 包含 3 个主要组件：</p>
+<ul>
+<li><p>数据库：包含数据库持有者，并作为应用已保留的持久关系型数据的底层连接的主要接入点。</p>
+<p>使用 @Database注释的类应满足以下条件：</p>
+<ul>
+<li>是扩展 RoomDatabase 的抽象类。</li>
+<li>在注释中添加与数据库关联的实体列表。</li>
+<li>包含具有 0 个参数且返回使用 @Dao注释的类的抽象方法。</li>
+</ul>
+<p>在运行时，您可以通过调用 Room.databaseBuilder() 或Room.inMemoryDatabaseBuilder()获取 Database 的实例。</p>
+</li>
+</ul>
+<ul>
+<li><p>Entity：表示数据库中的表。</p>
+</li>
+<li><p>DAO：包含用于访问数据库的方法。</p>
+</li>
+</ul>
+<p>应用使用 Room 数据库来获取与该数据库关联的数据访问对象 (DAO)。然后，应用使用每个 DAO 从数据库中获取实体，然后再将对这些实体的所有更改保存回数据库中。 最后，应用使用实体来获取和设置与数据库中的表列相对应的值。</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1gltmqa0tsjj30go0f2dgo.jpg" alt="img"></p>
+<h2 id="一、添加依赖"><a href="#一、添加依赖" class="headerlink" title="一、添加依赖"></a>一、添加依赖</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">  def room_version = <span class="string">&quot;2.2.5&quot;</span></span><br><span class="line"></span><br><span class="line">  implementation <span class="string">&quot;androidx.room:room-runtime:$room_version&quot;</span></span><br><span class="line">  annotationProcessor <span class="string">&quot;androidx.room:room-compiler:$room_version&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// optional - RxJava support for Room</span></span><br><span class="line">  implementation <span class="string">&quot;androidx.room:room-rxjava2:$room_version&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// optional - Guava support for Room, including Optional and ListenableFuture</span></span><br><span class="line">  implementation <span class="string">&quot;androidx.room:room-guava:$room_version&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// optional - Test helpers</span></span><br><span class="line">  testImplementation <span class="string">&quot;androidx.room:room-testing:$room_version&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、编写Entity类（这个类就是去包装具体的数据）"><a href="#二、编写Entity类（这个类就是去包装具体的数据）" class="headerlink" title="二、编写Entity类（这个类就是去包装具体的数据）"></a>二、编写Entity类（这个类就是去包装具体的数据）</h2><p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity(tableName = &quot;word_table&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Word</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PrimaryKey</span></span><br><span class="line">    <span class="meta">@NonNull</span></span><br><span class="line">    <span class="meta">@ColumnInfo(name = &quot;word&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String mWord;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Word</span><span class="params">(String mWord)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mWord = mWord;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getWord</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mWord;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>上面已经说过了，要写一个room作为本地数据库，对于安卓来说其实只需要将Entity、Dao、Database写好就可以，自利用这些类去实现数据库的增删查改。</p>
+<p>对于我们一个数据想要存储的数据，我们一般要将这个储存的数据设为public或者要有一个get方法，方看去读取内容</p>
+<p>这里解释一下具体的注解的作用：</p>
+<p>@Entity就是在检查这个类去作为一个数据项，一般默认类名就是表名，但是这里可以在注解里写上<code>tableName = &quot;xxx&quot;</code>，就可以自己为这个表去命名。SQLite中的表名不区分大小写。</p>
+<p>@PrimaryKey就是主键，惟一地标识一行(一张表中只能有一个主键)<br>主键应当是对用户没有意义的（常用于索引）<br>永远不要更新主键，否则违反对用户没有意义原则<br>主键不应包含动态变化的数据，如时间戳、创建时间列、修改时间列等</p>
+<p>比如：</p>
+<table>
+<thead>
+<tr>
+<th>学生表</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>学号</td>
+<td>姓名</td>
+<td>年龄</td>
+</tr>
+<tr>
+<td>S001</td>
+<td>张三</td>
+<td>24</td>
+</tr>
+<tr>
+<td>S002</td>
+<td>李四</td>
+<td>25</td>
+</tr>
+<tr>
+<td>S003</td>
+<td>王二麻子</td>
+<td>26</td>
+</tr>
+</tbody></table>
+<p>在这样一个数据表里，学号就可以作为主键，我们可以用主键实行数据的查找，而且学号是唯一的，是不能修改的，而这个表的tableName就是学生表</p>
+<p>@ColumnInfo就表示这个表的一个列，比如上面的表里就有学号，姓名，年龄等等</p>
+<p>在这里就可以看到，我们通过编写Entity类就可以为这个表搭建一个模版，规定表中的数据有哪些类型，而具体的这个Entity的对象就可以动态的把数据设置到对象的属性里，在room里就相当于放到这个表里了</p>
+<h2 id="三、编写Dao类"><a href="#三、编写Dao类" class="headerlink" title="三、编写Dao类"></a>三、编写Dao类</h2><p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Dao</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WordDao</span> </span>&#123;</span><br><span class="line">    <span class="comment">// allowing the insert of the same word multiple times by passing a</span></span><br><span class="line">    <span class="comment">// conflict resolution strategy</span></span><br><span class="line">    <span class="meta">@Insert(onConflict = OnConflictStrategy.IGNORE)</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(Word word)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Query(&quot;DELETE FROM word_table&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">deleteAll</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Query(&quot;SELECT * FROM word_table ORDER BY word ASC&quot;)</span></span><br><span class="line">    LiveData&lt;List&lt;Word&gt;&gt; getAlphabetizedWords();</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>DAO既可以是接口，也可以是抽象类。如果是抽象类，它可以有一个构造函数，它把<code>RoomDatabase</code>作为唯一的参数。Room在编译时创建每个DAO实现。至于为什么DAO要是一个抽象类或接口，我自己的看法就是，这个dao是用来干什么的呢，无非就是帮助我们对数据库进行增删查改的，那它里面就是要封装好一套方法，且对于数据库来说它就是工具包一样的，我的所有操作都有他来帮助实现，在写database事的时候，将接口或者抽象类的方法放进来就很方便，从他功能的角度就可以理解，他没有建一个对象的必要</p>
+</li>
+<li><p>像定义Entity一样，在Dao的定义的前一行，加上注解**@Dao**即可。</p>
+</li>
+<li><p><strong>Dao下的所有方法，都有一个注解</strong>。不同的注解，代表不同的意思，比如增删查改。而这些SQL语句是否合法，会在编译阶段就先过滤。如果你的SQL语句写错了，那将会编译失败。</p>
+</li>
+</ol>
+<p><code>@Delete</code>: 便捷方法会从数据库中删除一组以参数形式给出的实体。它使用主键查找要删除的实体。</p>
+<p>以下代码段演示了如何定义此方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Dao</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyDao</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Delete</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteWord</span><span class="params">(Word word)</span></span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Query</code>是 DAO 类中使用的主要注释。它允许您对数据库执行读/写操作。每个 <code>@Query</code>方法都会在编译时进行验证，因此如果查询出现问题，则会发生编译错误，而不是运行时失败。</p>
+<p>Room 还会验证查询的返回值，以确保当返回的对象中的字段名称与查询响应中的对应列名称不匹配时，Room 可以通过以下两种方式之一提醒您：</p>
+<ul>
+<li>如果只有部分字段名称匹配，则会发出警告。</li>
+<li>如果没有任何字段名称匹配，则会发出错误。</li>
+</ul>
+<p>像这些注解里面写的是sql语句，就是数据库一套专门操作语言，有兴趣可以去看看，一般要实现什么功能就可以去查查</p>
+<h2 id="四、编写Database类（继承自RoomDatabase）"><a href="#四、编写Database类（继承自RoomDatabase）" class="headerlink" title="四、编写Database类（继承自RoomDatabase）"></a>四、编写Database类（继承自RoomDatabase）</h2><p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Database(entities = &#123;Word.class&#125;,version = 1,exportSchema = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">WordRoomDatabase</span> <span class="keyword">extends</span> <span class="title">RoomDatabase</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> WordDao <span class="title">wordDao</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> WordRoomDatabase INSTANCE;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> NUMBER_OF_THREADS = <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> ExecutorService databaseWriteExecutor =</span><br><span class="line">            Executors.newFixedThreadPool(NUMBER_OF_THREADS);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> WordRoomDatabase <span class="title">getDatabase</span><span class="params">(<span class="keyword">final</span> Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (INSTANCE == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (WordRoomDatabase.class) &#123;</span><br><span class="line">                <span class="keyword">if</span> (INSTANCE == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),</span><br><span class="line">                            WordRoomDatabase.class, <span class="string">&quot;word_database&quot;</span>)</span><br><span class="line">                            .build();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个类写完以后，我们的一个简单的数据库就写完了，看这里的第一行注解，@Database后面的东西，这里是不是指明了entity是什么东西，这里传进去一个类对象，这样数据库就规定类他的框架，它里面能放什么，放什么样的东西，有什么限制都遵从这个Word这个类里的规范，version就是这个数据库的版本，当我们要对数据库进行更新的时候可能要用，这里不讨论，后面的表示数据库是不能通过迁移实现，不管这些。</p>
+<p>再看这里有接口，wordDao()就是我们之前写的给数据库的操作写好的方法，就可以在数据库里用接口里的方法实现数据库的操作。</p>
+<p>后面是一些多线程相关的东西，synchronized就是一个获得线程锁的机制，这样就会导致每次在执行代码块里里语句修改内存时，只有一个县线程可以修改，在这线程执行完才可以去执行别的线程的相关代码。</p>
+<p>volatile可以实现变量的可见性，就是说一旦某个线程修改了volatile关键字修饰的变量，则该变量将会立即保存修改后的值到物理内存中，其他线程读取该变量时，也可以立即获取修改后的值。<br> 在java运行中，为了提高程序的运行效率，对于一些变量的操作通常是在寄存器或者cpu缓存上进行的，之后才会保存到物理内存中，而使用volatile关键字修饰的变量则是直接读取物理内存。</p>
+<p>一般来说创建一个数据库是十分耗费资源的，所以我们一般是使用单例模式，去实现一个标准的数据库，可以看这个代码两块静态代码实现了单例模式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Room.databaseBuilder(context.getApplicationContext(),</span><br><span class="line">                            WordRoomDatabase.class, <span class="string">&quot;word_database&quot;</span>)</span><br><span class="line">                            .build();</span><br></pre></td></tr></table></figure>
+
+<p>这就是创建database的核心代码，具体怎么实现android已经帮你实现好了，我们直接穿参数进去就好了</p>
+<h2 id="五、具体使用"><a href="#五、具体使用" class="headerlink" title="五、具体使用"></a>五、具体使用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordRepository</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> WordDao mWordDao;</span><br><span class="line">    <span class="keyword">private</span> LiveData&lt;List&lt;Word&gt;&gt; mAllWords;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    WordRepository(Application application) &#123;</span><br><span class="line">        WordRoomDatabase db = WordRoomDatabase.getDatabase(application);</span><br><span class="line">        mWordDao = db.wordDao();</span><br><span class="line">        mAllWords = mWordDao.getAlphabetizedWords();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    LiveData&lt;List&lt;Word&gt;&gt; getAllWords() &#123;</span><br><span class="line">        <span class="keyword">return</span> mAllWords;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// You must call this on a non-UI thread or your app will throw an exception. Room ensures</span></span><br><span class="line">    <span class="comment">// that you&#x27;re not doing any long running operations on the main thread, blocking the UI.</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(Word word)</span> </span>&#123;</span><br><span class="line">        WordRoomDatabase.databaseWriteExecutor.execute(() -&gt; &#123;</span><br><span class="line">            mWordDao.insert(word);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们通过一个WordRepository将数据库中的所有数据获得，且交代了各种操作方法，我们要进行各种操作只需要实例化一个这个类的对象就可以了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"><i class = "fa fa-tags"></i> Android</a>
+              <a href="/tags/%E5%BC%80%E5%8F%91/" rel="tag"><i class = "fa fa-tags"></i> 开发</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/10/git%E7%AE%80%E4%BB%8B/" rel="prev" title="git简介">
+                  <i class="fa fa-chevron-left"></i> git简介
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/19/java-JVM/" rel="next" title="Java-JVM">
+                  Java-JVM <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">charming</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">67k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:01</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+<br /> 
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("09/01/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

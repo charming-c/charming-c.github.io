@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"charming-c.github.io","root":"/","scheme":"Muse","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="一、什么是JVM？1. 从jdk说起在初次运行Java代码之前我们都要下载一个叫做jdk的东西，并且要配置好环境变量，这样我们的java代码才能跑起来，达到我们想要的效果。简单的说，jdk就是用于支持java程序开发的最小环境，主要由Java程序设计语言、Java虚拟机、Java类库组成。jdk是java的核心，包含JRE和一些java工具（比如javac，java，jdb等）以及java的基础类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java-JVM">
+<meta property="og:url" content="https://charming-c.github.io/2021/03/19/java-JVM/index.html">
+<meta property="og:site_name" content="Charming-Zone">
+<meta property="og:description" content="一、什么是JVM？1. 从jdk说起在初次运行Java代码之前我们都要下载一个叫做jdk的东西，并且要配置好环境变量，这样我们的java代码才能跑起来，达到我们想要的效果。简单的说，jdk就是用于支持java程序开发的最小环境，主要由Java程序设计语言、Java虚拟机、Java类库组成。jdk是java的核心，包含JRE和一些java工具（比如javac，java，jdb等）以及java的基础类">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEly1goqerxazlnj30im0bdjr9.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEly1goqeui77gmj30fx08ojs5.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEly1goqh72zmtfj30oe0engmf.jpg">
+<meta property="article:published_time" content="2021-03-19T08:55:37.000Z">
+<meta property="article:modified_time" content="2021-04-13T16:09:49.183Z">
+<meta property="article:author" content="charming">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="编程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008eGmZEly1goqerxazlnj30im0bdjr9.jpg">
+
+
+<link rel="canonical" href="https://charming-c.github.io/2021/03/19/java-JVM/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Java-JVM | Charming-Zone</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Charming-Zone</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客世界！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AFJVM%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">一、什么是JVM？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BB%8Ejdk%E8%AF%B4%E8%B5%B7"><span class="nav-number">1.1.</span> <span class="nav-text">1. 从jdk说起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-JVM%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E5%A5%BD%E5%A4%84"><span class="nav-number">1.2.</span> <span class="nav-text">2.JVM的作用和好处</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81JVM%E7%9A%84%E8%87%AA%E5%8A%A8%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">二、JVM的自动内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9F"><span class="nav-number">2.1.</span> <span class="nav-text">1. JVM运行时数据区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8%EF%BC%88Program-Counter-Register%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. 程序计数器（Program Counter Register）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%EF%BC%88Java-Virtual-Machine-Stack%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">3.Java虚拟机栈（Java Virtual Machine Stack）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88%EF%BC%88Native-Stack-Stacks%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">4.本地方法栈（Native Stack Stacks）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Java%E5%A0%86%EF%BC%88Java-Heap%EF%BC%89"><span class="nav-number">2.5.</span> <span class="nav-text">5. Java堆（Java Heap）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E6%96%B9%E6%B3%95%E5%8C%BA%EF%BC%88Method-Area%EF%BC%89"><span class="nav-number">2.6.</span> <span class="nav-text">6.方法区（Method Area）</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="charming"
+      src="/images/icon2.jpg">
+  <p class="site-author-name" itemprop="name">charming</p>
+  <div class="site-description" itemprop="description">所思，所感，所想。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/charming-c" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;charming-c" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://charming-c.github.io/2021/03/19/java-JVM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon2.jpg">
+      <meta itemprop="name" content="charming">
+      <meta itemprop="description" content="所思，所感，所想。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Charming-Zone">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java-JVM
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-19 16:55:37" itemprop="dateCreated datePublished" datetime="2021-03-19T16:55:37+08:00">2021-03-19</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-14 00:09:49" itemprop="dateModified" datetime="2021-04-14T00:09:49+08:00">2021-04-14</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="一、什么是JVM？"><a href="#一、什么是JVM？" class="headerlink" title="一、什么是JVM？"></a>一、什么是JVM？</h1><h2 id="1-从jdk说起"><a href="#1-从jdk说起" class="headerlink" title="1. 从jdk说起"></a>1. 从jdk说起</h2><p>在初次运行Java代码之前我们都要下载一个叫做jdk的东西，并且要配置好环境变量，这样我们的java代码才能跑起来，达到我们想要的效果。简单的说，jdk就是用于支持java程序开发的最小环境，主要由Java程序设计语言、Java虚拟机、Java类库组成。jdk是java的核心，包含JRE和一些java工具（比如javac，java，jdb等）以及java的基础类库。</p>
+<p>JRE叫做Java运行时环境，在jdk的安装目录下，里面又有bin和lib两个文件夹，可以简单地理解成bin里面的就是jvm，而这个lib里装的是JVM工作时所需要的类库。</p>
+<a id="more"></a>
+
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEly1goqerxazlnj30im0bdjr9.jpg"></p>
+<h2 id="2-JVM的作用和好处"><a href="#2-JVM的作用和好处" class="headerlink" title="2.JVM的作用和好处"></a>2.JVM的作用和好处</h2><p>JVM是java能实现跨平台开发的核心，在一开始推出java的时候，开发者打出的口号是“一次编译，到处执行”，而能够实现这一目标的根源就是JVM，所有的Java程序在编译器编译过后，首先会编译成一个.class文件，这种类文件就会在虚拟机中解释运行，再通过虚拟机将程序解释给操作系统去执行，这样在不同的操作系统上我们只需要安装不同的虚拟机就可以运行同样的一份编译好的java程序。</p>
+<p>java不像c++、c语言那样编译后直接与操作系统联系，跑在我们的电脑上，而是根据一个叫做java虚拟机的东西，用它来解释我们编译好的java代码，生成相应的机器语言，交由操作系统执行，从而运行程序。</p>
+<h1 id="二、JVM的自动内存管理"><a href="#二、JVM的自动内存管理" class="headerlink" title="二、JVM的自动内存管理"></a>二、JVM的自动内存管理</h1><p>我们在编写c、c++程序的时候，所有关于动态分配的内存，都需要我们在程序结束之前将其销毁掉，否则就可能会出现相应的内存泄漏。而对于java来说，在虚拟机自动内存管理机制的帮助下，不需要再为每一个new操作去配对相应的delete代码，这样就大大减少我们的工作量以及避免了大多数内存泄漏和溢出方面的问题。</p>
+<h2 id="1-JVM运行时数据区域"><a href="#1-JVM运行时数据区域" class="headerlink" title="1. JVM运行时数据区域"></a>1. JVM运行时数据区域</h2><blockquote>
+<p>Java虚拟机在执行java程序中会把它所管理的内存划分为若干个不同的数据区域。这些区域有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而一直存在，有些则是依赖于用户的启动和结束而建立和销毁，Java虚拟机所管理的内存主要包括以下几个运行时数据区域：</p>
+</blockquote>
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEly1goqeui77gmj30fx08ojs5.jpg"></p>
+<h2 id="2-程序计数器（Program-Counter-Register）"><a href="#2-程序计数器（Program-Counter-Register）" class="headerlink" title="2. 程序计数器（Program Counter Register）"></a>2. 程序计数器（Program Counter Register）</h2><p>程序计数器时一块较小的内存空间，它可以看做是当前线程所执行的字节码的行号指示器。在字节码解释器工作时就是通过改变这个计数器的值来选取下一条要执行的字节码指令，它是程序控制流的指示器，分支、循环、跳转、异常处理、线程恢复等基础功能都是要依赖这个计数器来完成。</p>
+<p>比如，Java虚拟机的多线程就是通过线程轮流切换、分配处理器的执行时间的方式来实现的，在任何一个确定的时刻，一个单核处理器都只会执行一条线程中的一个指令。而程序计数器是为了指示下一条字节码指令在哪里，为了在线程切换以后能恢复到正确的执行位置，每条线程都需要一个独立的程序计数器，各条线程的之间的计数器互不影响，独立储存。这类的内存区域我们称为“线程私有的”。</p>
+<p>注意：当正在执行的是本地方法（native），这个计数器的值此时为null</p>
+<h2 id="3-Java虚拟机栈（Java-Virtual-Machine-Stack）"><a href="#3-Java虚拟机栈（Java-Virtual-Machine-Stack）" class="headerlink" title="3.Java虚拟机栈（Java Virtual Machine Stack）"></a>3.Java虚拟机栈（Java Virtual Machine Stack）</h2><p>和程序计数器一样，栈也是线程私有的，生命周期和线程相同。java栈描述的是java方法执行的线程内存模型：每个方法被执行的时候就会先创建一个栈帧并放入虚拟机栈中，在方法执行完毕时再从虚拟机栈中移除该栈帧。什么是栈帧？它主要用来存储局部变量表、操作数栈、动态链接、方法出口等信息。方法在执行时就会有各种存储信息入栈出栈，一个栈帧就包含了一个java方法的执行的所有信息。</p>
+<p>局部变量表存放了编译期可知的各种Java虚拟机基本数据类型、对象引用（reference）和returnAddress类型，局部变量表所需的内存空间在编译期完成分配，在方法运行期不会改变局部变量表的大小。在JVM规范中并没有对虚拟机栈空间的大小做限制，可以设置为固定大小的，也可以设置为可扩展的。但是在规范中定义了两种异常情况：</p>
+<ul>
+<li>如果计算时请求的栈空间大于虚拟机栈的最大值，则会抛出<code>StackOverflowError</code>异常；</li>
+<li>如果虚拟机栈设置为可扩展的并且无法再获取更多内存时，则会抛出<code>OutOfMemoryError</code>异常。</li>
+</ul>
+<h2 id="4-本地方法栈（Native-Stack-Stacks）"><a href="#4-本地方法栈（Native-Stack-Stacks）" class="headerlink" title="4.本地方法栈（Native Stack Stacks）"></a>4.本地方法栈（Native Stack Stacks）</h2><p>本地方法栈与虚拟机栈发挥的作用是非常相似的，其区别就是这里执行的是native方法，而虚拟机栈里执行的是java方法，在一些虚拟机中，比如Hot-Spot，本地方法栈和虚拟机栈是放到一起的，他们的相似性可见一斑。</p>
+<h2 id="5-Java堆（Java-Heap）"><a href="#5-Java堆（Java-Heap）" class="headerlink" title="5. Java堆（Java Heap）"></a>5. Java堆（Java Heap）</h2><p>对于java程序来说，堆是虚拟机所管理的内存的最大的一块，Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的是存放对象实例，Java世界里所有的对象实例都在这里分配内存。</p>
+<p>Java堆是垃圾收集管理的内存区域，从分配内存的角度来看，所有线程共享的Java堆中可以划分出多个线程私有的分配缓冲区，以提升对象分配的效率，但是原则上来说，Java堆里面对象是杂乱无章的，Java堆被细分的目的是为了更好的回收内存，或者更快的分配内存。Java堆是可以被实现成固定大小的，也是可以扩展的。但不管是何种方式，规范中还是定义了一种异常场景：</p>
+<ul>
+<li>如果计算需要更多的堆空间而无法满足时，则会抛出<code>OutOfMemoryError</code>异常。</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEly1goqh72zmtfj30oe0engmf.jpg"></p>
+<h2 id="6-方法区（Method-Area）"><a href="#6-方法区（Method-Area）" class="headerlink" title="6.方法区（Method Area）"></a>6.方法区（Method Area）</h2><ol>
+<li><p>方法区又被称为静态区，是程序中永远唯一的元素存储区域。和堆一样，是各个线程共享的内存区域。它用于存储已被虚拟机加载的类信息（类的方法代码，变量名，方法名，访问权限，返回值等）、常量、静态变量、即时编译器编译后的代码等数据。            </p>
+</li>
+<li><p>Java虚拟机规范对方法区的限制非常宽松，除了和Java堆一样 不需要连续的内存和可以选择固定大小或者可扩展之外，还可以选择不实现垃圾回收。<br> 这区域的内存回收目标主要是针对常量池的回收和类型的卸载，一般而言，这个区域的内存回收比较难以令人满意，尤其是类型的回收，条件相当苛刻，但是这部分区域的内存回收确实是必要的。</p>
+</li>
+<li><p>很多开发者更愿意把方法区称为“永久代”(Permanent Generation)「总是存放不会轻易改变的内容」。在目前已经发布的JDK 1.7 的HotSpot中，已经把原本放在永久代的字符串常量池移至堆中。</p>
+</li>
+<li><p>运行时常量池(Runtime Constant Pool)是方法区的一部分。（对于普通常量池有一个重要特征就是具备动态性，Java并不制定常量只能在编译期才能产生，运行时可以将新的常量放入池中。</p>
+<ol>
+<li>Eg:<code>String.intern()</code>是一个Native(本地)方法，它的作用是如果字符串常量池已经包含一个等于此String对象的字符串，则返回字符串常量池中这个字符串的引用, 否则将当前String对象的引用地址（堆中）添加到字符串常量池中并返回。</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        String str1 = <span class="keyword">new</span> StringBuilder(<span class="string">&quot;123&quot;</span>).append(<span class="string">&quot;456&quot;</span>).toString();</span><br><span class="line">        System.out.println(str1.intern() == str1);</span><br><span class="line"></span><br><span class="line">        String str2 = <span class="keyword">new</span> StringBuilder(<span class="string">&quot;ja&quot;</span>).append(<span class="string">&quot;va&quot;</span>).toString();</span><br><span class="line">        System.out.println(str2.intern() == str2);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"><i class = "fa fa-tags"></i> java</a>
+              <a href="/tags/%E7%BC%96%E7%A8%8B/" rel="tag"><i class = "fa fa-tags"></i> 编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/18/Android%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%BA%93-Room/" rel="prev" title="Android本地数据库-Room">
+                  <i class="fa fa-chevron-left"></i> Android本地数据库-Room
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/27/%E5%88%9D%E8%AF%86%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="next" title="初识动态规划">
+                  初识动态规划 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">charming</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">67k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:01</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+<br /> 
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("09/01/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
