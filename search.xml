@@ -510,6 +510,8 @@
 </blockquote>
 <p>题目分析：</p>
 <p>这道题一看就很好用暴力的方法解出来，因为我们可以暴力从小到大枚举所有的数，这样当这个数是丑数我们就用一个count做记录加1，一直加到count == n，这样第n个整数就找出来了。</p>
+<a id="more"></a>
+
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">nthUglyNumber</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> num = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(isUgly(num)) &#123;</span><br><span class="line">                count++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(count == n) <span class="keyword">break</span>;</span><br><span class="line">            num++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> num;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isUgly</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(n == <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(n == <span class="number">0</span>) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span>(n%<span class="number">2</span> == <span class="number">0</span>) <span class="keyword">return</span> isUgly(n/<span class="number">2</span>);</span><br><span class="line">        <span class="keyword">if</span>(n%<span class="number">3</span> == <span class="number">0</span>) <span class="keyword">return</span> isUgly(n/<span class="number">3</span>);</span><br><span class="line">        <span class="keyword">if</span>(n%<span class="number">5</span> == <span class="number">0</span>) <span class="keyword">return</span> isUgly(n/<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这么写毫无疑问就是超时了，毕竟一道中等难度的题目不会这么简单，那有什么更加快捷的算法呢？</p>
@@ -1487,6 +1489,24 @@
       <tags>
         <tag>c语言</tag>
         <tag>排序</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JVM-垃圾回收机制</title>
+    <url>/2021/04/16/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/</url>
+    <content><![CDATA[<h1 id="JVM–垃圾回收机制"><a href="#JVM–垃圾回收机制" class="headerlink" title="JVM–垃圾回收机制"></a>JVM–垃圾回收机制</h1><p>​    在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭，栈中的栈帧随着方法的进入和退出而有条不紊地执行着出栈和入栈的操作。每一个栈帧中分配多少内存基本上是在类结构确定下来时就已知的，因此这几个区域内存分配和回收都具有确定性，在这几个区域内就不需要过多考虑如何回收的问题，当方法结束或者内存结束时，内存自然就回收了。</p>
+<p>​    而在 Java 堆和方法区这两个区域则有着显著的不确定性：一个接口的多个实现类需要的内存可能会不一样，一个方法所执行的不同条件分支所需要的内存也可能不一样，只有在运行期间我们才知道程序究竟会创建哪些对象，创建多少个对象，这部分内存的分配和回收是动态的。垃圾收集器所关注的就是这部分内存该如何管理。</p>
+<a id="more"></a>
+
+<h2 id="一、对象已死？"><a href="#一、对象已死？" class="headerlink" title="一、对象已死？"></a>一、对象已死？</h2><p>​    在堆里存放着所有的对象实例，垃圾收集器在对堆进行回收前，第一件事情就是确定堆中的对象哪些还“存活”着，哪些已经“死去”（死去就是指不可能再被任何途径使用的对象）。</p>
+<p>​    </p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>编程</tag>
       </tags>
   </entry>
 </search>

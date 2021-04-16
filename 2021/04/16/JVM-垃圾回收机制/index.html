@@ -22,20 +22,22 @@
     var CONFIG = {"hostname":"charming-c.github.io","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta name="description" content="所思，所感，所想。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="分类">
-<meta property="og:url" content="https://charming-c.github.io/categories/index.html">
+  <meta name="description" content="JVM–垃圾回收机制​    在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭，栈中的栈帧随着方法的进入和退出而有条不紊地执行着出栈和入栈的操作。每一个栈帧中分配多少内存基本上是在类结构确定下来时就已知的，因此这几个区域内存分配和回收都具有确定性，在这几个区域内就不需要过多考虑如何回收的问题，当方法结束或者内存结束时，内存自然">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM-垃圾回收机制">
+<meta property="og:url" content="https://charming-c.github.io/2021/04/16/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/index.html">
 <meta property="og:site_name" content="Charming-Zone">
-<meta property="og:description" content="所思，所感，所想。">
+<meta property="og:description" content="JVM–垃圾回收机制​    在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭，栈中的栈帧随着方法的进入和退出而有条不紊地执行着出栈和入栈的操作。每一个栈帧中分配多少内存基本上是在类结构确定下来时就已知的，因此这几个区域内存分配和回收都具有确定性，在这几个区域内就不需要过多考虑如何回收的问题，当方法结束或者内存结束时，内存自然">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-09-09T19:16:50.000Z">
-<meta property="article:modified_time" content="2021-04-13T16:09:49.185Z">
+<meta property="article:published_time" content="2021-04-16T04:26:25.000Z">
+<meta property="article:modified_time" content="2021-04-16T10:17:11.596Z">
 <meta property="article:author" content="charming">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="编程">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://charming-c.github.io/categories/">
+<link rel="canonical" href="https://charming-c.github.io/2021/04/16/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/">
 
 
 <script class="page-configurations">
@@ -43,13 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>分类 | Charming-Zone
-</title>
+  <title>JVM-垃圾回收机制 | Charming-Zone</title>
   
 
 
@@ -193,7 +194,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -205,6 +206,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM%E2%80%93%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">1.</span> <span class="nav-text">JVM–垃圾回收机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AF%B9%E8%B1%A1%E5%B7%B2%E6%AD%BB%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">一、对象已死？</span></a></li></ol></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -265,53 +267,122 @@
 </noscript>
 
 
-    <div class="main-inner page posts-expand">
+    <div class="main-inner post posts-expand">
       
-  
-  
 
       
 
     
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://charming-c.github.io/2021/04/16/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon2.jpg">
+      <meta itemprop="name" content="charming">
+      <meta itemprop="description" content="所思，所感，所想。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Charming-Zone">
+    </span>
+
     
     
-    <div class="post-block" lang="zh-CN">
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM-垃圾回收机制
+        </h1>
 
-<h1 class="post-title" itemprop="name headline">分类
-</h1>
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
 
-<div class="post-meta-container">
+      <time title="创建时间：2021-04-16 12:26:25 / 修改时间：18:17:11" itemprop="dateCreated datePublished" datetime="2021-04-16T12:26:25+08:00">2021-04-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
   
-
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>434</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
 </div>
 
-</header>
+        </div>
+      </header>
 
-      
-      
-      
-      <div class="post-body">
-          <div class="category-all-page">
-  <div class="category-all-title">
-    目前共计 2 个分类
-  </div>
-  <div class="category-all">
-    <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a><span class="category-list-count">4</span></li></ul>
-  </div>
-</div>
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="JVM–垃圾回收机制"><a href="#JVM–垃圾回收机制" class="headerlink" title="JVM–垃圾回收机制"></a>JVM–垃圾回收机制</h1><p>​    在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭，栈中的栈帧随着方法的进入和退出而有条不紊地执行着出栈和入栈的操作。每一个栈帧中分配多少内存基本上是在类结构确定下来时就已知的，因此这几个区域内存分配和回收都具有确定性，在这几个区域内就不需要过多考虑如何回收的问题，当方法结束或者内存结束时，内存自然就回收了。</p>
+<p>​    而在 Java 堆和方法区这两个区域则有着显著的不确定性：一个接口的多个实现类需要的内存可能会不一样，一个方法所执行的不同条件分支所需要的内存也可能不一样，只有在运行期间我们才知道程序究竟会创建哪些对象，创建多少个对象，这部分内存的分配和回收是动态的。垃圾收集器所关注的就是这部分内存该如何管理。</p>
+<a id="more"></a>
+
+<h2 id="一、对象已死？"><a href="#一、对象已死？" class="headerlink" title="一、对象已死？"></a>一、对象已死？</h2><p>​    在堆里存放着所有的对象实例，垃圾收集器在对堆进行回收前，第一件事情就是确定堆中的对象哪些还“存活”着，哪些已经“死去”（死去就是指不可能再被任何途径使用的对象）。</p>
+<p>​    </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"><i class = "fa fa-tags"></i> java</a>
+              <a href="/tags/%E7%BC%96%E7%A8%8B/" rel="tag"><i class = "fa fa-tags"></i> 编程</a>
+          </div>
 
         
-      </div>
-      
-      
-      
-    </div>
-    
 
-    
-    
-    
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/14/Leetcode%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%EF%BC%88%E4%BA%8C%EF%BC%89/" rel="prev" title="Leetcode刷题笔记--动态规划（二）">
+                  <i class="fa fa-chevron-left"></i> Leetcode刷题笔记--动态规划（二）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
 
 
       
