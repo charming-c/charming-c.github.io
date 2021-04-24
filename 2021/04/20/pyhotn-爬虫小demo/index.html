@@ -22,18 +22,22 @@
     var CONFIG = {"hostname":"charming-c.github.io","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta name="description" content="所思，所感，所想。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Charming-Zone">
-<meta property="og:url" content="https://charming-c.github.io/tags/%E7%BC%96%E7%A8%8B/index.html">
+  <meta name="description" content="Python 爬虫入门篇​    看过《图解 http 》就应该会知道客户端在发起网络请求，服务器在收到请求以后，就会发送我们请求的一些数据，客户端接受以后，经过浏览器进行解析，最后可视化形成我们所浏览的网页的模样。其实所发送的所有数据都在我们的浏览器里，当我们不想机械地通过浏览器按照前端程序员所希望的模式去接收我们请求的数据时，我们就可以通过爬虫去定向的爬取我们所希望得到的数据。在互联网上的许许">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pyhotn 爬虫小demo">
+<meta property="og:url" content="https://charming-c.github.io/2021/04/20/pyhotn-%E7%88%AC%E8%99%AB%E5%B0%8Fdemo/index.html">
 <meta property="og:site_name" content="Charming-Zone">
-<meta property="og:description" content="所思，所感，所想。">
+<meta property="og:description" content="Python 爬虫入门篇​    看过《图解 http 》就应该会知道客户端在发起网络请求，服务器在收到请求以后，就会发送我们请求的一些数据，客户端接受以后，经过浏览器进行解析，最后可视化形成我们所浏览的网页的模样。其实所发送的所有数据都在我们的浏览器里，当我们不想机械地通过浏览器按照前端程序员所希望的模式去接收我们请求的数据时，我们就可以通过爬虫去定向的爬取我们所希望得到的数据。在互联网上的许许">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-20T14:51:20.000Z">
+<meta property="article:modified_time" content="2021-04-20T15:11:35.078Z">
 <meta property="article:author" content="charming">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="爬虫">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://charming-c.github.io/tags/%E7%BC%96%E7%A8%8B/">
+<link rel="canonical" href="https://charming-c.github.io/2021/04/20/pyhotn-%E7%88%AC%E8%99%AB%E5%B0%8Fdemo/">
 
 
 <script class="page-configurations">
@@ -41,12 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: 编程 | Charming-Zone</title>
+  <title>pyhotn 爬虫小demo | Charming-Zone</title>
   
 
 
@@ -190,7 +194,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -202,6 +206,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Python-%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8%E7%AF%87"><span class="nav-number">1.</span> <span class="nav-text">Python 爬虫入门篇</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Request-%E5%BA%93"><span class="nav-number">1.1.</span> <span class="nav-text">一、Request 库</span></a></li></ol></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -262,176 +267,115 @@
 </noscript>
 
 
-    <div class="main-inner tag posts-collapse">
+    <div class="main-inner post posts-expand">
       
 
       
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h2 class="collection-header">编程
-          <small>标签</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://charming-c.github.io/2021/04/20/pyhotn-%E7%88%AC%E8%99%AB%E5%B0%8Fdemo/">
 
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon2.jpg">
+      <meta itemprop="name" content="charming">
+      <meta itemprop="description" content="所思，所感，所想。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Charming-Zone">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          pyhotn 爬虫小demo
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+
+      <time title="创建时间：2021-04-20 22:51:20 / 修改时间：23:11:35" itemprop="dateCreated datePublished" datetime="2021-04-20T22:51:20+08:00">2021-04-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>367</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Python-爬虫入门篇"><a href="#Python-爬虫入门篇" class="headerlink" title="Python 爬虫入门篇"></a>Python 爬虫入门篇</h1><p>​    看过《图解 http 》就应该会知道客户端在发起网络请求，服务器在收到请求以后，就会发送我们请求的一些数据，客户端接受以后，经过浏览器进行解析，最后可视化形成我们所浏览的网页的模样。其实所发送的所有数据都在我们的浏览器里，当我们不想机械地通过浏览器按照前端程序员所希望的模式去接收我们请求的数据时，我们就可以通过爬虫去定向的爬取我们所希望得到的数据。在互联网上的许许多多的服务器 24 小时运行着，时时刻刻等待着别人的请求，爬虫就是通过模拟请求，就好像在浏览器输入网址，通过一些 http 库向指定的服务器发起请求，这个时候爬虫可以假装自己是浏览器（通过添加一些 header ），大多是服务器就会直接返回数据给爬虫，当然一些大型的、涉及安全性的网站就会有很多反爬虫的机制，这个时候要爬数据就没那么简单了。</p>
+<h2 id="一、Request-库"><a href="#一、Request-库" class="headerlink" title="一、Request 库"></a>一、Request 库</h2>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-04-16T12:26:25+08:00"
-              content="2021-04-16">
-          04-16
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/04/16/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" itemprop="url">
-            <span itemprop="name">JVM-垃圾回收机制</span>
-          </a>
-      </div>
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"><i class = "fa fa-tags"></i> python</a>
+              <a href="/tags/%E7%88%AC%E8%99%AB/" rel="tag"><i class = "fa fa-tags"></i> 爬虫</a>
+          </div>
 
-      
-    </header>
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/16/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" rel="prev" title="JVM-垃圾回收机制">
+                  <i class="fa fa-chevron-left"></i> JVM-垃圾回收机制
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-04-03T15:18:25+08:00"
-              content="2021-04-03">
-          04-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/04/03/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" itemprop="url">
-            <span itemprop="name">Java内存模型与线程</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-19T16:55:37+08:00"
-              content="2021-03-19">
-          03-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/19/java-JVM/" itemprop="url">
-            <span itemprop="name">Java-JVM</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-11-14T13:28:35+08:00"
-              content="2020-11-14">
-          11-14
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/11/14/java-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%B7%E4%BA%94-%E5%85%AD%E7%AB%A0/" itemprop="url">
-            <span itemprop="name">java-核心技术卷五,六章</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-10-10T01:31:09+08:00"
-              content="2020-10-10">
-          10-10
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/10/10/java-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" itemprop="url">
-            <span itemprop="name">java-类加载机制</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-09-10T16:54:28+08:00"
-              content="2020-09-10">
-          09-10
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/09/10/java-%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" itemprop="url">
-            <span itemprop="name">java-集合框架</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-09-10T16:46:27+08:00"
-              content="2020-09-10">
-          09-10
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/09/10/Java-IO%E6%B5%81/" itemprop="url">
-            <span itemprop="name">Java-IO流</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
