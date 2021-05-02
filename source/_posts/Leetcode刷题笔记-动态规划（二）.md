@@ -2,7 +2,7 @@
 title: Leetcode刷题笔记--动态规划（二）
 date: 2021-04-14 00:20:52
 tags:
-	[leetcode,动态规划]
+	[Leetcode,动态规划]
 categories: 算法
 ---
 

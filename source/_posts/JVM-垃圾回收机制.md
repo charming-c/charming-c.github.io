@@ -2,8 +2,8 @@
 title: JVM-垃圾回收机制
 date: 2021-04-16 12:26:25
 tags:
-	[java,编程]
-categories: 学习
+	[JVM]
+categories: Java
 
 ---
 

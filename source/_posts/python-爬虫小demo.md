@@ -2,8 +2,8 @@
 title: python 爬虫小demo
 date: 2021-04-20 22:51:20
 tags:
-	[python,爬虫]
-categories: 网络
+	[爬虫]
+categories: Python
 
 ---
 

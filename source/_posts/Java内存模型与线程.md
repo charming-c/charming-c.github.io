@@ -2,8 +2,8 @@
 title: Java内存模型与线程
 date: 2021-04-03 15:18:25
 tags:
-	[java,编程]
-categories: 学习
+	[JVM]
+categories: Java
 ---
 
 

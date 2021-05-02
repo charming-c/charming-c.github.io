@@ -2,8 +2,8 @@
 title: 'java-核心技术卷五,六章'
 date: 2020-11-14 13:28:35
 tags:
-	[java,编程]
-categories: 学习
+	[核心技术]
+categories: Java
 ---
 
 

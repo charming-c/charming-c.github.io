@@ -2,8 +2,8 @@
 title: Android本地数据库-Room
 date: 2020-12-18 13:25:51
 tags:
-	[Android,开发]
-categories: 学习
+	[数据库]
+categories: Android
 ---
 
 

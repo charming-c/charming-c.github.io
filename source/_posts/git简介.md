@@ -2,8 +2,8 @@
 title: git简介
 date: 2020-12-10 00:36:12
 tags:
-	[计算机,工具]
-categories: 学习
+	[git]
+categories: 工具
 
 ---
 

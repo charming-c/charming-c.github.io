@@ -2,8 +2,8 @@
 title: java-类加载机制
 date: 2020-10-10 01:31:09
 tags:
-	[java,编程]
-categories: 学习
+	[类加载]
+categories: Java
 
 ---
 

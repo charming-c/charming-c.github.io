@@ -2,8 +2,8 @@
 title: Java-IO流
 date: 2020-09-10 16:46:27
 tags:
-     [java,编程]
-categories: 学习
+     [I/O流]
+categories: Java
 ---
 
 简单介绍java的io流的概念

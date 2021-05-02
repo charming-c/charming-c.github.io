@@ -2,8 +2,8 @@
 title: java-集合框架
 date: 2020-09-10 16:54:28
 tags:
-    [java,编程]
-categories: 学习
+    [集合]
+categories: Java
 ---
 
 # 1. 集合

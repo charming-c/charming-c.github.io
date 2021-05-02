@@ -2,8 +2,8 @@
 title: Java-JVM
 date: 2021-03-19 16:55:37
 tags:
-     [java,编程]
-categories: 学习
+     [JVM]
+categories: Java
 
 ---
 
