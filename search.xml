@@ -196,11 +196,10 @@
 <p>这里我们通过一个WordRepository将数据库中的所有数据获得，且交代了各种操作方法，我们要进行各种操作只需要实例化一个这个类的对象就可以了。</p>
 ]]></content>
       <categories>
-        <category>学习</category>
+        <category>Android</category>
       </categories>
       <tags>
-        <tag>Android</tag>
-        <tag>开发</tag>
+        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
@@ -302,11 +301,10 @@
 <h1 id="Writer"><a href="#Writer" class="headerlink" title="Writer"></a>Writer</h1><p>Writer和OutputStream的联系与上面Reader差不多，不再赘述。</p>
 ]]></content>
       <categories>
-        <category>学习</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>编程</tag>
+        <tag>I/O流</tag>
       </tags>
   </entry>
   <entry>
@@ -387,11 +385,10 @@
 <p>使用volatile变量的第二个语义是禁止指令重排序优化，普通的变量仅会保证在该方法的执行过程中所有依赖该赋值结果的地方都能够取得正确的值，而不能保证变量的操作顺序与执行顺序一致。</p>
 ]]></content>
       <categories>
-        <category>学习</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>编程</tag>
+        <tag>JVM</tag>
       </tags>
   </entry>
   <entry>
@@ -494,8 +491,8 @@
         <category>算法</category>
       </categories>
       <tags>
-        <tag>leetcode</tag>
         <tag>动态规划</tag>
+        <tag>Leetcode</tag>
       </tags>
   </entry>
   <entry>
@@ -575,8 +572,8 @@
         <category>算法</category>
       </categories>
       <tags>
-        <tag>leetcode</tag>
         <tag>动态规划</tag>
+        <tag>Leetcode</tag>
       </tags>
   </entry>
   <entry>
@@ -718,11 +715,10 @@
 <p>在项目开发的过程中，可能会有其他的人的提交被main分支merge上了，我们需要在本地切换到main分支上，git pull一下，同步更新，之后再进入dev分支，也要调用git merge origin/main 合并主分支上的最新更新，如果有冲突，就像前面那样处理冲突，在就可以git add 等，最后git merge -continue</p>
 ]]></content>
       <categories>
-        <category>学习</category>
+        <category>工具</category>
       </categories>
       <tags>
-        <tag>计算机</tag>
-        <tag>工具</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -773,11 +769,10 @@
 
 ]]></content>
       <categories>
-        <category>学习</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>编程</tag>
+        <tag>JVM</tag>
       </tags>
   </entry>
   <entry>
@@ -1075,11 +1070,10 @@
 </ol>
 ]]></content>
       <categories>
-        <category>学习</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>编程</tag>
+        <tag>核心技术</tag>
       </tags>
   </entry>
   <entry>
@@ -1166,11 +1160,10 @@
 <p>5:继续为count1与count2赋值,此时count1没有赋值操作,所有count1为1,但是count2执行赋值操作就变为0。</p>
 ]]></content>
       <categories>
-        <category>学习</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>编程</tag>
+        <tag>类加载</tag>
       </tags>
   </entry>
   <entry>
@@ -1317,11 +1310,10 @@
 
 <h2 id="实现类（内容有点多，下次再写完）"><a href="#实现类（内容有点多，下次再写完）" class="headerlink" title="实现类（内容有点多，下次再写完）"></a>实现类（内容有点多，下次再写完）</h2>]]></content>
       <categories>
-        <category>学习</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>编程</tag>
+        <tag>集合</tag>
       </tags>
   </entry>
   <entry>
@@ -1398,8 +1390,8 @@
         <category>算法</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>算法</tag>
+        <tag>动态规划</tag>
+        <tag>Leetcode</tag>
       </tags>
   </entry>
   <entry>
@@ -1538,7 +1530,6 @@
         <category>算法</category>
       </categories>
       <tags>
-        <tag>c语言</tag>
         <tag>排序</tag>
       </tags>
   </entry>
@@ -1553,11 +1544,10 @@
 <p>​    </p>
 ]]></content>
       <categories>
-        <category>学习</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>编程</tag>
+        <tag>JVM</tag>
       </tags>
   </entry>
   <entry>
@@ -1589,10 +1579,9 @@
 
 ]]></content>
       <categories>
-        <category>网络</category>
+        <category>Python</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>爬虫</tag>
       </tags>
   </entry>
