@@ -411,3 +411,5 @@ if (onFilterTouchEventForSecurity(ev)) {
 
 这个就是之前看过那部分代码，通过上面代码我们可以看到View会先判断是否设置了OnTouchListener，**如果设置了OnTouchListener并且onTouch方法返回了true，那么onTouchEvent不会被调用。**
  当没有设置OnTouchListener或者设置了OnTouchListener但是onTouch方法返回false则会调用View自己的onTouchEvent方法。而一些时间的消费和对应的处理都封装在onTouchEvent方法中了，这里就不详细阐述了。
+
+![img](https://tva1.sinaimg.cn/large/008i3skNgy1gvhswsrlrrj60i50z5jt102.jpg)
