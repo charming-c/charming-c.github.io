@@ -1,0 +1,99 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Java内存模型与线程 - Charming Zone</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="charming"><meta name=description content="Java内存模型与线程 多任务处理在现代计算机操作系统中几乎已经是一项必备的技能了。在很多的场景下，让计算机同时去做几件事情，不仅仅是因为计算"><meta name=keywords content="Hugo,theme,even"><meta name=generator content="Hugo 0.97.3 with theme even"><link rel=canonical href=https://charming-c.github.io/post/java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Java内存模型与线程"><meta property="og:description" content="Java内存模型与线程 多任务处理在现代计算机操作系统中几乎已经是一项必备的技能了。在很多的场景下，让计算机同时去做几件事情，不仅仅是因为计算"><meta property="og:type" content="article"><meta property="og:url" content="https://charming-c.github.io/post/java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-04-21T00:00:00+00:00"><meta property="article:modified_time" content="2022-04-21T00:00:00+00:00"><meta itemprop=name content="Java内存模型与线程"><meta itemprop=description content="Java内存模型与线程 多任务处理在现代计算机操作系统中几乎已经是一项必备的技能了。在很多的场景下，让计算机同时去做几件事情，不仅仅是因为计算"><meta itemprop=datePublished content="2022-04-21T00:00:00+00:00"><meta itemprop=dateModified content="2022-04-21T00:00:00+00:00"><meta itemprop=wordCount content="4362"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content="Java内存模型与线程"><meta name=twitter:description content="Java内存模型与线程 多任务处理在现代计算机操作系统中几乎已经是一项必备的技能了。在很多的场景下，让计算机同时去做几件事情，不仅仅是因为计算"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Charming</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Charming</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Java内存模型与线程</h1><div class=post-meta><span class=post-time>2022-04-21</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#java内存模型与线程>Java内存模型与线程</a><ul><li><a href=#一从硬件出发>一、从硬件出发</a></li><li><a href=#二java内存模型>二、Java内存模型</a><ul><li><a href=#1-主内存和工作内存>1. 主内存和工作内存</a></li><li><a href=#2-内存之间的交互操作>2. 内存之间的交互操作</a></li><li><a href=#3-三个特性>3. 三个特性</a></li></ul></li><li><a href=#三volatile关键字>三、volatile关键字</a><ul><li><a href=#1-对于volatile型变量的特殊规则>1. 对于volatile型变量的特殊规则</a></li></ul></li></ul></li></ul></nav></div></div><div class=post-content><h1 id=java内存模型与线程>Java内存模型与线程</h1><p>多任务处理在现代计算机操作系统中几乎已经是一项必备的技能了。在很多的场景下，让计算机同时去做几件事情，不仅仅是因为计算机的运算能力强大，还有一个很重要的原因是计算机的运算速度与他的存储和通信子系统的速度差距太大了，大量的时间都浪费在磁盘I/O、网络通信和数据库的访问上面了，如果不希望处理器在大部分时间都处在等待其他资源的空闲状态，就必须去使用一些手段去把处理器的运算能力压榨出来，而这种压榨在我们看来就是<strong>并发和并行</strong>。</p><p>同理在服务器层面，一个服务端要同时对多个客户提供服务，也是一个显然的并发使用场景。对于就计算量相同的任务，程序线程并发协调地越好，效率自然就越高，反之，线程之间频繁争用数据，互相阻塞甚至死锁，将会大大降低程序的并发能力。</p><p>这里简单介绍一下锁机制：</p><p>Java中的内置锁：每个Java对象都可以做一个实现同步的锁，这些锁就是内置锁，线程进入同步代码块或方法的时候，会自动获得该锁，退出同步以后，会释放该锁，在多线程协作的时候，在某些动作操作对象之前，必须先获得这个对象的锁，获得以后其他的线程的操作就必须等到这个锁释放之后才可以进行相关的操作</p><p>什么是死锁：</p><blockquote><p>线程一：首先获得对象1的锁，企图再获得对象2的锁</p><p>线程二：首先获得对象2的锁，企图获得对象1的锁</p><p>线程一等待线程二释放对象2，线程二等待线程一释放对象1，</p><p>这样就会，，，一直等下去。</p></blockquote><h2 id=一从硬件出发>一、从硬件出发</h2><p>在物理计算机中，绝大多数的运算任务都不可能只靠处理器“计算”完成，处理器至少要与内存交互，比如读取运算数据、存储运算结果等，这个I/O操作是很难消除的（没有办法仅靠寄存器去完成所有运算任务），由于计算机的存储设备与处理器的运算速度有着几个数量级的差距，所以现代计算机系统都不得不加入一层或者多层读写速度尽可能接近处理器运算速度的高度缓存（Cache）来作为处理器与内存之间的缓冲：将运算要使用的数据复制到缓存里，帮助运算快速进行，当运算结束后，在从缓存同步到内存中，这样就不需要等待缓慢的内存读写了。</p><p><img src=https://tva1.sinaimg.cn/large/008eGmZEly1gp7su08gn6j31ea0p6428.jpg alt=cpu-cache-memory></p><p>关于缓存一致性协议：</p><p>基于高速缓存的存储交互很好地解决了处理器与内存速度之间的矛盾，但是也为计算机系统带来了更高的复杂度，他引入一个新的问题，在多路处理器系统中，每个处理器都有自己的高速缓存，而它们有共享一块主内存，当多个处理器的运算任务都涉及同一块主内存区域时，将可能导致各自的缓存数据的不一致，最后同步到主存中的就不知道到底是哪一块的数据了，为了解决一致性的问题，需要各个处理器访问缓存时要遵循一些协议，在读写根据一些协议进行操作。</p><p>除了增加高速缓存以外，为了使处理器内部的运算单元能尽量被充分利用，处理器可以对输入的代码进行乱序执行优化，处理器会将乱序执行的结果重组，保证该结果与顺序执行的结果是一致的，但并不保证程序中各个语句计算的先后顺序与输入代码的先后顺序是一致的。Java虚拟机的即时编译器也有类似的指令重排序优化。</p><h2 id=二java内存模型>二、Java内存模型</h2><p>这里所讲的Java内存模型和之前说的Java内存区域（栈、堆、方法区等）并不是一个层次对内存的划分，这两者基本上是没有任何关系的。只是两种不同的对内存的划分概念，一个从程序领域帮助我们理解，一个则是从机器操作领域去分类。</p><h3 id=1-主内存和工作内存>1. 主内存和工作内存</h3><p>Java内存模型的主要目的是定义程序中各个变量的访问规则，即关注在虚拟机中把变量值存储到内存中和从内存中去取变量值这样的底层细节。此处的变量和Java编程中的变量也不是一个概念，这里指实例字段、静态字段和构成数组对象的元素，但是不包括局部变量和方法参数，因为后者是线程私有的，不会被共享，自然不会有竞争问题，而这里的内存模型就是针对线程树立的概念。</p><p>Java内存模型规定了所有的变量都存储在主内存中（这里的主内存与介绍计算机内部的物理硬件提到的主内存名字一样，两者也可以类比，但物理上它仅仅是虚拟机内存中的一部分）。每条线程还有自己的工作内存（可以与前面讲的Cache类比），线程的工作内存中保存了被该线程使用的变量的主内存副本，线程对变量的所有操作（读取，赋值等）都必须在工作内存中进行，而不能直接写主内存的中的数据。不同的线程之间也无法访问相互之间的工作内存中的变量，线程之间变量值的传递均需要通过主内存来完成，线程、主内存、工作内存三者之间的交互关系如下：</p><p><img src=https://tva1.sinaimg.cn/large/008eGmZEly1gp7tslxkjlj30mt0bc74p.jpg alt></p><h3 id=2-内存之间的交互操作>2. 内存之间的交互操作</h3><p>关于主内存与工作内存之间的具体交互协议，即一个变量如何从主内存拷贝到工作内存、如何从工作内存同步会回内存这一类的实现细节，Java内存模型定义了以下8种操作来完成，Java虚拟机必须保证实现时下列每一个种都是原子的、不可再分的。</p><ul><li>lock（锁定）：作用于主内存之间的变量，他把变量标识成为一条线程独占的状态</li><li>unlock（解锁）：作用于主内存之间的变量，他把处于锁定状态的变量释放出来，释放后的变量才可以被其他线程所锁定</li><li>read（读取）：作用于主内存的变量，他把变量值从主内存传输到线程的工作内存中，以便之后的load操作使用</li><li>load（载入）：作用于工作内存的变量，将read操作从主内存中得到的变量值放入工作内存的变量副本中</li><li>use（使用）：作用于工作内存的变量，他把工作内存中的一个变量的值传递给一个执行引擎，每当虚拟机遇到一个需要使用变量的值的字节码指令时，就执行这个操作</li><li>assign（赋值）：作用于工作区的变量，他把一个从执行引擎接受的值赋给工作内存的变量，每当虚拟机遇到一个需要给变量赋值的的字节码指令，就执行这个操作</li><li>store（存储）：作用于主内存的变量，他把工作内存中的一个变量的值传送到主内存中，以便之后的write操作使用</li><li>write（写入）：作用于主内存的变量，他把store操作从工作内存得到的变量的值放入到主内存的变量里</li></ul><p>如果要把一个变量从主内存拷贝到工作内存，那就要按顺序执行read和load操作，如果反过来要写入的话，就要按顺序执行store和write操作，Java内存模型只要求上述两个操作必须按顺序执行，但不要求是连续执行。其他的一些操作的规则：</p><ul><li>不允许read和load、store和write操作之一单独出现，即不允许一个变量从主内存读取了但工作内存不接受，或者工作内存发起了回写但主内存不接受的情况出现。</li><li>不允许一个线程丢弃它最近的assign操作，即变量在工作内存中改变之后，必须把该改变同步回主内存中</li><li>一个新的变量只能在主内存中诞生，不允许在工作内存中直接使用一个未被初始化（load和assign）的变量，换句话说就是对一个变量实施use、store操作之前，必须先执行assign和load操作</li><li>一个变量在同一个时刻只允许一条线程对其进行lock操作，但lock操作可以被同一条线程重复执行多次，多次执行lock以后，只有执行相同次数的unlock操作，变量才会解锁</li><li>如果对一个变量执行lock操作，那将会清空工作内存中此变量的值，在执行引擎使用这个变量之前，需要重新执行load获assign操作初始化变量的值</li><li>如果一个变量事先没有被lock操作锁定，那就不允许对他执行unlock操作，也不允许去unlock一个被其他线程所lock的变量</li><li>对一个变量执行unlock操作之前，必须先把此变量同步回主内存中</li></ul><h3 id=3-三个特性>3. 三个特性</h3><ol><li>原子性：<ol><li>一个操作或多个操作要么全部执行完成且执行过程不被中断，要么就不执行</li><li>由Java内存模型直接保证的原子性变量的操作有以上6种，我们大致可以认为，基本数据类型的访问、读写都是具有原子性的</li><li>如果想要保证更大范围的原子性，Java内存模型还提供了lock和unlock操作来满足这种需求，尽管虚拟机没有把lock和unlock操作直接开放给用户使用，但是却提供了更高层次的字节码指令来隐式的使用这两种操作，这两个字节码指令反应到Java代码就是同步块-synchronized关键字，因此synchronized块之间的操作也具备原子性</li></ol></li><li>可见性：<ol><li>可见性就是当一个线程修改了共享变量的值时，其他线程能够立即得知这个修改。</li><li>Java内存模型是通过在变量修改后将新值同步回主内存，在变量读取前从主内存刷新变量值，这种依赖主内存作为传递媒介的方式来实现可见性的</li><li>用volatile修饰的变量就是利用这种规则保证了操作变量的可见性，而普通变量就不能保证这一点</li><li>除此之外，synchronized和final也可以实现可见性，就不是通过上面的规则实现的</li></ol></li><li>有序性：<ol><li>Java中天然的有序性可以总结为一句话，如果在本线程内观察，所有的操作都是有序的，如果在一个线程中观察另一个线程，所有的操作都是无序的。前半句指，线程内是表现串行的语义，后半句就表现为‘指令重排序’现象和‘工作内存与主内存同步延迟现象’</li><li>volatile和synchronized两个关键字来保证线程之间的操作的有序性，volatile关键字本身就包含了禁止指令重排序的语义，而synchronized则是由“一个变量在同一个时刻只允许一个线程对其进行lock操作”这条规则获得的，这条规则决定了持有同一个锁两个同步块只能串行的进入</li></ol></li></ol><h2 id=三volatile关键字>三、volatile关键字</h2><h3 id=1-对于volatile型变量的特殊规则>1. 对于volatile型变量的特殊规则</h3><p>关键字volatile可以说是Java虚拟机提供的最轻量级的同步机制，当一个变量被定义成volatile之后，它将具备两项特性，第一项就是可见性，但是保障了一个变量的可见性，是否就意味着他在并发下就安全呢？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>VolatileTest</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>static</span> <span class=kd>volatile</span> <span class=kt>int</span> <span class=n>race</span> <span class=o>=</span> <span class=n>0</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>increase</span><span class=o>(){</span>
+</span></span><span class=line><span class=cl>        <span class=n>race</span><span class=o>++;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>THREAD_COUNT</span> <span class=o>=</span> <span class=n>20</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>main</span><span class=o>(</span><span class=n>String</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>Thread</span><span class=o>[]</span> <span class=n>threads</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>[</span><span class=n>THREAD_COUNT</span><span class=o>];</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span><span class=o>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=n>0</span><span class=o>;</span> <span class=n>i</span><span class=o>&lt;</span><span class=n>THREAD_COUNT</span><span class=o>;</span> <span class=n>i</span><span class=o>++)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>threads</span><span class=o>[</span><span class=n>i</span><span class=o>]</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(</span><span class=k>new</span> <span class=n>Runnable</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>                <span class=kd>public</span> <span class=kt>void</span> <span class=nf>run</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=k>for</span><span class=o>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=n>0</span><span class=o>;</span> <span class=n>i</span><span class=o>&lt;</span><span class=n>10000</span><span class=o>;</span> <span class=n>i</span><span class=o>++){</span>
+</span></span><span class=line><span class=cl>                        <span class=n>increase</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>                    <span class=o>}</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=o>});</span>
+</span></span><span class=line><span class=cl>            <span class=n>threads</span><span class=o>[</span><span class=n>i</span><span class=o>].</span><span class=na>start</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>while</span><span class=o>(</span><span class=n>Thread</span><span class=o>.</span><span class=na>activeCount</span><span class=o>()&gt;</span><span class=n>2</span><span class=o>){</span>
+</span></span><span class=line><span class=cl>            <span class=n>Thread</span><span class=o>.</span><span class=na>yield</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>race</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这段代码发起了20个线程，每个线程对race变量进行10000次自增操作，如果这段代码能够正确并发的话，输出的结果是显而易见的，但是我们会发现最后执行的结果并不是我们预期的结果，而且每次运行程序，输出的结果都不太一样，这是为什么？</p><p>其实问题就出现在race++上，这个自增操作并不是原子性的，这个执行操作对于执行引擎来说是可分割的，虽然每次增加了以后其他的线程的自增操作是可见的，但是当指令继续往下执行的时候，race的值就发生改变了，后面的操作没有感受到他的改变，所以就不会出现预期的结果</p><p>那么volatile一般适用于那些场景呢？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>volatile</span> <span class=kt>boolean</span> <span class=n>shutdownRequested</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>shutdown</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>shutdownRequested</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>doWork</span><span class=o>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>while</span> <span class=o>(!</span><span class=n>shutdownRequested</span><span class=o>){</span>
+</span></span><span class=line><span class=cl>            <span class=c1>//.....
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>因为前面已经说过了，基本变量的访问和读写都是原子性的，无论哪一个线程调用了shutdown()方法，都能立马就结束掉dowork()。</p><p>使用volatile变量的第二个语义是禁止指令重排序优化，普通的变量仅会保证在该方法的执行过程中所有依赖该赋值结果的地方都能够取得正确的值，而不能保证变量的操作顺序与执行顺序一致。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>charming</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2022-04-21</span></p></div><footer class=post-footer><nav class=post-nav><a class=prev href=/post/java-jvm/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Java-JVM</span>
+<span class="prev-text nav-mobile">Prev</span></a>
+<a class=next href=/post/jvm-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/><span class="next-text nav-default">JVM-垃圾回收机制</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:your@email.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/charming-c class="iconfont icon-github" title=github></a>
+<a href=https://charming-c.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>charming</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script></body></html>

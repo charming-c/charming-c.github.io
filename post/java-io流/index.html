@@ -1,0 +1,93 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Java-IO流 - Charming Zone</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="charming"><meta name=description content="简单介绍java的io流的概念
+一、IO概念  I/O就是input和output的缩写，是计算机调度把各个储存中（包括内存和外部储存）的数据写入写出的过程 所谓的外部设备可以包括硬盘文件, 网络设备, 另个程序等. 也就是当前程序之外的数据设备 java中用流（stream）来抽象表示这么一个写入写出的功能，封装成一个类，都放在java.io这个包里面 "><meta name=keywords content="Hugo,theme,even"><meta name=generator content="Hugo 0.97.3 with theme even"><link rel=canonical href=https://charming-c.github.io/post/java-io%E6%B5%81/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Java-IO流"><meta property="og:description" content="简单介绍java的io流的概念
+一、IO概念
+
+I/O就是input和output的缩写，是计算机调度把各个储存中（包括内存和外部储存）的数据写入写出的过程
+所谓的外部设备可以包括硬盘文件, 网络设备, 另个程序等. 也就是当前程序之外的数据设备
+java中用流（stream）来抽象表示这么一个写入写出的功能，封装成一个类，都放在java.io这个包里面
+"><meta property="og:type" content="article"><meta property="og:url" content="https://charming-c.github.io/post/java-io%E6%B5%81/"><meta property="article:section" content="post"><meta property="article:published_time" content="2020-09-10T16:46:27+00:00"><meta property="article:modified_time" content="2020-09-10T16:46:27+00:00"><meta itemprop=name content="Java-IO流"><meta itemprop=description content="简单介绍java的io流的概念
+一、IO概念
+
+I/O就是input和output的缩写，是计算机调度把各个储存中（包括内存和外部储存）的数据写入写出的过程
+所谓的外部设备可以包括硬盘文件, 网络设备, 另个程序等. 也就是当前程序之外的数据设备
+java中用流（stream）来抽象表示这么一个写入写出的功能，封装成一个类，都放在java.io这个包里面
+"><meta itemprop=datePublished content="2020-09-10T16:46:27+00:00"><meta itemprop=dateModified content="2020-09-10T16:46:27+00:00"><meta itemprop=wordCount content="2977"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content="Java-IO流"><meta name=twitter:description content="简单介绍java的io流的概念
+一、IO概念
+
+I/O就是input和output的缩写，是计算机调度把各个储存中（包括内存和外部储存）的数据写入写出的过程
+所谓的外部设备可以包括硬盘文件, 网络设备, 另个程序等. 也就是当前程序之外的数据设备
+java中用流（stream）来抽象表示这么一个写入写出的功能，封装成一个类，都放在java.io这个包里面
+"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Charming</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Charming</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Java-IO流</h1><div class=post-meta><span class=post-time>2020-09-10</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#一io概念>一、IO概念</a></li><li><a href=#二流stream的概念>二、流（stream）的概念</a></li><li><a href=#三io流的分类>三、IO流的分类</a><ul><li><a href=#1按照流的方向>1、按照流的方向</a></li><li><a href=#2按照流的操作颗粒度划分>2、按照流的操作颗粒度划分</a></li><li><a href=#3按照流的角色划分>3、按照流的角色划分</a></li></ul></li><li><a href=#inputstream>InputStream</a><ul><li><a href=#1缓冲>1.缓冲</a></li><li><a href=#2阻塞>2.阻塞</a></li></ul></li><li><a href=#outputstream>OutputStream</a></li><li><a href=#filter模式>Filter模式</a></li><li><a href=#reader>Reader</a></li><li><a href=#writer>Writer</a></li></ul></nav></div></div><div class=post-content><p>简单介绍java的io流的概念</p><h1 id=一io概念>一、IO概念</h1><ul><li>I/O就是input和output的缩写，是计算机调度把各个储存中（包括内存和外部储存）的数据写入写出的过程</li><li>所谓的外部设备可以包括硬盘文件, 网络设备, 另个程序等. 也就是当前程序之外的数据设备</li><li>java中用流（stream）来抽象表示这么一个写入写出的功能，封装成一个类，都放在java.io这个包里面</li></ul><h1 id=二流stream的概念>二、流（stream）的概念</h1><ul><li>stream（流）是从起源（source）到接收（sink）的有序数据。</li><li>如果把输入输出源比作“水桶”的话，“流”就相当于是连接他们的“管道”，这个管道的粗细、单向性等各种属性就是区分不同流的特性，流中的各种方法就是管道上的按钮，用于操作数据的流通。
+<img src=https://img-blog.csdnimg.cn/20200802143851170.jpg alt=在这里插入图片描述></li></ul><h1 id=三io流的分类>三、IO流的分类</h1><h2 id=1按照流的方向>1、按照流的方向</h2><ul><li>输入流：只能从中读取数据（主要由InputStream和Reader作为基类）</li><li>输出流：只能向其写入数据（主要由OutputStream和Writer作为基类）</li></ul><h2 id=2按照流的操作颗粒度划分>2、按照流的操作颗粒度划分</h2><ul><li>字节流：以字节为单位，可操作任何数据（主要以InputStream和OutputStream作为基类）</li><li>字符流：以字符为单位，只能操作纯字符数据，比较方便（主要以Reader和Writer为基类）</li></ul><h2 id=3按照流的角色划分>3、按照流的角色划分</h2><ul><li>节点流：可以从/向一个特定的IO设备（如磁盘，网络）读/写数据的流，也叫低级流。</li><li>处理流：用于对一个已经存在的流进行连接和封装，通过封装后的流实现数据的读/写功能，也叫高级流。</li></ul><h1 id=inputstream>InputStream</h1><p>InputStream是Java标准库提供的最基本的输入流。InputStream是一个抽象类，是所有输入类的超类。这个抽象类定义的最重要的方法就是int read（）这样的一个方法</p><blockquote><p>public abstract int read() throws IOException;
+这个方法会读取输入流的下一个字节，并返回字节表示的int值。如果己经> 读到末尾，返回-1，表示不能继续读取了</p></blockquote><p>FileInputStream是InputStream的一个子类，可以用来从文件中获得数据，下面的代码演示了如何完整读取一个文件的字节：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public static void main(String[] args) throws IOException {
+</span></span><span class=line><span class=cl>      InputStream inputStream=new FileInputStream(&#34;src/sample.txt&#34;);
+</span></span><span class=line><span class=cl>        for(;;){
+</span></span><span class=line><span class=cl>            int n=inputStream.read();
+</span></span><span class=line><span class=cl>            if(n==-1){
+</span></span><span class=line><span class=cl>                break;
+</span></span><span class=line><span class=cl>            }
+</span></span><span class=line><span class=cl>            System.out.println(n);
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>        inputStream.close();
+</span></span><span class=line><span class=cl>    }
+</span></span></code></pre></td></tr></table></div></div><p>注意：在计算机中，类似文件，网络端口这些资源，都是由操作系统统一管理，应用程序在运行的时候，如果打开了一个文件进行读写，完成后要及时关闭，以便操作系统把资源释放掉，否则，应用程序占用的资源会越来越多，不但白白占用内存还会影响其他应用程序的运行。</p><h2 id=1缓冲>1.缓冲</h2><p>在读取流的时候，一次读取一个字节并不是最高效的方法。很多流支持一次性读取多个字节到缓冲区，对于文件和网络流来说，利用缓冲区一次性读取多个字节的效率要高很多。InputStream提供两个重载方法来支持读取多个字节：</p><blockquote><p>int read(byte[] b): 读取若干字节填充到byte[]数组，返回读取的字节数
+int read(byte[] b,int off,int len): 指定byte[]数组的偏移量和最大填充数</p></blockquote><p>利用上述方法读取多个字节时需要先定义一个byte[]数组作为缓冲区，read()会尽可能多的读取字节到缓冲区，但不会超过缓冲区容量的大小，read（）的返回值变为实际读取的字节数。若返回-1，则表示没有更多数据了。
+栗子：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public static void main(String[] args) throws IOException{
+</span></span><span class=line><span class=cl>      InputStream inputStream=new FileInputStream(&#34;src/sample.txt&#34;);
+</span></span><span class=line><span class=cl>        byte[] butter=new byte[5];
+</span></span><span class=line><span class=cl>        int n;
+</span></span><span class=line><span class=cl>        while((n=inputStream.read(butter))!=-1){
+</span></span><span class=line><span class=cl>            System.out.println(&#34;read&#34;+n+&#34;bytes\n&#34;);
+</span></span><span class=line><span class=cl>        }
+</span></span><span class=line><span class=cl>        inputStream.close();
+</span></span><span class=line><span class=cl>    }
+</span></span></code></pre></td></tr></table></div></div><h2 id=2阻塞>2.阻塞</h2><p>在调用InputStream的read()方法时，我们说它是阻塞的</p><blockquote><p>int n;
+n=inputStream.read();
+m=n;</p></blockquote><p>执行到第二行时，必须等read（）方法返回后才可以继续。因为读取IO流比普通代码速度要慢很多，无法确定read（）方法到底要花费多长时间，所以它是阻塞的。</p><h1 id=outputstream>OutputStream</h1><p>和InputStream相反，OutputStream是Java库中提供的最基本的输出流。
+和InputStream类似，OutputStream也是抽象类，它是所有输出流的超类。这个抽象类定义的最重要的方法是void write(int b):</p><blockquote><p>public abstract void write(int b) throws IOException;</p></blockquote><p>这个方法会写入一个字节到输出流。要注意，虽然传入的是int类型的参数，但只会写入一个字节，即只写入int最低8位表示字节的部分。</p><ul><li>和InputStream一样，也有close（）方法，write（）也是阻塞的</li><li>OutputStream还提供了一个flush()方法，它的作用是将缓冲区的内容真正输入到目的地。</li></ul><p>为什么要有flush()方法？因为向网络、磁盘写入数据的时候，出于效率考虑，操作系统并不是输出一个字节就立马写入到文件或发送到网络，而是把输出的字节先放到内存的一个缓冲区（本质上也是一个byte[]数组），等到缓冲区写满，在一次性发送。对于很多IO设备，一次性写一个字节和一次性写1000个字节花费的时间几乎是一样的，所以这个flush方法的存在，就是强制把缓冲区的flush输出。</p><p>以FileOutputStream为例，演示将若干字节写入文件流：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public static void main(String[] args) throws IOException {
+</span></span><span class=line><span class=cl> OutputStream outputStream = new FileOutputStream(&#34;src/sample.txt&#34;);
+</span></span><span class=line><span class=cl>        outputStream.write(108);
+</span></span><span class=line><span class=cl>    }
+</span></span></code></pre></td></tr></table></div></div><h1 id=filter模式>Filter模式</h1><ul><li>如果我们要给一个FileInputStream添加缓冲功能，则可以从FileInputStream派生出一个类</li></ul><blockquote><p>BufferedFileInputStream extends FileInputstream</p></blockquote><ul><li>如果我们要给一个FileInputStream添加计算签名功能，则可以派生一个类</li></ul><blockquote><p>DigestFileInputStream extends FileInputstream</p></blockquote><ul><li>若要添加加密解密功能，还可以派生一个类</li></ul><blockquote><p>CipherFileInputStream extends FileInputstream</p></blockquote><p>如果要给一个FileInputStream添加以上三种功能，用继承的方法实现的话，子类会比较多，实现的功能越多，子类就越复杂。因此直接使用继承的方法，为InputStream添加很多功能，根本无法控制代码的复杂度。</p><p>为了解决依赖继承导致子类数量失控的问题，JDK首先将InputStream分成两大类：</p><ol><li>直接提供数据的基础InputStream，例如</li></ol><ul><li>FileInputStream</li><li>ByteArrayInputStream</li></ul><ol start=2><li>提供额外附加功能的InputStream。例如</li></ol><ul><li>BufferedInputStream</li><li>DigestInputStream</li></ul><p>当我们给一个基础的的InputStream附加各种功能时，我们先确定这个提供数据源的InputStream，即第一类Inputstream
+例如：</p><blockquote><p>Inputstream file= new FileInputStream(&ldquo;test.gz&rdquo;);</p></blockquote><p>紧接着我们希望FileInputStream能提供缓冲的功能来提高读取效率，因此我们可以用BufferedInputStream来包装这个InputStream，得到的包装类型是BufferedInputStream，他仍可视为InputStream：</p><blockquote><p>InputStream buffered= new BufferedInputStream(file);</p></blockquote><p>无论包装了多少次，得到的对象始终是InputStream，我们zhijieyongInputStream来引用它，皆可以正常读取。</p><p>同理，OutputStream也是如此，这样的一种通过一个基础组件再叠加各种“附加”功能组件的模式，就叫做Filter模式。</p><h1 id=reader>Reader</h1><p>Reader是Java IO库提供的另一个输入流接口。和InputStream的区别是，Reader是一个字符流，以char为单位读取，而后者是一个字节流，以byte为单位。</p><table><thead><tr><th>InputStream</th><th>Reader</th></tr></thead><tbody><tr><td>字节流，byte</td><td>字符流，char</td></tr><tr><td>读取字节（-1，0~255):int read()</td><td>读取字符（-1，0~65535):int read()</td></tr><tr><td>Reader定义了所有字符输入流的超类：</td><td></td></tr></tbody></table><ul><li>FileReader实现了文字字符流的输入，使用时注意制定编码</li><li>CharArrayReader和StringReader可以在内存中模拟一个字符流输入</li></ul><p>Reader 是基于inputStream构造的：可以通过InPutStreanReader在制定编码的同时讲一个InputStream转化为Reader。</p><blockquote><p>Reader reader=new InputStreamReader(new FileInPutstream(&ldquo;文件名路径”，“编码”));</p></blockquote><h1 id=writer>Writer</h1><p>Writer和OutputStream的联系与上面Reader差不多，不再赘述。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>charming</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2020-09-10</span></p></div><footer class=post-footer><nav class=post-nav><a class=prev href=/post/jvm-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">JVM-垃圾回收机制</span>
+<span class="prev-text nav-mobile">Prev</span></a></nav></footer></article></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:your@email.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/charming-c class="iconfont icon-github" title=github></a>
+<a href=https://charming-c.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>charming</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script></body></html>
