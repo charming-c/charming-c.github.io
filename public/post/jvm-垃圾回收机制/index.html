@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>JVM-垃圾回收机制 - Charming Zone</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="charming" /><meta name="description" content="JVM&amp;ndash;垃圾回收机制 ​ 在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.86.1 with theme even" />
+
+
+<link rel="canonical" href="https://charming-c.github.io/post/jvm-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="JVM-垃圾回收机制" />
+<meta property="og:description" content="JVM&ndash;垃圾回收机制 ​ 在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://charming-c.github.io/post/jvm-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-04-21T00:00:00+00:00" />
+
+<meta itemprop="name" content="JVM-垃圾回收机制">
+<meta itemprop="description" content="JVM&ndash;垃圾回收机制 ​ 在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭"><meta itemprop="datePublished" content="2022-04-21T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-04-21T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2697">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="JVM-垃圾回收机制"/>
+<meta name="twitter:description" content="JVM&ndash;垃圾回收机制 ​ 在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Charming</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Charming</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">JVM-垃圾回收机制</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2022-04-21 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#jvm--垃圾回收机制">JVM&ndash;垃圾回收机制</a>
+      <ul>
+        <li><a href="#一对象已死">一、对象已死？</a>
+          <ul>
+            <li><a href="#1-引用计数算法">1. 引用计数算法</a></li>
+            <li><a href="#2-可达性分析算法">2. 可达性分析算法</a></li>
+            <li><a href="#3-关于引用">3. 关于引用</a></li>
+          </ul>
+        </li>
+        <li><a href="#二-垃圾回收流程">二、 垃圾回收流程</a>
+          <ul>
+            <li><a href="#1-标记-清除mark-sweep算法">1 、标记-清除(Mark-Sweep)算法</a></li>
+            <li><a href="#2标记-整理算法">2、标记-整理算法</a></li>
+            <li><a href="#3复制算法">3、复制算法</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h1 id="jvm--垃圾回收机制">JVM&ndash;垃圾回收机制</h1>
+<p>​	在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭，栈中的栈帧随着方法的进入和退出而有条不紊地执行着出栈和入栈的操作。每一个栈帧中分配多少内存基本上是在类结构确定下来时就已知的，因此这几个区域内存分配和回收都具有确定性，在这几个区域内就不需要过多考虑如何回收的问题，当方法结束或者内存结束时，内存自然就回收了。</p>
+<p>​	而在 Java 堆和方法区这两个区域则有着显著的不确定性：一个接口的多个实现类需要的内存可能会不一样，一个方法所执行的不同条件分支所需要的内存也可能不一样，只有在运行期间我们才知道程序究竟会创建哪些对象，创建多少个对象，这部分内存的分配和回收是动态的。垃圾收集器所关注的就是这部分内存该如何管理。</p>
+<h2 id="一对象已死">一、对象已死？</h2>
+<p>​	我们知道，Java 在诞生之初，就已经确定了自动内存管理的一个亮点，Java 在堆里存放着所有的对象实例，而当程序一步一步执行下去的时候，有一些对象实例可能永远也不会用到了，这个时候就需要 jvm 去自动回收这些内存，方便之后在分配新的对象时，能够有充足的空间。垃圾收集器在对堆进行回收前，第一件事情就是确定堆中的对象哪些还“存活”着，哪些已经“死去”（死去就是指不可能再被任何途径使用的对象）。这里介绍两种算法来确定一个对个对象能否被回收。</p>
+<h3 id="1-引用计数算法">1. 引用计数算法</h3>
+<p>引用计数的基本实现思路是,<strong>一个对象加个计数器当用时+1用完-1</strong>,最终回收计数为0的对象.但是这种实现方式有个问题,叫<strong>循环引用</strong>。假设A对象引用了B对象,B对象也引用了A对象。GC在做回收的时候就会觉得两个都不能回收,因为都两个对象都存在引用。</p>
+<p>引用计数算法虽然需要占用一些额外的内存空间进行计数，但它的原理是很简单的，判定的效率也高，在大多数情况下都是不错的，所以像 python、微软的COM技术等都采用引用计数算法来进行内存管理。不过Java的各个垃圾收集器都是没有采用这种方法来管理内存的，而是采用无论是空间还是时间效率上更高的可达性<strong>分析算法</strong>来处理。</p>
+<h3 id="2-可达性分析算法">2. 可达性分析算法</h3>
+<p>当前主流的商用编程语言（Java 、c#等）的内存管理子系统都是通过可达性分析算法来判断对象是否存活。这个算法的基本思路就是通过一系列成为“GC ROOT”的跟对象作为起始节点，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”。如果某个对象到GC ROOT 之间没有任何引用链相连，则表明这个对象是不可达的，能够被垃圾回收器标记回收的。<img src="https://tva1.sinaimg.cn/large/008i3skNgy1gqyalgsspuj31380ny75i.jpg" alt="引用计数法和可达性分析算法· Issue #44 · xzhuz/blog-gitment · GitHub"></p>
+<p>​	而能够作为上述 GC ROOT 的对象包括下面几种：</p>
+<ul>
+<li>在Java虚拟机栈中引用的对象，比如各个线程中被调用的方法栈里使用到的参数、局部变量、临时变量等。</li>
+<li>在方法区中类静态属性引用的对象</li>
+<li>在方法区中常量引用的对象，比如字符串常量常量池里的引用</li>
+<li>在Java本地方法栈中JNI（即通常所说的Native方法）引用的对象</li>
+<li>Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象等，还有类加载器对象</li>
+<li>所有被同步锁（synchronized 关键字）持有的对象</li>
+</ul>
+<h3 id="3-关于引用">3. 关于引用</h3>
+<p>从前面的两个算法来看，判断对象的存活其实和引用是离不开的，但是有一些引用由于其特殊性，在内存充裕的时候，我们希望保留这个对象在内存中，而当内存不够时，我们有能够接受回收掉这部分对象内存的代价，所以，Java对引用的概念进行了扩充，将引用分为了强引用、软引用、弱引用、虚引用。</p>
+<ul>
+<li>强引用：是最常见，最传统的引用，指程序代码里普遍存在的引用赋值，类似<code>String s = new String()</code>;无论在任何情况下只要强引用的关系还存在，垃圾收集器就永远不会回收被引用的对象</li>
+<li>软引用：用来描述一些有用，但是非必须的对象。只是被软引用关联的对象，在系统要发生内存溢出异常以前，会把这些对象列进回收范围之内进行第二次回收，如果这次回收还是没有足够的内存才会报oom错。利用SoftReference类来实现软引用</li>
+<li>弱引用：描述非必须的对象，强度比软引用还要弱一点，被弱引用关联的对象只能活在下一次垃圾收集发生为止，当垃圾回收器开始工作，无论内存够不够，这部分内存都会被回收掉。</li>
+<li>虚引用：基本不算引用，唯一的用处就是对象被回收时，系统会收到一个通知。</li>
+</ul>
+<h2 id="二-垃圾回收流程">二、 垃圾回收流程</h2>
+<p>先介绍一下堆中的分代收集划分：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gqybrnbdb0j30e804lglw.jpg" alt="JVM中的垃圾回收策略| 大唐札记"></p>
+<p>堆主要分成两个代：</p>
+<p>新生代：大部分对象都会在这个区域死去，主要用来存放新生的，在只经历前几次GC的对象</p>
+<p>老年代：这里的内存用来存放存活时间比较长的对象</p>
+<p>为什么会有这样的划分呢，这就和垃圾回收的算法有关了，下面介绍不同的垃圾回收算法</p>
+<h3 id="1-标记-清除mark-sweep算法">1 、标记-清除(Mark-Sweep)算法</h3>
+<p>首先识别出所有要回收的对象,然后进行清除</p>
+<p><strong>标记、清除过程效率有限,有内存碎片化问题,不合适特别大的堆</strong></p>
+<p>其他收集算法基本<strong>基于标记-清除的思路</strong>进行改进</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gqybzgkreoj30k10fo3ys.jpg" alt="标记复制法、标记清除法和标记整理法的区别_波波的小书房-CSDN博客"></p>
+<p>内存碎片指的是<strong>内存占用不连续</strong>，比如上面回收过后的内存，在不同的对象之间都留有较小的不连续的内存，如果要新分配一个内存较大的对象，就会造成本身空间够，却无法容纳的问题。基于这样的问题，就出现了标记-整理算法。</p>
+<h3 id="2标记-整理算法">2、标记-整理算法</h3>
+<p>类似于标记-清除,但为了避免内存碎片化,它会在<strong>清理过程中将对象移动</strong>,以确保<strong>移动后的对象占用连续的内存空间</strong>，<strong>本质上来说和标记-清除算法是差不多的,但是它多了一个整理的步骤,主要目的也是为了避免内存碎片的问题了</strong></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gqyc32q2wdj30xk0hgdg5.jpg" alt="JAVA垃圾回收算法——标记-清除算法、复制算法、标记-整理算法、分代收集算法_Simon的博客-CSDN博客"></p>
+<p>但是这样，就需要多遍历一次标记好的存货对象，且还有复制，转移对象内存的操作。</p>
+<h3 id="3复制算法">3、复制算法</h3>
+<p>划分两块同等大小的区域,收集时将活着的对象复制到另一块区域.</p>
+<p>拷贝过程中将对象顺序存放,就可以避免内存碎片化.<strong>弊端是复制+预留内存会造成一定的内存浪费</strong></p>
+<p>复制到新的内存区域过程中是按顺序放入,所以<strong>复制算法解决了内存碎片的问题</strong></p>
+<p>弊端也很明显,要<strong>预留一块内存作为存活对象的存放区域</strong>.如果说程序运行需要8G的内存,为了避免内存碎片的问题又得加多8G内存用来作复制算法,那就太浪费了，但是复制算法的优点也是明显的，时间效率和空间整齐度都很高，适合那些gc存活数量小的内存区域。事实上，jvm也是这样做的：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gqycb4lif1j30e80aq0uc.jpg" alt="java培训JVM之复制算法(Copying) - 技术聚焦- 尚硅谷"></p>
+<p>在新生代里，又讲内存分为三个区域：</p>
+<ul>
+<li><strong>Eden</strong>区 (用于存放新对象)</li>
+<li><strong>Survivor0</strong>区(用于保存在Eden区中经过垃圾回收后没有被回收的对象)</li>
+<li><strong>Survivor1</strong>区(用于保存在Survivor0区中经过垃圾回收后没有被回收的对象)</li>
+</ul>
+<p>大多数对象诞生都是在Eden区，在初次GC过后就会进入Survivor区，而这里为什么会有两个（0，1）区，则就是为了实现垃圾回收的复制算法。</p>
+<p>而在老年代里，由于经过多次GC，这些对象都没有被回收，说明对象的成活率是非常高的，通常就是使用标记-整理方法和标记-清理算法去处理。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">charming</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2022-04-21
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Java内存模型与线程</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/java-io%E6%B5%81/">
+            <span class="next-text nav-default">Java-IO流</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/charming-c" class="iconfont icon-github" title="github"></a>
+  <a href="https://charming-c.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>charming</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

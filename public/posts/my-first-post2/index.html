@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>My First Post - Charming Zone</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="charming" /><meta name="description" content="浅谈view、activity、window 1、从 setContentView（）出发 对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程
+1 2 3 4 5 6 7 8 9 10 11 12 13  /** * Set the activity content from a layout resource. The resource will be * inflated, adding all top-level views to the activity. * * @param layoutResID Resource ID to be inflated. * * @see #setContentView(android.view.View) * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams) */ public void setContentView(@LayoutRes int layoutResID) { getWindow().setContentView(layoutResID); initWindowDecorActionBar(); }   这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 mWindow = new PhoneWindow(this, window, activityConfigCallback); 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法：
+" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.86.1 with theme even" />
+
+
+<link rel="canonical" href="https://charming-c.github.io/posts/my-first-post2/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="My First Post" />
+<meta property="og:description" content="浅谈view、activity、window
+1、从 setContentView（）出发
+对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+
+
+/**
+     * Set the activity content from a layout resource.  The resource will be
+     * inflated, adding all top-level views to the activity.
+     *
+     * @param layoutResID Resource ID to be inflated.
+     *
+     * @see #setContentView(android.view.View)
+     * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+     */
+    public void setContentView(@LayoutRes int layoutResID) {
+        getWindow().setContentView(layoutResID);
+        initWindowDecorActionBar();
+    }
+
+
+这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 mWindow = new PhoneWindow(this, window, activityConfigCallback); 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://charming-c.github.io/posts/my-first-post2/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-04-20T19:23:58+08:00" />
+<meta property="article:modified_time" content="2022-04-20T19:23:58+08:00" />
+
+<meta itemprop="name" content="My First Post">
+<meta itemprop="description" content="浅谈view、activity、window
+1、从 setContentView（）出发
+对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+
+
+/**
+     * Set the activity content from a layout resource.  The resource will be
+     * inflated, adding all top-level views to the activity.
+     *
+     * @param layoutResID Resource ID to be inflated.
+     *
+     * @see #setContentView(android.view.View)
+     * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+     */
+    public void setContentView(@LayoutRes int layoutResID) {
+        getWindow().setContentView(layoutResID);
+        initWindowDecorActionBar();
+    }
+
+
+这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 mWindow = new PhoneWindow(this, window, activityConfigCallback); 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法："><meta itemprop="datePublished" content="2022-04-20T19:23:58+08:00" />
+<meta itemprop="dateModified" content="2022-04-20T19:23:58+08:00" />
+<meta itemprop="wordCount" content="5090">
+<meta itemprop="keywords" content="view," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="My First Post"/>
+<meta name="twitter:description" content="浅谈view、activity、window
+1、从 setContentView（）出发
+对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+
+
+/**
+     * Set the activity content from a layout resource.  The resource will be
+     * inflated, adding all top-level views to the activity.
+     *
+     * @param layoutResID Resource ID to be inflated.
+     *
+     * @see #setContentView(android.view.View)
+     * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+     */
+    public void setContentView(@LayoutRes int layoutResID) {
+        getWindow().setContentView(layoutResID);
+        initWindowDecorActionBar();
+    }
+
+
+这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 mWindow = new PhoneWindow(this, window, activityConfigCallback); 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法："/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Charming</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Charming</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+  <div class="post-content">
+    <h1 id="浅谈viewactivitywindow">浅谈view、activity、window</h1>
+<h2 id="1从-setcontentview出发">1、从 setContentView（）出发</h2>
+<p>对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
+</span><span class="cm">     * Set the activity content from a layout resource.  The resource will be
+</span><span class="cm">     * inflated, adding all top-level views to the activity.
+</span><span class="cm">     *
+</span><span class="cm">     * @param layoutResID Resource ID to be inflated.
+</span><span class="cm">     *
+</span><span class="cm">     * @see #setContentView(android.view.View)
+</span><span class="cm">     * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+</span><span class="cm">     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setContentView</span><span class="o">(</span><span class="nd">@LayoutRes</span> <span class="kt">int</span> <span class="n">layoutResID</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">getWindow</span><span class="o">().</span><span class="na">setContentView</span><span class="o">(</span><span class="n">layoutResID</span><span class="o">);</span>
+        <span class="n">initWindowDecorActionBar</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 <code>mWindow = new PhoneWindow(this, window, activityConfigCallback);</code> 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setContentView</span><span class="o">(</span><span class="kt">int</span> <span class="n">layoutResID</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Note: FEATURE_CONTENT_TRANSITIONS may be set in the process of installing the window
+</span><span class="c1"></span>        <span class="c1">// decor, when theme attributes and the like are crystalized. Do not check the feature
+</span><span class="c1"></span>        <span class="c1">// before this happens.
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">mContentParent</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">installDecor</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(!</span><span class="n">hasFeature</span><span class="o">(</span><span class="n">FEATURE_CONTENT_TRANSITIONS</span><span class="o">))</span> <span class="o">{</span>
+          <span class="c1">//移除该mContentParent下的所有View
+</span><span class="c1"></span>          <span class="c1">//又因为这个的存在  我们可以多次使用setContentView()
+</span><span class="c1"></span>            <span class="n">mContentParent</span><span class="o">.</span><span class="na">removeAllViews</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">hasFeature</span><span class="o">(</span><span class="n">FEATURE_CONTENT_TRANSITIONS</span><span class="o">))</span> <span class="o">{</span>
+          <span class="c1">//设置动画场景
+</span><span class="c1"></span>            <span class="kd">final</span> <span class="n">Scene</span> <span class="n">newScene</span> <span class="o">=</span> <span class="n">Scene</span><span class="o">.</span><span class="na">getSceneForLayout</span><span class="o">(</span><span class="n">mContentParent</span><span class="o">,</span> <span class="n">layoutResID</span><span class="o">,</span>
+                    <span class="n">getContext</span><span class="o">());</span>
+            <span class="n">transitionTo</span><span class="o">(</span><span class="n">newScene</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">mLayoutInflater</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="n">layoutResID</span><span class="o">,</span> <span class="n">mContentParent</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">mContentParent</span><span class="o">.</span><span class="na">requestApplyInsets</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="n">Callback</span> <span class="n">cb</span> <span class="o">=</span> <span class="n">getCallback</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">cb</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">isDestroyed</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">cb</span><span class="o">.</span><span class="na">onContentChanged</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="n">mContentParentExplicitlySet</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以最终调用的是上面的一个setContentView方法，解释一下上面的一套流程和参数：</p>
+<ul>
+<li>
+<p>mContentParent：一个ViewGroup对象，里面存放的就是我们要绘制和显示的view，所以我们在activity中添加显示的view只是默认的ViewGroup的一个子view</p>
+</li>
+<li>
+<p>installDector()：这个方法主要就是初始一个DecorView</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">installDecor</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">mForceDecorInstall</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mDecor</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mDecor</span> <span class="o">=</span> <span class="n">generateDecor</span><span class="o">(-</span><span class="n">1</span><span class="o">);</span>
+            <span class="n">mDecor</span><span class="o">.</span><span class="na">setDescendantFocusability</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">FOCUS_AFTER_DESCENDANTS</span><span class="o">);</span>
+            <span class="n">mDecor</span><span class="o">.</span><span class="na">setIsRootNamespace</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">mInvalidatePanelMenuPosted</span> <span class="o">&amp;&amp;</span> <span class="n">mInvalidatePanelMenuFeatures</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">mDecor</span><span class="o">.</span><span class="na">postOnAnimation</span><span class="o">(</span><span class="n">mInvalidatePanelMenuRunnable</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">mDecor</span><span class="o">.</span><span class="na">setWindow</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mContentParent</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mContentParent</span> <span class="o">=</span> <span class="n">generateLayout</span><span class="o">(</span><span class="n">mDecor</span><span class="o">);</span>
+      <span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>检查mDecor 是否为空，是则初始化一个DecorView，否，则将当前的window与初始化的decorView绑定，下面的generateLayout注意到DectorView本身的主题theme，style其实也被加载了，最后返回所有的子view到phoneWindow的mContentParent这样的一个ViewGroup属性里。</p>
+</li>
+</ul>
+<p>第二个方法<code>initWindowDecorActionBar()</code>则是将decorView中的actorBar子控件全部初始化</p>
+<p>简单梳理一下这样一个方法的调用流程：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gvhoo2mz3ej60v70rsjvd02.jpg" alt="image-20211017015058281"></p>
+<p>这里就可以讲解一下关于这三样东西的功能：</p>
+<ul>
+<li>Activity是一个工人，它来控制Window；Window是一面显示屏，用来显示信息；View就是要显示在显示屏上的信息，这些View都是层层重叠在一起（通过infalte()和addView()）放到Window显示屏上的。</li>
+<li>Activity并不负责视图控制，它只是控制生命周期和处理事件，真正控制视图的是Window。一个Activity包含了一个Window，Window才是真正代表一个窗口，Window 中持有一个 DecorView，而这个DecorView才是 view 的根布局。</li>
+<li>DecorView可以被认为是Android视图树的根节点视图。DecorView作为顶级View，一般情况下它上面的是标题栏，下面的是内容栏。在Activity中通过setContentView所设置的布局文件其实就是被加到内容栏之中的，而内容栏的id是content，在代码中可以通过ViewGroup content = （ViewGroup)findViewById(R.android.id.content)来得到content对应的layout。</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gvhosj6dpej60eq0eqdgg02.jpg" alt="img"></p>
+<h1 id="motionevent-事件">MotionEvent 事件</h1>
+<p>单点触控事件：</p>
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>简介</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACTION_DOWN</td>
+<td>手指初次触碰屏幕时触发</td>
+</tr>
+<tr>
+<td>ACTION_MOVE</td>
+<td>手指在屏幕上滑动时会触发，可多次触发</td>
+</tr>
+<tr>
+<td>ACTION_UP</td>
+<td>手指离开屏幕时触发</td>
+</tr>
+<tr>
+<td>ACTION_CACEL</td>
+<td>事件被上层拦截时触发</td>
+</tr>
+<tr>
+<td>ACTION_OUTSIDE</td>
+<td>手指不在控件区域时触发</td>
+</tr>
+</tbody>
+</table>
+<p>一般来说，从ACTION_DOWN 到ACTION_UP结束为一个事件序列</p>
+<h2 id="从一个例子出发">从一个例子出发：</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">AppCompatActivity</span> <span class="o">{</span>
+    <span class="n">Button</span> <span class="n">button</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">time</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_main</span><span class="o">);</span>
+
+        <span class="n">button</span> <span class="o">=</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button</span><span class="o">);</span>
+
+        <span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&#34;clickEvent&#34;</span><span class="o">,</span><span class="s">&#34;time&#34;</span><span class="o">+</span><span class="n">time</span><span class="o">++);</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+
+        <span class="n">button</span><span class="o">.</span><span class="na">setOnTouchListener</span><span class="o">(</span><span class="k">new</span> <span class="n">View</span><span class="o">.</span><span class="na">OnTouchListener</span><span class="o">()</span> <span class="o">{</span>
+
+            <span class="nd">@SuppressLint</span><span class="o">(</span><span class="s">&#34;ClickableViewAccessibility&#34;</span><span class="o">)</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onTouch</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">,</span> <span class="n">MotionEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&#34;touchEvent&#34;</span><span class="o">,</span><span class="s">&#34;time&#34;</span><span class="o">+</span><span class="n">time</span><span class="o">++);</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>点击事件的响应结果：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gvhpovelsbj60sm07gdi902.jpg" alt="image-20211017022624260"></p>
+<p>无论点击按钮多少下，其实最终调用的都是onTouch方法，而没有调用onClick方法而这里的原因就可以从这里的return true 找起。</p>
+<p>检查一下onTouch方法的调用情况：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"> <span class="k">if</span> <span class="o">(</span><span class="n">onFilterTouchEventForSecurity</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">((</span><span class="n">mViewFlags</span> <span class="o">&amp;</span> <span class="n">ENABLED_MASK</span><span class="o">)</span> <span class="o">==</span> <span class="n">ENABLED</span> <span class="o">&amp;&amp;</span> <span class="n">handleScrollBarDragging</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">//noinspection SimplifiableIfStatement
+</span><span class="c1"></span>            <span class="n">ListenerInfo</span> <span class="n">li</span> <span class="o">=</span> <span class="n">mListenerInfo</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">li</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">li</span><span class="o">.</span><span class="na">mOnTouchListener</span> <span class="o">!=</span> <span class="kc">null</span>
+                    <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">mViewFlags</span> <span class="o">&amp;</span> <span class="n">ENABLED_MASK</span><span class="o">)</span> <span class="o">==</span> <span class="n">ENABLED</span>
+                    <span class="o">&amp;&amp;</span> <span class="n">li</span><span class="o">.</span><span class="na">mOnTouchListener</span><span class="o">.</span><span class="na">onTouch</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(!</span><span class="n">result</span> <span class="o">&amp;&amp;</span> <span class="n">onTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在view的<code>public boolean dispatchTouchEvent(MotionEvent event)</code>方法里onTouch方法被调用，可知，当一个安全的事件发生时，先判断View是否是可用的，并前当前操作是为了操作滚动条的，如果是，就先将返回值确定为true，然后初始化ListenInfo，可以发现，当我们重写了onTouch方法返回true以后，这里的result也被赋值为true，再下面一行的onTouchEvent就不会被调用，而我们去看看这个方法会发现：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gvhqnj2mbbj60yw0oiad602.jpg" alt="image-20211017025942977"></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gvhqo8pf5aj61920fcwgg02.jpg" alt="image-20211017030022973"></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gvhqqks6ukj60v40beq4002.jpg" alt="image-20211017030239010"></p>
+<p>onclick方法其实是在onTouchEvent的某个条件下出发的，这也就是上面为什么会出现不调用onclick方法的原因。</p>
+<p>从上面的例子我门引出一个事件是如何在各级的view实现分发的。</p>
+<p>首先我们需要了解三个方法：</p>
+<blockquote>
+<ul>
+<li><strong>public boolean dispatchTouchEvent(MotionEvent event)</strong>
+通过方法名我们不难猜测，它就是事件分发的重要方法。那么很明显，如果一个MotionEvent传递给了View，那么dispatchTouchEvent方法一定会被调用！
+<strong>返回值：表示是否消费了当前事件。可能是View本身的onTouchEvent方法消费，也可能是子View的dispatchTouchEvent方法中消费。返回true表示事件被消费，本次的事件终止。返回false表示View以及子View均没有消费事件，将调用父View的onTouchEvent方法</strong></li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li><strong>public boolean onInterceptTouchEvent(MotionEvent ev)</strong>
+事件拦截，当一个ViewGroup在接到MotionEvent事件序列时候，首先会调用此方法判断是否需要拦截。<strong>特别注意，这是ViewGroup特有的方法，View并没有拦截方法</strong>
+<strong>返回值：是否拦截事件传递，返回true表示拦截了事件，那么事件将不再向下分发而是调用View本身的onTouchEvent方法。返回false表示不做拦截，事件将向下分发到子View的dispatchTouchEvent方法。</strong></li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li><strong>public boolean onTouchEvent(MotionEvent ev)</strong>
+真正对MotionEvent进行处理或者说消费的方法。在dispatchTouchEvent进行调用。
+<strong>返回值：返回true表示事件被消费，本次的事件终止。返回false表示事件没有被消费，将调用父View的onTouchEvent方法</strong></li>
+</ul>
+</blockquote>
+<p>从最开始的内容中我们了解，activity才是处理事件的用来处理事件的，所以我们首先从activity的dispatchTouchEvent看起：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">dispatchTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">ev</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">ev</span><span class="o">.</span><span class="na">getAction</span><span class="o">()</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">onUserInteraction</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">getWindow</span><span class="o">().</span><span class="na">superDispatchTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">onTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过上面的代码我们可以发现，事件会给Activity附属的Window进行分发。如果返回true，那么事件被消费。如果返回false表示事件发下去却没有View可以进行处理，则最后return Activity自己的onTouchEvent方法。</p>
+<p>跟进getWindow().superDispatchTouchEvent(ev)方法发现是Window类当中的一个抽象方法</p>
+<p>查看PhoneWindow类，因为这个getWindow返回的其实就是他的一个对象：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">superDispatchTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">mDecor</span><span class="o">.</span><span class="na">superDispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里其实又调用了decorView的方法：(吐槽一句，真是套娃)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">superDispatchTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>而我们知道decorView其实是继承自frameLayout，而它又继承自ViewGroup，而在viewGroup类中，我们才找到相应的</p>
+<p>dispatchTouchEvent方法，接下来简单分析一下这个方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="k">if</span> <span class="o">(</span><span class="n">onFilterTouchEventForSecurity</span><span class="o">(</span><span class="n">ev</span><span class="o">))</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="kt">int</span> <span class="n">action</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getAction</span><span class="o">();</span>
+            <span class="kd">final</span> <span class="kt">int</span> <span class="n">actionMasked</span> <span class="o">=</span> <span class="n">action</span> <span class="o">&amp;</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_MASK</span><span class="o">;</span>
+
+            <span class="c1">// Handle an initial down.
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// Throw away all previous state when starting a new touch gesture.
+</span><span class="c1"></span>                <span class="c1">// The framework may have dropped the up or cancel event for the previous gesture
+</span><span class="c1"></span>                <span class="c1">// due to an app switch, ANR, or some other state change.
+</span><span class="c1"></span>                <span class="n">cancelAndClearTouchTargets</span><span class="o">(</span><span class="n">ev</span><span class="o">);</span>
+                <span class="n">resetTouchState</span><span class="o">();</span>
+            <span class="o">}</span>
+
+            <span class="c1">// Check for interception.
+</span><span class="c1"></span>            <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">intercepted</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span>
+                    <span class="o">||</span> <span class="n">mFirstTouchTarget</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+              <span class="c1">//FLAG_DISALLOW_INTERCEPT是子View通过
+</span><span class="c1"></span>            <span class="c1">//requestDisallowInterceptTouchEvent方法进行设置的
+</span><span class="c1"></span>                <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">disallowIntercept</span> <span class="o">=</span> <span class="o">(</span><span class="n">mGroupFlags</span> <span class="o">&amp;</span> <span class="n">FLAG_DISALLOW_INTERCEPT</span><span class="o">)</span> <span class="o">!=</span> <span class="n">0</span><span class="o">;</span>
+              <span class="c1">// 允许拦截  
+</span><span class="c1"></span>              <span class="k">if</span> <span class="o">(!</span><span class="n">disallowIntercept</span><span class="o">)</span> <span class="o">{</span>
+              <span class="c1">//调用onInterceptTouchEvent方法判断是否拦截
+</span><span class="c1"></span>                    <span class="n">intercepted</span> <span class="o">=</span> <span class="n">onInterceptTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">);</span>
+                    <span class="n">ev</span><span class="o">.</span><span class="na">setAction</span><span class="o">(</span><span class="n">action</span><span class="o">);</span> <span class="c1">// restore action in case it was changed
+</span><span class="c1"></span>                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">intercepted</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="c1">// There are no touch targets and this action is not an initial down
+</span><span class="c1"></span>                <span class="c1">// so this view group continues to intercept touches.
+</span><span class="c1"></span>                <span class="n">intercepted</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="c1">// If intercepted, start normal event dispatch. Also if there is already
+</span><span class="c1"></span>            <span class="c1">// a view that is handling the gesture, do normal event dispatch.
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">intercepted</span> <span class="o">||</span> <span class="n">mFirstTouchTarget</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">ev</span><span class="o">.</span><span class="na">setTargetAccessibilityFocus</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+            <span class="o">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>对于每个安全的事件，都会判断是否被拦截，如果子view要求viewGroup不拦截，则不会调用拦截的方法，反之，则viewGroup拦截，不再向下分发事件。当ViewGroup决定拦截事件后，后续事件将默认交给它处理并且不会再调用onInterceptTouchEvent方法来判断是否拦截。子View可以通过设置FLAG_DISALLOW_INTERCEPT标志位来不让ViewGroup拦截除ACTION_DOWN以外的事件。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">            <span class="k">if</span> <span class="o">(!</span><span class="n">canceled</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">intercepted</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// If the event is targeting accessibility focus we give it to the
+</span><span class="c1"></span>                <span class="c1">// view that has accessibility focus and if it does not handle it
+</span><span class="c1"></span>                <span class="c1">// we clear the flag and dispatch the event to all children as usual.
+</span><span class="c1"></span>                <span class="c1">// We are looking up the accessibility focused host to avoid keeping
+</span><span class="c1"></span>                <span class="c1">// state since these events are very rare.
+</span><span class="c1"></span>                <span class="n">View</span> <span class="n">childWithAccessibilityFocus</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">isTargetAccessibilityFocus</span><span class="o">()</span>
+                        <span class="o">?</span> <span class="n">findChildWithAccessibilityFocus</span><span class="o">()</span> <span class="o">:</span> <span class="kc">null</span><span class="o">;</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span>
+                        <span class="o">||</span> <span class="o">(</span><span class="n">split</span> <span class="o">&amp;&amp;</span> <span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_POINTER_DOWN</span><span class="o">)</span>
+                        <span class="o">||</span> <span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_HOVER_MOVE</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kd">final</span> <span class="kt">int</span> <span class="n">actionIndex</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getActionIndex</span><span class="o">();</span> <span class="c1">// always 0 for down
+</span><span class="c1"></span>                    <span class="kd">final</span> <span class="kt">int</span> <span class="n">idBitsToAssign</span> <span class="o">=</span> <span class="n">split</span> <span class="o">?</span> <span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">ev</span><span class="o">.</span><span class="na">getPointerId</span><span class="o">(</span><span class="n">actionIndex</span><span class="o">)</span>
+                            <span class="o">:</span> <span class="n">TouchTarget</span><span class="o">.</span><span class="na">ALL_POINTER_IDS</span><span class="o">;</span>
+
+                    <span class="c1">// Clean up earlier touch targets for this pointer id in case they
+</span><span class="c1"></span>                    <span class="c1">// have become out of sync.
+</span><span class="c1"></span>                    <span class="n">removePointersFromTouchTargets</span><span class="o">(</span><span class="n">idBitsToAssign</span><span class="o">);</span>
+
+                    <span class="kd">final</span> <span class="kt">int</span> <span class="n">childrenCount</span> <span class="o">=</span> <span class="n">mChildrenCount</span><span class="o">;</span>
+                  <span class="c1">// 触摸到的目标不为空，子view数量不为零，开始分发
+</span><span class="c1"></span>                    <span class="k">if</span> <span class="o">(</span><span class="n">newTouchTarget</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">childrenCount</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="kd">final</span> <span class="kt">float</span> <span class="n">x</span> <span class="o">=</span>
+                                <span class="n">isMouseEvent</span> <span class="o">?</span> <span class="n">ev</span><span class="o">.</span><span class="na">getXCursorPosition</span><span class="o">()</span> <span class="o">:</span> <span class="n">ev</span><span class="o">.</span><span class="na">getX</span><span class="o">(</span><span class="n">actionIndex</span><span class="o">);</span>
+                        <span class="kd">final</span> <span class="kt">float</span> <span class="n">y</span> <span class="o">=</span>
+                                <span class="n">isMouseEvent</span> <span class="o">?</span> <span class="n">ev</span><span class="o">.</span><span class="na">getYCursorPosition</span><span class="o">()</span> <span class="o">:</span> <span class="n">ev</span><span class="o">.</span><span class="na">getY</span><span class="o">(</span><span class="n">actionIndex</span><span class="o">);</span>
+                        <span class="c1">// Find a child that can receive the event.
+</span><span class="c1"></span>                        <span class="c1">// Scan children from front to back.
+</span><span class="c1"></span>                        <span class="kd">final</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">View</span><span class="o">&gt;</span> <span class="n">preorderedList</span> <span class="o">=</span> <span class="n">buildTouchDispatchChildList</span><span class="o">();</span>
+                        <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">customOrder</span> <span class="o">=</span> <span class="n">preorderedList</span> <span class="o">==</span> <span class="kc">null</span>
+                                <span class="o">&amp;&amp;</span> <span class="n">isChildrenDrawingOrderEnabled</span><span class="o">();</span>
+                        <span class="kd">final</span> <span class="n">View</span><span class="o">[]</span> <span class="n">children</span> <span class="o">=</span> <span class="n">mChildren</span><span class="o">;</span>
+                        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">childrenCount</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span><span class="o">--)</span> <span class="o">{</span>
+                            <span class="kd">final</span> <span class="kt">int</span> <span class="n">childIndex</span> <span class="o">=</span> <span class="n">getAndVerifyPreorderedIndex</span><span class="o">(</span>
+                                    <span class="n">childrenCount</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">customOrder</span><span class="o">);</span>
+                            <span class="kd">final</span> <span class="n">View</span> <span class="n">child</span> <span class="o">=</span> <span class="n">getAndVerifyPreorderedView</span><span class="o">(</span>
+                                    <span class="n">preorderedList</span><span class="o">,</span> <span class="n">children</span><span class="o">,</span> <span class="n">childIndex</span><span class="o">);</span>
+                          <span class="c1">//判断1，View可见并且没有播放动画。2，点击事件的坐标落在View的范围内
+</span><span class="c1"></span>            <span class="c1">//如果上述两个条件有一项不满足则continue继续循环下一个View
+</span><span class="c1"></span>                            <span class="k">if</span> <span class="o">(!</span><span class="n">child</span><span class="o">.</span><span class="na">canReceivePointerEvents</span><span class="o">()</span>
+                                    <span class="o">||</span> <span class="o">!</span><span class="n">isTransformedTouchPointInView</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">child</span><span class="o">,</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span>
+                                <span class="k">continue</span><span class="o">;</span>
+                            <span class="o">}</span>
+
+                            <span class="n">newTouchTarget</span> <span class="o">=</span> <span class="n">getTouchTarget</span><span class="o">(</span><span class="n">child</span><span class="o">);</span>
+                           <span class="c1">//如果有子View处理即newTouchTarget 不为null则跳出循环。
+</span><span class="c1"></span>                            <span class="k">if</span> <span class="o">(</span><span class="n">newTouchTarget</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="c1">// Child is already receiving touch within its bounds.
+</span><span class="c1"></span>                                <span class="c1">// Give it the new pointer in addition to the ones it is handling.
+</span><span class="c1"></span>                                <span class="n">newTouchTarget</span><span class="o">.</span><span class="na">pointerIdBits</span> <span class="o">|=</span> <span class="n">idBitsToAssign</span><span class="o">;</span>
+                                <span class="k">break</span><span class="o">;</span>
+                            <span class="o">}</span>
+
+                            <span class="n">resetCancelNextUpFlag</span><span class="o">(</span><span class="n">child</span><span class="o">);</span>
+                           <span class="c1">//dispatchTransformedTouchEvent第三个参数child这里不为null
+</span><span class="c1"></span>            							<span class="c1">//实际调用的是child的dispatchTouchEvent方法
+</span><span class="c1"></span>                            <span class="k">if</span> <span class="o">(</span><span class="n">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="n">child</span><span class="o">,</span> <span class="n">idBitsToAssign</span><span class="o">))</span> <span class="o">{</span>
+                                <span class="c1">// Child wants to receive touch within its bounds.
+</span><span class="c1"></span>                                <span class="n">mLastTouchDownTime</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getDownTime</span><span class="o">();</span>
+                                <span class="k">if</span> <span class="o">(</span><span class="n">preorderedList</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                                    <span class="c1">// childIndex points into presorted list, find original index
+</span><span class="c1"></span>                                    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">childrenCount</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+                                        <span class="k">if</span> <span class="o">(</span><span class="n">children</span><span class="o">[</span><span class="n">childIndex</span><span class="o">]</span> <span class="o">==</span> <span class="n">mChildren</span><span class="o">[</span><span class="n">j</span><span class="o">])</span> <span class="o">{</span>
+                                            <span class="n">mLastTouchDownIndex</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
+                                            <span class="k">break</span><span class="o">;</span>
+                                        <span class="o">}</span>
+                                    <span class="o">}</span>
+                                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                                    <span class="n">mLastTouchDownIndex</span> <span class="o">=</span> <span class="n">childIndex</span><span class="o">;</span>
+                                <span class="o">}</span>
+                                <span class="n">mLastTouchDownX</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getX</span><span class="o">();</span>
+                                <span class="n">mLastTouchDownY</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getY</span><span class="o">();</span>
+                                <span class="n">newTouchTarget</span> <span class="o">=</span> <span class="n">addTouchTarget</span><span class="o">(</span><span class="n">child</span><span class="o">,</span> <span class="n">idBitsToAssign</span><span class="o">);</span>
+                                <span class="n">alreadyDispatchedToNewTouchTarget</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                                <span class="c1">//子View处理了事件，然后就跳出了for循环
+</span><span class="c1"></span>                                <span class="k">break</span><span class="o">;</span>
+                            <span class="o">}</span>
+
+            <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果没有被取消也没有被拦截的话，则要把这个事件分发给子view去处理了，循环判断是否可以处理这个事件，如果有子view处理，已经处理完毕，跳出大循环</p>
+<p>总结一下：</p>
+<p><strong>ViewGroup会遍历所有子View去寻找能够处理点击事件的子View（可见，没有播放动画，点击事件坐标落在子View内部）最终调用子View的dispatchTouchEvent方法处理事件</strong>，<strong>当子View处理了事件则mFirstTouchTarget 被赋值，并终止子View的遍历。</strong></p>
+<h2 id="view-对事件的处理">view 对事件的处理</h2>
+<p>从上面的viewGroup的事件分发可以看出来，其实view最终对时间的处理使用的也是dispatchTouchEvent方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">        <span class="c1">//如果窗口没有被遮盖
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">onFilterTouchEventForSecurity</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">((</span><span class="n">mViewFlags</span> <span class="o">&amp;</span> <span class="n">ENABLED_MASK</span><span class="o">)</span> <span class="o">==</span> <span class="n">ENABLED</span> <span class="o">&amp;&amp;</span> <span class="n">handleScrollBarDragging</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">//noinspection SimplifiableIfStatement
+</span><span class="c1"></span>            <span class="c1">//当前监听事件
+</span><span class="c1"></span>            <span class="n">ListenerInfo</span> <span class="n">li</span> <span class="o">=</span> <span class="n">mListenerInfo</span><span class="o">;</span>
+            <span class="c1">//需要特别注意这个判断当中的li.mOnTouchListener.onTouch(this, event)条件
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">li</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">li</span><span class="o">.</span><span class="na">mOnTouchListener</span> <span class="o">!=</span> <span class="kc">null</span>
+                    <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">mViewFlags</span> <span class="o">&amp;</span> <span class="n">ENABLED_MASK</span><span class="o">)</span> <span class="o">==</span> <span class="n">ENABLED</span>
+                    <span class="o">&amp;&amp;</span> <span class="n">li</span><span class="o">.</span><span class="na">mOnTouchListener</span><span class="o">.</span><span class="na">onTouch</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">//result为false调用自己的onTouchEvent方法处理
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(!</span><span class="n">result</span> <span class="o">&amp;&amp;</span> <span class="n">onTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个就是之前看过那部分代码，通过上面代码我们可以看到View会先判断是否设置了OnTouchListener，<strong>如果设置了OnTouchListener并且onTouch方法返回了true，那么onTouchEvent不会被调用。</strong>
+当没有设置OnTouchListener或者设置了OnTouchListener但是onTouch方法返回false则会调用View自己的onTouchEvent方法。而一些时间的消费和对应的处理都封装在onTouchEvent方法中了，这里就不详细阐述了。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gvhswsrlrrj60i50z5jt102.jpg" alt="img"></p>
+  </div>
+</article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/charming-c" class="iconfont icon-github" title="github"></a>
+  <a href="https://charming-c.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>charming</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

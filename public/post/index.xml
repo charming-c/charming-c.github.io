@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Charming Zone</title>
+    <link>https://charming-c.github.io/post/</link>
+    <description>Recent content in Posts on Charming Zone</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 21 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://charming-c.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Java-JVM</title>
+      <link>https://charming-c.github.io/post/java-jvm/</link>
+      <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://charming-c.github.io/post/java-jvm/</guid>
+      <description>一、什么是JVM？ 1. 从jdk说起 在初次运行Java代码之前我们都要下载一个叫做jdk的东西，并且要配置好环境变量，这样我们的java代码才能</description>
+    </item>
+    
+    <item>
+      <title>Java内存模型与线程</title>
+      <link>https://charming-c.github.io/post/java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/</link>
+      <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://charming-c.github.io/post/java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/</guid>
+      <description>Java内存模型与线程 多任务处理在现代计算机操作系统中几乎已经是一项必备的技能了。在很多的场景下，让计算机同时去做几件事情，不仅仅是因为计算</description>
+    </item>
+    
+    <item>
+      <title>JVM-垃圾回收机制</title>
+      <link>https://charming-c.github.io/post/jvm-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/</link>
+      <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://charming-c.github.io/post/jvm-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/</guid>
+      <description>JVM&amp;ndash;垃圾回收机制 ​ 在之前介绍的 Java 内存运行时区域的各个部分，其中程序计数器、虚拟机栈、本地方法栈 3 个区域随线程而生，随线程而灭</description>
+    </item>
+    
+    <item>
+      <title>Java-IO流</title>
+      <link>https://charming-c.github.io/post/java-io%E6%B5%81/</link>
+      <pubDate>Thu, 10 Sep 2020 16:46:27 +0000</pubDate>
+      
+      <guid>https://charming-c.github.io/post/java-io%E6%B5%81/</guid>
+      <description>&lt;p&gt;简单介绍java的io流的概念&lt;/p&gt;
+&lt;h1 id=&#34;一io概念&#34;&gt;一、IO概念&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;I/O就是input和output的缩写，是计算机调度把各个储存中（包括内存和外部储存）的数据写入写出的过程&lt;/li&gt;
+&lt;li&gt;所谓的外部设备可以包括硬盘文件, 网络设备, 另个程序等. 也就是当前程序之外的数据设备&lt;/li&gt;
+&lt;li&gt;java中用流（stream）来抽象表示这么一个写入写出的功能，封装成一个类，都放在java.io这个包里面&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
