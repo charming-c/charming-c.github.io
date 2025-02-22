@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pages on Charming Zone</title>
+    <link>https://example.org/pages/</link>
+    <description>Recent content in Pages on Charming Zone</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="https://example.org/pages/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://example.org/pages/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://example.org/pages/about/</guid>
+      
+      <description>&lt;p&gt;Hi there! I’m charming-c, a master’s student at Xi’an Jiaotong University (XJTU) with a strong interest in operating systems and network programming. I graduated from Central China Normal University (CCNU), where I developed a passion for the inner workings of computer systems.&lt;/p&gt;
+&lt;p&gt;My focus lies in understanding and building efficient systems—whether it&amp;rsquo;s exploring OS internals like memory management and process scheduling or diving into network programming such as io_uring and socket. Outside of academics, I enjoy hands-on projects, contributing to open-source initiatives, and sharing my learnings through this blog.&lt;/p&gt;</description>
+      
+    </item>
+    
+  </channel>
+</rss>
