@@ -1,71 +1,264 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Charming Zone</title><link>https://charming-c.github.io/posts/</link><description>Recent content in Posts on Charming Zone</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 20 Apr 2022 19:23:58 +0800</lastBuildDate><atom:link href="https://charming-c.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>My First Post</title><link>https://charming-c.github.io/posts/my-first-post/</link><pubDate>Wed, 20 Apr 2022 19:23:58 +0800</pubDate><guid>https://charming-c.github.io/posts/my-first-post/</guid><description>&lt;h1 id="浅谈viewactivitywindow">浅谈view、activity、window&lt;/h1>
-&lt;h2 id="1从-setcontentview出发">1、从 setContentView（）出发&lt;/h2>
-&lt;p>对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="cm">/**
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * Set the activity content from a layout resource. The resource will be
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * inflated, adding all top-level views to the activity.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> *
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * @param layoutResID Resource ID to be inflated.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> *
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * @see #setContentView(android.view.View)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Charming Zone</title><link>https://charming-c.github.io/posts/</link><description>Recent content in Posts on Charming Zone</description><generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Sun, 19 Jan 2025 21:26:44 +0800</lastBuildDate><atom:link href="https://charming-c.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>浅析 io_uring provided buffers 的两种模式</title><link>https://charming-c.github.io/posts/%E6%B5%85%E6%9E%90-io_uring-peovided-buffers-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F/</link><pubDate>Sun, 19 Jan 2025 21:26:44 +0800</pubDate><guid>https://charming-c.github.io/posts/%E6%B5%85%E6%9E%90-io_uring-peovided-buffers-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F/</guid><description>&lt;h2 id="一echo-serverprovided-buffer">一、echo server（provided buffer）&lt;/h2>
+&lt;p>&lt;a href="https://github.com/frevib/io_uring-echo-server">这里&lt;/a>实现了一个通过 provided buffer 特性的 echo server，其中采用了 liburing 封装了 io_uring 中针对 provided buffer 特性的接口，本文从这个实例出发，介绍 provided buffer 特性。&lt;/p>
+&lt;p>首先，设置 buffer 的主要的函数调用逻辑为：&lt;/p>
+&lt;p>&lt;img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20250203174409198.png" alt="image-20250203174409198">&lt;/p>
+&lt;p>通过将用户空间中的 buffer 相关信息写入 sqe，并通过 sqe 请求向内核中的 io_uring 设置 provided buffer，其中 sqe 的参数设置参考 io_uring_prep_provided_buffers，主要是传入 buffer 的大小和内存地址，代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 设置 group_id，同时 buffer id 设置为 0
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nf">io_uring_prep_provide_buffers&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">sqe&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">bufs&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">MAX_MESSAGE_LEN&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">BUFFERS_COUNT&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">group_id&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 设置 sqe 参数
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="n">IOURINGINLINE&lt;/span> &lt;span class="kt">void&lt;/span> &lt;span class="nf">io_uring_prep_provide_buffers&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">struct&lt;/span> &lt;span class="n">io_uring_sqe&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">sqe&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">void&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">addr&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="n">nr&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">int&lt;/span> &lt;span class="n">bgid&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="n">bid&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">io_uring_prep_rw&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">IORING_OP_PROVIDE_BUFFERS&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">sqe&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">nr&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">addr&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">__u32&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="n">__u64&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">bid&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">sqe&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="n">buf_group&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">__u16&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">bgid&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">IOURINGINLINE&lt;/span> &lt;span class="kt">void&lt;/span> &lt;span class="nf">io_uring_prep_rw&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span> &lt;span class="n">op&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">struct&lt;/span> &lt;span class="n">io_uring_sqe&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">sqe&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="n">fd&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">const&lt;/span> &lt;span class="kt">void&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">addr&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">unsigned&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">__u64&lt;/span> &lt;span class="n">offset&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">sqe&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="n">opcode&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">__u8&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">op&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">sqe&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="n">fd&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">fd&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">sqe&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="n">off&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">offset&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">sqe&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="n">addr&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">unsigned&lt;/span> &lt;span class="kt">long&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">addr&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">sqe&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="n">len&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在这个 sqe 请求完成后，对应的 buffer 已经注册到 io_uring 当中。之后的 socket recv 请求不再需要设置用户缓冲区了，而是通过如下方式，io_uring 会返回对应的 provided buffer，例如，这里为一个 socket 添加的 recv 请求代码为：&lt;/p></description></item><item><title>Occlum 异步网络框架</title><link>https://charming-c.github.io/posts/%E8%AF%A6%E8%A7%A3-occlum-%E5%BC%82%E6%AD%A5%E7%BD%91%E7%BB%9C%E6%A1%86%E6%9E%B6/</link><pubDate>Fri, 11 Oct 2024 00:00:00 +0000</pubDate><guid>https://charming-c.github.io/posts/%E8%AF%A6%E8%A7%A3-occlum-%E5%BC%82%E6%AD%A5%E7%BD%91%E7%BB%9C%E6%A1%86%E6%9E%B6/</guid><description>&lt;h2 id="1-io_uring_callback">1. io_uring_callback&lt;/h2>
+&lt;p>这是 libos 中对 occlum io_uring 的进一步封装。对于原始的 occlum io_uring，他最大的缺点是，使用者必须手动的从 CQ 中获得 CQE，然后映射到对应的 SQE 的请求进行处理，这使得整个使用流程略显繁琐。io_uring_callback 提供了用户更加友好的 io_uring api，其特点主要表现在下面三个方面：&lt;/p>
+&lt;ul>
+&lt;li>callback_based，在一个 IO 请求被完成后，对应的用户注册的回调函数会被调用，而不需要手动分配 IO 的完成事件。&lt;/li>
+&lt;li>Async/await，在提交完 io 请求之后，用户会获得一个代表这个正在进行的 io 请求的 handle，可以 await 这个 handle，类似 future。&lt;/li>
+&lt;li>polling_based IO，无论是 IO 的提交还是完成都便于使用轮询模式。&lt;/li>
+&lt;/ul>
+&lt;p>下面先介绍 io_uring 的总体设计，然后从上面三个方面详细介绍具体实现原理。&lt;/p>
+&lt;p>&lt;img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241025141435122.png" alt="image-20241025141435122">&lt;/p>
+&lt;p>这里介绍一下各个模块的作用：&lt;/p>
+&lt;ul>
+&lt;li>Builder：直接套壳的 io_uring 中的 builder，也是 occlum 中创建 IoUring 的唯一方式，可以在创建前配置对应的参数，以便在内核实例化创建的 io_uring 具有不同的特性。&lt;/li>
+&lt;li>IoUring：核心结构体，主要包括的字段有：
+&lt;ul>
+&lt;li>ring：io_uring 实例，调用 crate 进行具体的操作，&lt;/li>
+&lt;li>fd_map：当前 io_uring 中所有处理过的 IO 事件的 fd 以及 io 事件数，除非 unregister 否则一直存在&lt;/li>
+&lt;li>sq_lock：为向 SQ 提交 SQE 加锁，防止同一时间操作同一个 SQ，线程安全&lt;/li>
+&lt;li>token_table：标识 SQE 和 CQE 的一一映射，是回调和 handle 实现的核心&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>在 IoUring 中的方法主要分为两类：
+&lt;ul>
+&lt;li>op_method：主要是针对特定的 opcode 的对 socket 的封装，比如 accept 等，创建出 SQE，随后通过调用 push_entry，传递进 SQ&lt;/li>
+&lt;li>其他方法，这里特别指出 poll_completions，此方法包含了 IoUring 对 CQ 操作的封装&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>解下来分析其中几个重点方法：&lt;code>push_entry&lt;/code>，&lt;code>poll_completions&lt;/code>，&lt;code>cancel&lt;/code>。&lt;/p></description></item><item><title>Linux io_uring 分析</title><link>https://charming-c.github.io/posts/linux-io_uring-%E5%88%86%E6%9E%90/</link><pubDate>Wed, 02 Oct 2024 16:42:34 +0800</pubDate><guid>https://charming-c.github.io/posts/linux-io_uring-%E5%88%86%E6%9E%90/</guid><description>&lt;h2 id="一网络-io">一、网络 IO&lt;/h2>
+&lt;p>下图是一个 UDP 连接中 socket 的 IO 流程：&lt;/p>
+&lt;img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241013163621280.png" alt="image-20241013163621280" style="zoom: 33%;" />
+&lt;p>可以看到，在每次调用 recvfrom 时，由于网络数据传输的时延缘故，Client/Server 都需要一定程度的等待，如果不做特殊的处理，这里就只能阻塞进程，被迫放弃 CPU，内核调度其他的进程运行。在内核中，IO 更为具体的流程如下：&lt;/p>
+&lt;img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241013173929488.png" alt="image-20241013173929488" style="zoom: 33%;" />
+&lt;ol>
+&lt;li>用户进程通过 socket 系统调用，创建 socket&lt;/li>
+&lt;li>在进程 socket 配置之后，发起 recvfrom 系统调用陷入内核。此时，由于 socket 的数据接收队列还没有数据到来，所以内核将用户进程阻塞，且将进程描述符添加到进程等待队列，之后调度其他进程执行&lt;/li>
+&lt;li>在其他进程执行的过程中，数据到达网卡&lt;/li>
+&lt;li>网卡通过 DMA 将数据拷贝到内存环形缓冲区 RingBuffer&lt;/li>
+&lt;li>网卡随后就向 CPU 发出硬件中断&lt;/li>
+&lt;li>CPU 向内核中断进程发出软中断&lt;/li>
+&lt;li>中断进程首先通过 RingBuffer 中的数据（IP + 端口），找到对应的 socket&lt;/li>
+&lt;li>将 RingBuffer 中的数据拷贝到 socket 中的接收队列，并唤醒用户进程&lt;/li>
+&lt;li>用户进程进入运行队列，继续从之前被阻塞的 recvfrom 处执行，此时接收队列有数据，将数据拷贝进用户空间的 buffer。&lt;/li>
+&lt;/ol>
+&lt;p>根据上面的流程可知，在 Client/Server 执行一次网络 IO 的过程中，需要等待两次：&lt;/p>
+&lt;ul>
+&lt;li>在调用 recvfrom 陷入内核时，由于 socket 的接收队列没有数据，所以需要等待数据从网卡输入最终进入 socket 的接收队列&lt;/li>
+&lt;li>在 socket 的接收队列准备好数据，原用户进程被唤醒以后，还需要等待将数据从内核中的 socket 接收队列拷贝进用户空间&lt;/li>
+&lt;/ul>
+&lt;p>其中，根据第一次等待需不需要发生，将 IO 分为阻塞 IO 和 非阻塞 IO。&lt;/p></description></item><item><title>浅谈 Rust 内存机制</title><link>https://charming-c.github.io/posts/rust-%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6/</link><pubDate>Thu, 15 Aug 2024 21:26:17 +0800</pubDate><guid>https://charming-c.github.io/posts/rust-%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6/</guid><description>&lt;blockquote>
+&lt;p>本文主要从内存的角度，简析 Rust 的 所有权 Ownership 和 引用 Reference。&lt;/p>&lt;/blockquote>
+&lt;h2 id="一栈-stack">一、栈 stack&lt;/h2>
+&lt;p>栈是 LIFO（后进先出）的数据结构。在 CSAPP 中的内存模型中已经知道，当调用一个函数时，一个新的栈帧（stack frame）就会被添加到栈顶。栈帧中保存了函数的所有参数、局部变量和一些其他的值。当函数返回时，栈帧就会从栈顶弹出。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-rust" data-lang="rust">&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="o">+-----------------+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">func2&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">frame&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">func2&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">func2&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="o">+-----------------+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">is&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">called&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+-----------------+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">returns&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+-----------------+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">frame&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">func1&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">----------&lt;/span>-&amp;gt; &lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">frame&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">func1&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">--------&lt;/span>-&amp;gt; &lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">frame&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">func1&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="o">+-----------------+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+-----------------+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+-----------------+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>从操作的角度来看，栈内存的分配和销毁是十分快速的。我们总是 push 和 pop 数据到栈顶中。所以我们不需要去查找空闲内存，同时我们也不需要担心内促碎片，&lt;u>栈本身就是一个连续的内存块。&lt;/u>&lt;/p>
+&lt;p>Rust 经常需要在 stack 中分配数据。如果函数有一个 &lt;code>u32&lt;/code>的输入参数，这 32 位数据分配在栈上。如果定义了一个局部变量 &lt;code>i64&lt;/code>，那么 64 位的数据也会分配在栈上。这些都会运作的很好在编译时，因为编译器在编译时知道这些 integer 的大小。因此，编译程序知道在栈上分配多少空间去保存它们。&lt;/p>
+&lt;h3 id="1-stdmemsize_of">1. std::mem::size_of&lt;/h3>
+&lt;p>我们可以通过使用 std::mem::size_of 函数确认一个类型将会在占中占用多少空间。对于 &lt;code>u8&lt;/code>，如下：&lt;/p></description></item><item><title>6.s081 trap lab</title><link>https://charming-c.github.io/posts/6.s081-trap-lab/</link><pubDate>Wed, 03 Jul 2024 21:26:17 +0800</pubDate><guid>https://charming-c.github.io/posts/6.s081-trap-lab/</guid><description>&lt;p>trap 机制，是由 ecall，sret，mret 这样的指令控制的，硬件 CPU 只会使用几个关键寄存器，其他的所有内容由软件（OS）完成。&lt;/p>
+&lt;h2 id="一xv6-trap-机制">一、xv6 trap 机制&lt;/h2>
+&lt;p>首先简单介绍一下关于 trap 中所需要使用的汇编和 c 函数：&lt;/p>
+&lt;h3 id="1-trampoline">1. Trampoline&lt;/h3>
+&lt;p>由于 Trampoline 同时映射到 user 和 kernel 的 pagetable 中，所以在切换 satp 后仍旧是可以执行的。其中主要由两个函数：&lt;/p>
+&lt;p>&lt;strong>uservec：&lt;/strong>&lt;/p>
+&lt;pre tabindex="0">&lt;code>.globl uservec
+uservec:
+#
+# trap.c sets stvec to point here, so
+# traps from user space start here,
+# in supervisor mode, but with a
+# user page table.
+#
+# sscratch points to where the process&amp;#39;s p-&amp;gt;trapframe is
+# mapped into user space, at TRAPFRAME.
+#
+# swap a0 and sscratch
+# so that a0 is TRAPFRAME
+csrrw a0, sscratch, a0
+# save the user registers in TRAPFRAME
+sd ra, 40(a0)
+sd sp, 48(a0)
+sd gp, 56(a0)
+sd tp, 64(a0)
+sd t0, 72(a0)
+sd t1, 80(a0)
+sd t2, 88(a0)
+sd s0, 96(a0)
+sd s1, 104(a0)
+sd a1, 120(a0)
+sd a2, 128(a0)
+sd a3, 136(a0)
+sd a4, 144(a0)
+sd a5, 152(a0)
+sd a6, 160(a0)
+sd a7, 168(a0)
+sd s2, 176(a0)
+sd s3, 184(a0)
+sd s4, 192(a0)
+sd s5, 200(a0)
+sd s6, 208(a0)
+sd s7, 216(a0)
+sd s8, 224(a0)
+sd s9, 232(a0)
+sd s10, 240(a0)
+sd s11, 248(a0)
+sd t3, 256(a0)
+sd t4, 264(a0)
+sd t5, 272(a0)
+sd t6, 280(a0)
+# save the user a0 in p-&amp;gt;trapframe-&amp;gt;a0
+csrr t0, sscratch
+sd t0, 112(a0)
+# restore kernel stack pointer from p-&amp;gt;trapframe-&amp;gt;kernel_sp
+ld sp, 8(a0)
+# make tp hold the current hartid, from p-&amp;gt;trapframe-&amp;gt;kernel_hartid
+ld tp, 32(a0)
+# load the address of usertrap(), p-&amp;gt;trapframe-&amp;gt;kernel_trap
+ld t0, 16(a0)
+# restore kernel page table from p-&amp;gt;trapframe-&amp;gt;kernel_satp
+ld t1, 0(a0)
+csrw satp, t1
+sfence.vma zero, zero
+# a0 is no longer valid, since the kernel page
+# table does not specially map p-&amp;gt;tf.
+# jump to usertrap(), which does not return
+jr t0
+&lt;/code>&lt;/pre>&lt;p>uservec 首先将 a0 和 sscratch 中的寄存器值交换，由于在调用 uservec 之前，sscratch 应该写入的是 Trapframe 的值（物理地址），所以交换后，就可以把各个寄存器的值写入 trapframe，保存用户态的寄存器状态，然后进入内核态执行。&lt;/p></description></item><item><title>6.s081 pgtbl lab</title><link>https://charming-c.github.io/posts/6.s081-pgtbl-lab/</link><pubDate>Mon, 01 Jul 2024 21:26:17 +0800</pubDate><guid>https://charming-c.github.io/posts/6.s081-pgtbl-lab/</guid><description>&lt;h2 id="一xv6-boot">一、xv6 boot&lt;/h2>
+&lt;p>首先要介绍一下xv6中的页表设置，我们从xv6的boot入口开始分析。首先是kernel.ld链接脚本，负责将os的镜像加载到内存中。截取其中的部分代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="nf">OUTPUT_ARCH&lt;/span>&lt;span class="p">(&lt;/span> &lt;span class="s">&amp;#34;riscv&amp;#34;&lt;/span> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">ENTRY&lt;/span>&lt;span class="p">(&lt;/span> &lt;span class="n">_entry&lt;/span> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">SECTIONS&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="cm">/*
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * ensure that entry.S / _entry is at 0x80000000,
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * where qemu&amp;#39;s -kernel jumps.
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> */&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">public&lt;/span> &lt;span class="kt">void&lt;/span> &lt;span class="nf">setContentView&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="nd">@LayoutRes&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="n">layoutResID&lt;/span>&lt;span class="o">)&lt;/span> &lt;span class="o">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">getWindow&lt;/span>&lt;span class="o">().&lt;/span>&lt;span class="na">setContentView&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="n">layoutResID&lt;/span>&lt;span class="o">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">initWindowDecorActionBar&lt;/span>&lt;span class="o">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 &lt;code>mWindow = new PhoneWindow(this, window, activityConfigCallback);&lt;/code> 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法：&lt;/p></description></item><item><title>My First Post</title><link>https://charming-c.github.io/posts/my-first-post2/</link><pubDate>Wed, 20 Apr 2022 19:23:58 +0800</pubDate><guid>https://charming-c.github.io/posts/my-first-post2/</guid><description>&lt;h1 id="浅谈viewactivitywindow">浅谈view、activity、window&lt;/h1>
-&lt;h2 id="1从-setcontentview出发">1、从 setContentView（）出发&lt;/h2>
-&lt;p>对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="cm">/**
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * Set the activity content from a layout resource. The resource will be
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * inflated, adding all top-level views to the activity.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> *
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * @param layoutResID Resource ID to be inflated.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> *
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * @see #setContentView(android.view.View)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> */&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">public&lt;/span> &lt;span class="kt">void&lt;/span> &lt;span class="nf">setContentView&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="nd">@LayoutRes&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="n">layoutResID&lt;/span>&lt;span class="o">)&lt;/span> &lt;span class="o">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">getWindow&lt;/span>&lt;span class="o">().&lt;/span>&lt;span class="na">setContentView&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="n">layoutResID&lt;/span>&lt;span class="o">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">initWindowDecorActionBar&lt;/span>&lt;span class="o">();&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 &lt;code>mWindow = new PhoneWindow(this, window, activityConfigCallback);&lt;/code> 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法：&lt;/p></description></item></channel></rss>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mh">0x80000000&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="nl">text&lt;/span> &lt;span class="p">:&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">*&lt;/span>&lt;span class="p">(.&lt;/span>&lt;span class="n">text&lt;/span> &lt;span class="p">.&lt;/span>&lt;span class="n">text&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nf">ALIGN&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x1000&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">_trampoline&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">.;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">*&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">trampsec&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nf">ALIGN&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x1000&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">ASSERT&lt;/span>&lt;span class="p">(.&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="n">_trampoline&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mh">0x1000&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;error: trampoline larger than one page&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">PROVIDE&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">etext&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">.);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这里很自然发现，在编译时，os的kernel镜像的text（也就是代码指令部分）被从0x80000000开始放置。然后入口设置成了_entry。检查entry.S:&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-assembly" data-lang="assembly"> # qemu -kernel loads the kernel at 0x80000000
+# and causes each CPU to jump there.
+# kernel.ld causes the following code to
+# be placed at 0x80000000.
+.section .text
+_entry:
+# set up a stack for C.
+# stack0 is declared in start.c,
+# with a 4096-byte stack per CPU.
+# sp = stack0 + (hartid * 4096)
+la sp, stack0
+li a0, 1024*4
+csrr a1, mhartid
+addi a1, a1, 1
+mul a0, a0, a1
+add sp, sp, a0
+# jump to start() in start.c
+call start
+spin:
+j spin
+&lt;/code>&lt;/pre>&lt;p>由于qemu的设置，代码首先从0x80000000开始执行，也就是这里的_entry的第一条指令。stack0在start中被设置，主要是为每个CPU都设置一个page的stack，关于多核的设置，6.s081不涉及，这里我们也略过。_entry的主要作用就是设置好每个CPU的栈以后，直接调用start函数：&lt;/p></description></item><item><title>浅谈 HTTPS 协议</title><link>https://charming-c.github.io/posts/%E6%B5%85%E8%B0%88-https-%E5%8D%8F%E8%AE%AE/</link><pubDate>Fri, 15 Sep 2023 21:26:17 +0800</pubDate><guid>https://charming-c.github.io/posts/%E6%B5%85%E8%B0%88-https-%E5%8D%8F%E8%AE%AE/</guid><description>&lt;h2 id="一http-的缺点">一、HTTP 的缺点&lt;/h2>
+&lt;p>HTTP 主要有如下不足，例举如下：&lt;/p>
+&lt;ul>
+&lt;li>通信使用明文（不加密），内容可能会被窃听&lt;/li>
+&lt;li>不验证通信方的身份，因此有可能遭遇伪装&lt;/li>
+&lt;li>无法证明报文完整性，所以有可能已遭篡改&lt;/li>
+&lt;/ul>
+&lt;p>这些问题不仅在 HTTP 中出现，其他未加密的协议中也会存在类似的问题。&lt;/p>
+&lt;h3 id="1-通信使用明文可能会被窃听">1. 通信使用明文可能会被窃听&lt;/h3>
+&lt;p>由于 HTTP 本身不具备加密的功能，所以也无法做到对通信整体（使用 HTTP 协议通信的请求和相应内容）进行加密。即，HTTP 报文使用明文方式发送。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>TCP/IP 是可能被窃听的网络&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>加密处理防止被窃听&lt;/p>
+&lt;p>目前正在研究的如何让防止窃听保护信息的几种对策中，最为普及的就是加密技术。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>通信的加密&lt;/p>
+&lt;p>HTTP 协议中没有加密机制，但可以通过和 SSL（secure socket layer，安全套接层）或者 TLS（Transport Layer Security）的组合使用，加密 HTTP 的通信内容。&lt;/p>
+&lt;p>用 SSL 建立安全通信线路以后，就可以在这条线路上进行 HTTP 通信了，称为 HTTPS。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>内容的加密&lt;/p>
+&lt;p>还有一种将参与通信的内容本身加密的方式。由于 HTTP 协议中没有加密机制，那么就对 HTTP 协议传输的内通本身加密。即把 HTTP 报文里所含的内容进行加密处理。&lt;/p>
+&lt;p>在这种情况下，客户端需要对 HTTP 报文进行加密处理后再发送请求。&lt;/p>
+&lt;p>&lt;img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20231114162615505.png" alt="image-20231114162615505">&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="2-不验证通信方的身份就可能遭遇伪装">2. 不验证通信方的身份就可能遭遇伪装&lt;/h3>
+&lt;p>HTTP 协议中的请求和响应不会对通信方进行确认。也就是说存在“服务器是否就是发送请求中 URI 真正指定的主机，返回的响应是否真的返回到实际提出请求的客户端“等类似问题。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>任何人都可以发起请求&lt;/p>
+&lt;p>在 HTTP 协议通信时，由于不存在确认通信方的处理步骤，任何人都可以发起请求。服务器只要接收到请求都会响应，因此就会有很多隐患：&lt;/p>
+&lt;ul>
+&lt;li>无法确定请求发送至目标的 Web 服务器是否是返回响应的服务器。&lt;/li>
+&lt;li>无法确定客户端是否是收到响应的客户端。&lt;/li>
+&lt;li>无法确定正在通信的对方是否有访问权限。&lt;/li>
+&lt;li>即使是无意义的请求服务器也会照单全收，无法阻止海量请求下的 Dos 攻击（Deny of Service，拒绝服务攻击）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>查明对手的证书&lt;/p></description></item><item><title>15-213 bomb lab</title><link>https://charming-c.github.io/posts/15-213-bomb-lab/</link><pubDate>Tue, 03 May 2022 21:26:17 +0800</pubDate><guid>https://charming-c.github.io/posts/15-213-bomb-lab/</guid><description>&lt;h2 id="1-phase_1">1. phase_1&lt;/h2>
+&lt;blockquote>
+&lt;p>tips: 首先要学会使用 gdb 才可以开始这个实验&lt;/p>&lt;/blockquote>
+&lt;p>查看关于 phase_1 函数的汇编代码：&lt;/p>
+&lt;p>&lt;img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20220517193015629.png" alt="image-20220517193015629">&lt;/p>
+&lt;p>可以看到，phase_1 函数只是调用了 strings_not_equal 函数就判断了炸弹是否爆炸，而对于 phase_1 函数，由源码可以知道会将读取的第一行传入作为第一个参数，所以到调用 strings_not_equal 时，函数一共有两个参数，而想要炸弹不爆炸，就必须保证传入的两个参数他们对于 string_not_equal 函数 返回值（保存在 %eax ）必须为1，而第二个参数就存储在 %esi 中， 在函数调用时打断点，同时将 %esi 中保存的地址转化为 char * 类型打印出来，答案就出来了&lt;/p>
+&lt;blockquote>
+&lt;p>Strings_not_equal 比较两个字符串，内容相同 返回0， 不同 返回 正值&lt;/p>
+&lt;p>查看汇编发现函数的比较逻辑是这样的：&lt;/p>
+&lt;ol>
+&lt;li>先计算两个字符串的长度，相同，则继续到第二步，不同则返回正值&lt;/li>
+&lt;li>依次从字符串的第一个 char 开始比较，相同，则将依次比较下一个，直到比较到字符串结尾，或者不相同为止&lt;/li>
+&lt;/ol>&lt;/blockquote>
+&lt;h2 id="2-phase_2">2. phase_2&lt;/h2>
+&lt;p>这个函数比较有意思 phase_2 函数首先通过 read_six_numbers 将 6 个数字读取到栈顶，而 read_six_numbers 的汇编代码比较有意思：&lt;/p>
+&lt;p>&lt;img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20220517200324847.png" alt="image-20220517200324847">&lt;/p>
+&lt;p>函数通过两个寄存器 %rdi 存储 phase_2 调用时栈顶指针的地址， %rsp 存储当前函数栈顶指针的地址，然后将 %rdi 的高地址的各个位置要么写进 %rsp 的高地址中存储， 要么写进其他参数寄存器，这样就可以在 0x40148a 这里函数调用时，动态的赋值这些地址的值，从而巧妙的将 6 个数字存储在了 phase_2 的栈帧中，这里读的其实就是我们输入的答案，这时候在查看 phase_2 函数，什么情况炸弹不会爆炸：&lt;/p></description></item></channel></rss>

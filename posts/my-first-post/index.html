@@ -1,638 +1,701 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>My First Post - Charming Zone</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="charming"><meta name=description content="浅谈view、activity、window 1、从 setContentView（）出发 对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程
-1 2 3 4 5 6 7 8 9 10 11 12 13  /** * Set the activity content from a layout resource. The resource will be * inflated, adding all top-level views to the activity. * * @param layoutResID Resource ID to be inflated. * * @see #setContentView(android.view.View) * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams) */ public void setContentView(@LayoutRes int layoutResID) { getWindow().setContentView(layoutResID); initWindowDecorActionBar(); }   这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 mWindow = new PhoneWindow(this, window, activityConfigCallback); 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法：
-"><meta name=keywords content="Hugo,theme,even"><meta name=generator content="Hugo 0.97.3 with theme even"><link rel=canonical href=https://charming-c.github.io/posts/my-first-post/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="My First Post"><meta property="og:description" content="浅谈view、activity、window
-1、从 setContentView（）出发
-对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程
+<!DOCTYPE html>
+<html lang="en-gb"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Occlum 异步网络框架 | Charming Zone</title>
+<meta property="og:title" content="Occlum 异步网络框架 | Charming Zone" />
+<meta name="twitter:title" content="Occlum 异步网络框架 | Charming Zone" />
+<meta itemprop="name" content="Occlum 异步网络框架 | Charming Zone" />
+<meta name="application-name" content="Occlum 异步网络框架 | Charming Zone" />
+<meta property="og:site_name" content="Charming Zone" />
+
+<meta name="description" content="分析并详细解释整个 Occlum 异步网络框架.">
+<meta itemprop="description" content="分析并详细解释整个 Occlum 异步网络框架." />
+<meta property="og:description" content="分析并详细解释整个 Occlum 异步网络框架." />
+<meta name="twitter:description" content="分析并详细解释整个 Occlum 异步网络框架." />
+
+<meta property="og:locale" content="en-gb" />
+<meta name="language" content="en-gb" />
+
+  <link rel="alternate" hreflang="en-gb" href="http://localhost:1313/posts/my-first-post/" title="English" />
 
 
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
 
 
-/**
-     * Set the activity content from a layout resource.  The resource will be
-     * inflated, adding all top-level views to the activity.
-     *
-     * @param layoutResID Resource ID to be inflated.
-     *
-     * @see #setContentView(android.view.View)
-     * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
-     */
-    public void setContentView(@LayoutRes int layoutResID) {
-        getWindow().setContentView(layoutResID);
-        initWindowDecorActionBar();
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2023-02-11T00:00:00Z />
+    <meta property="article:published_time" content=2023-02-11T00:00:00Z />
+    <meta property="og:url" content="http://localhost:1313/posts/my-first-post/" />
+
+    
+    <meta property="og:article:author" content="charming-c" />
+    <meta property="article:author" content="charming-c" />
+    <meta name="author" content="charming-c" />
+    
+    
+
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "Occlum 异步网络框架",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2023-02-11",
+        "description": "分析并详细解释整个 Occlum 异步网络框架.",
+        "wordCount":  1593 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2023-02-11",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Charming Zone"
+        }
     }
+    </script>
 
 
-这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 mWindow = new PhoneWindow(this, window, activityConfigCallback); 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法："><meta property="og:type" content="article"><meta property="og:url" content="https://charming-c.github.io/posts/my-first-post/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-04-20T19:23:58+08:00"><meta property="article:modified_time" content="2022-04-20T19:23:58+08:00"><meta itemprop=name content="My First Post"><meta itemprop=description content="浅谈view、activity、window
-1、从 setContentView（）出发
-对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程
+<meta name="generator" content="Hugo 0.144.2">
+
+    
+    <meta property="og:url" content="http://localhost:1313/posts/my-first-post/">
+  <meta property="og:site_name" content="Charming Zone">
+  <meta property="og:title" content="Occlum 异步网络框架">
+  <meta property="og:description" content="分析并详细解释整个 Occlum 异步网络框架.">
+  <meta property="og:locale" content="en_gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-02-11T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-02-11T00:00:00+00:00">
 
 
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Occlum 异步网络框架">
+  <meta name="twitter:description" content="分析并详细解释整个 Occlum 异步网络框架.">
 
 
-/**
-     * Set the activity content from a layout resource.  The resource will be
-     * inflated, adding all top-level views to the activity.
-     *
-     * @param layoutResID Resource ID to be inflated.
-     *
-     * @see #setContentView(android.view.View)
-     * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
-     */
-    public void setContentView(@LayoutRes int layoutResID) {
-        getWindow().setContentView(layoutResID);
-        initWindowDecorActionBar();
-    }
+    
+
+    <link rel="canonical" href="http://localhost:1313/posts/my-first-post/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
-这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 mWindow = new PhoneWindow(this, window, activityConfigCallback); 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法："><meta itemprop=datePublished content="2022-04-20T19:23:58+08:00"><meta itemprop=dateModified content="2022-04-20T19:23:58+08:00"><meta itemprop=wordCount content="5089"><meta itemprop=keywords content="view,"><meta name=twitter:card content="summary"><meta name=twitter:title content="My First Post"><meta name=twitter:description content="浅谈view、activity、window
-1、从 setContentView（）出发
-对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程
 
 
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    
+</head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.js"></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="http://localhost:1313/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>Home</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        Home
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/posts/">
+                        Posts
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        About
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Occlum 异步网络框架</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2023-02-11T00:00:00&#43;00:00" itemprop="datePublished"> 11 Feb 2023 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>Table of Contents</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-io_uring_callback">1. io_uring_callback</a></li>
+    <li><a href="#2-libos-uringset-单例">2. Libos UringSet 单例</a></li>
+    <li><a href="#3-event-模型">3. Event 模型</a></li>
+    <li><a href="#4-socket-file">4. Socket file</a></li>
+    <li><a href="#5-common">5. Common</a></li>
+    <li><a href="#6-datagram-socket">6. Datagram Socket</a>
+      <ul>
+        <li><a href="#61-state-的转化">6.1 State 的转化</a></li>
+        <li><a href="#62-sender--receiver">6.2 Sender &amp;&amp; Receiver</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-stream-socket">7. Stream Socket</a>
+      <ul>
+        <li><a href="#71-状态转化">7.1 状态转化</a></li>
+        <li><a href="#72-listenerstream">7.2 ListenerStream</a></li>
+        <li><a href="#73-connectedstream">7.3 ConnectedStream</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <h2 id="1-io_uring_callback">1. io_uring_callback</h2>
+<p>这是 libos 中对 occlum io_uring 的进一步封装。对于原始的 occlum io_uring，他最大的缺点是，使用者必须手动的从 CQ 中获得 CQE，然后映射到对应的 SQE 的请求进行处理，这使得整个使用流程略显繁琐。io_uring_callback 提供了用户更加友好的 io_uring api，其特点主要表现在下面三个方面：</p>
+<ul>
+<li>callback_based，在一个 IO 请求被完成后，对应的用户注册的回调函数会被调用，而不需要手动分配 IO 的完成事件。</li>
+<li>Async/await，在提交完 io 请求之后，用户会获得一个代表这个正在进行的 io 请求的 handle，可以 await 这个 handle，类似 future。</li>
+<li>polling_based IO，无论是 IO 的提交还是完成都便于使用轮询模式。</li>
+</ul>
+<p>下面先介绍 io_uring 的总体设计，然后从上面三个方面详细介绍具体实现原理。</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241025141435122.png" alt="image-20241025141435122"></p>
+<p>这里介绍一下各个模块的作用：</p>
+<ul>
+<li>Builder：直接套壳的 io_uring 中的 builder，也是 occlum 中创建 IoUring 的唯一方式，可以在创建前配置对应的参数，以便在内核实例化创建的 io_uring 具有不同的特性。</li>
+<li>IoUring：核心结构体，主要包括的字段有：
+<ul>
+<li>ring：io_uring 实例，调用 crate 进行具体的操作，</li>
+<li>fd_map：当前 io_uring 中所有处理过的 IO 事件的 fd 以及 io 事件数，除非 unregister 否则一直存在</li>
+<li>sq_lock：为向 SQ 提交 SQE 加锁，防止同一时间操作同一个 SQ，线程安全</li>
+<li>token_table：标识 SQE 和 CQE 的一一映射，是回调和 handle 实现的核心</li>
+</ul>
+</li>
+<li>在 IoUring 中的方法主要分为两类：
+<ul>
+<li>op_method：主要是针对特定的 opcode 的对 socket 的封装，比如 accept 等，创建出 SQE，随后通过调用 push_entry，传递进 SQ</li>
+<li>其他方法，这里特别指出 poll_completions，此方法包含了 IoUring 对 CQ 操作的封装</li>
+</ul>
+</li>
+</ul>
+<p>解下来分析其中几个重点方法：<code>push_entry</code>，<code>poll_completions</code>，<code>cancel</code>。</p>
+<p>io_uring_callback 每次创建 SQE 时会生成一个对应的 IoHandle，这个 Iohandle 的结构大致如下所示：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">IoHandle</span>
+</span></span><span class="line"><span class="cl">	<span class="o">-&gt;</span> <span class="n">IoToken</span>
+</span></span><span class="line"><span class="cl">    	<span class="o">-&gt;</span><span class="n">Inner</span>
+</span></span><span class="line"><span class="cl">    		<span class="o">-&gt;</span>  <span class="n">state</span>
+</span></span><span class="line"><span class="cl">    			<span class="n">completion_callback</span>
+</span></span><span class="line"><span class="cl">    			<span class="n">token_key</span>
+</span></span></code></pre></div><p>在注册 SQE 时，传入 callback 参数，然后在提交 SQE 时，通过生成一个 token_key，注册在 IoUring 的 token_table 中，不仅关联了 SQE 和 IoHandle，通过将 userdata 设置成 tokenkey 还可以将 SQE 和 CQE 对应起来，大致流程如下所示：</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241025162339077.png" alt="image-20241025162339077"></p>
+<p>回调机制的实现流程：</p>
+<ol>
+<li>用户通过 fd、callback 调用对应的 op method 创建 sqe</li>
+<li>在 IoUring 的 token_table 中生成一个 token_key，利用 token_key 和 callback 生成 token，将 token_key 和 token 关联注册到 table 中</li>
+<li>在 sqe 的 userdata 中写入 token_key，push 到 SQ 中</li>
+<li>在 CQ 中对应的 cqe 从 ring 中出来后根据 key 的值找到 token</li>
+<li>将 token 从 table 中注销</li>
+<li>调用 token 中的 callback 实现回调</li>
+</ol>
+<p>这只是单个 sqe 的同步流程，对于已经在运行的异步 IoUring 的宏观形势如下：</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241025163108539.png" alt="image-20241025163108539"></p>
+<p>token_table 注册大量已经运行，或者正在被取消的 IO 事件，通过<code>cancel</code>方法取消一个已经提交的事件，同时 handle 的存在还可以实时维护在内核运行中的 IO 事件的状态，具体表现为：</p>
+<ul>
+<li>一开始创建的 sqe，在 push_entry 后提交到内核后为 submitted 状态</li>
+<li>如果想要取消 IO，则会向内核发起取消请求，此时 Token 标记为 cacelling</li>
+</ul>
+<p>即：在提交到内核 IO 事件处理完成前，Token 只有两个状态，即 submitted 和 cancelling</p>
+<ul>
+<li>在<code>poll_completions</code> 后，cqe 出现，利用 key 找到对应的 Token
+<ul>
+<li>Token 为 submitted，一个正常的 IO 事件完成，调用回调，标记为 processed</li>
+<li>Token 为 cacelling
+<ul>
+<li>如果返回值为 CANCEL_RETVAL，则表示已取消，标记为 cacelled</li>
+<li>如果返回值不是，则表示取消失败，标记为 processed，仍旧回调</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>整个大致的基于回调和 handle 的机制大概就是这样。</p>
+<h2 id="2-libos-uringset-单例">2. Libos UringSet 单例</h2>
+<p>在 Occlum libos 中整个网络的 socket 层使用单例的 UringSet 进行 IO 操作，结构为：</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241025174208630.png" alt="image-20241025174208630"></p>
+<p>主要对外暴露两个接口：</p>
+<ul>
+<li>get_uring：分为初始阶段和非初始阶段
+<ul>
+<li>初始阶段：依据配置创建足够数量的 IoUring 实例</li>
+<li>非初始阶段：不创建，直接找工作负载最少的 IoUring 实例（两个方面，注册的 socketfd 以及 op num）</li>
+</ul>
+</li>
+<li>disattach_uring
+<ul>
+<li>从 IoUring 中取消注册一个 socketfd</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-event-模型">3. Event 模型</h2>
+<p>occlum 中事件机制共有三种：</p>
+<ul>
+<li>Waiter、Waker 和 Waiter Queue，和线程休眠唤醒相关</li>
+<li>Event、Observer 和 Notifier 用来处理和广播事件</li>
+<li>WaiterQueueObserver 实现了当事件发生唤醒对应线程的机制</li>
+</ul>
+<p>这里主要介绍如何处理和广播事件，其机制大致如下图所示：</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241026210855401.png" alt="image-20241026210855401"></p>
+<p>对于一个 Notifier，其内部动态维护者一个 subscriber 队列，可以通过 register/unregister 从 notifier 中添加和删除 subscriber，Notifiter 每次向队列中的每一个 subscriber 广播事件。而每一个 subscriber 中由一个 observer 和 filter 组成，filter 过滤当前 subscriber 不感兴趣的事件，在 Notifiter 广播事件时，不做处理，observer 则在得到事件时执行对应的 on_event 行为。</p>
+<p><strong>Pollee-Poller 模型：</strong></p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241026215720502.png" alt="image-20241026215720502"></p>
+<p>Pollee 作为 Notifier，Poller 作为 subscriber，在 Poller 通过 connect 和 Pollee 关联后，每次有 add_event 事件添加时，都会向所有的 subscriber 广播，Poller 会执行对应的线程唤醒操作，其他的 Observer 则会执行对应的 on_event。</p>
+<h2 id="4-socket-file">4. Socket file</h2>
+<p>在 Linux 中将 socket 看做一个文件，在 Occlum 中也是如此。对于所有使用 io_uring 实现的异步 socket，其对应的系统调用经过 Occlum 包装后返回的都是 SocketFile 类型，不同的 socket 类型在 SocketFile 中的 AnySocket 枚举中实现，其对外的接口由 SocketFile 暴露，总体架构如下：</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241107230439318.png" alt="image-20241107230439318"></p>
+<p>当对 Occlum libos 发起一个 Socket 系统调用时，首先会判断 socket 的类型。代码示例如下(这里节选自 bind 系统调用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="n">file_ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">current!</span><span class="p">().</span><span class="n">file</span><span class="p">(</span><span class="n">fd</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">FileDesc</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Ok</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">file_ref</span><span class="p">.</span><span class="n">as_host_socket</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">raw_addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">addr</span><span class="p">.</span><span class="n">to_raw</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">socket</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">raw_addr</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Ok</span><span class="p">(</span><span class="n">unix_socket</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">file_ref</span><span class="p">.</span><span class="n">as_unix_socket</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">unix_addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">addr</span><span class="p">.</span><span class="n">to_unix</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">unix_socket</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="n">unix_addr</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Ok</span><span class="p">(</span><span class="n">uring_socket</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">file_ref</span><span class="p">.</span><span class="n">as_uring_socket</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">uring_socket</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="fm">return_errno!</span><span class="p">(</span><span class="no">ENOTSOCK</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;not a socket&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>这里的第一行<code>current!().file(fd as FileDesc)?</code>如果成功的话，会返回一个 FileRef 类型，在 socket_file 中，有如下实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">trait</span><span class="w"> </span><span class="n">UringSocketType</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">fn</span> <span class="nf">as_uring_socket</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;&amp;</span><span class="n">SocketFile</span><span class="o">&gt;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">impl</span><span class="w"> </span><span class="n">UringSocketType</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">FileRef</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">fn</span> <span class="nf">as_uring_socket</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;&amp;</span><span class="n">SocketFile</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="bp">self</span><span class="p">.</span><span class="n">as_any</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">downcast_ref</span>::<span class="o">&lt;</span><span class="n">SocketFile</span><span class="o">&gt;</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">ok_or_else</span><span class="p">(</span><span class="o">||</span><span class="w"> </span><span class="fm">errno!</span><span class="p">(</span><span class="no">ENOTSOCK</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;not a uring socket&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>因此对于一个 uring socket，可以通过普通的 fd 和 as_uring_socket 方法拿到 SocketFile，而 SocketFile 的实现很简单：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">struct</span> <span class="nc">SocketFile</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">socket</span>: <span class="nc">AnySocket</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">enum</span> <span class="nc">AnySocket</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Ipv4Stream</span><span class="p">(</span><span class="n">Ipv4Stream</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Ipv6Stream</span><span class="p">(</span><span class="n">Ipv6Stream</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Ipv4Datagram</span><span class="p">(</span><span class="n">Ipv4Datagram</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Ipv6Datagram</span><span class="p">(</span><span class="n">Ipv6Datagram</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>SocketFile 中拥有 syscall 对应的接口，对于 Socket 中比较通用的操作，比如 write、read，采用 apply_fn_on_any_socket! 宏实现，而其它不同 Socket 实现逻辑不同的接口则通过 AnySocket 调用具体枚举类实现，比如 bind、listen、accept 等。</p>
+<h2 id="5-common">5. Common</h2>
+<p>common 中集合了不同状态下 Stream Socket 中的一些通用的属性和方法，比如是否阻塞、是否已经关闭、绑定的 io_uring 实例等等，其定义如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="c1">// A 泛型标识地址类型，比如 IPv4、IPv6，R 泛型表示运行时，这里主要用于 io_uring
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">pub</span><span class="w"> </span><span class="k">struct</span> <span class="nc">Common</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">&#39;static</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>: <span class="nc">Runtime</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">host_fd</span>: <span class="nc">FileDesc</span><span class="p">,</span><span class="w">					</span><span class="c1">// host_fd：主机上的文件描述符
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">type_</span>: <span class="nc">SocketType</span><span class="p">,</span><span class="w">					</span><span class="c1">// socket 类型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">nonblocking</span>: <span class="nc">AtomicBool</span><span class="p">,</span><span class="w">			</span><span class="c1">// 是否是阻塞类型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">is_closed</span>: <span class="nc">AtomicBool</span><span class="p">,</span><span class="w">				</span><span class="c1">// socket 是否关闭
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">pollee</span>: <span class="nc">Pollee</span><span class="p">,</span><span class="w">						</span><span class="c1">// 用于 Pollee-Poller 机制，实现异步 IO
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">inner</span>: <span class="nc">Mutex</span><span class="o">&lt;</span><span class="n">Inner</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">				</span><span class="c1">// 保存了一个 Stream Socket 连接（bind）的 C/S 地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">timeout</span>: <span class="nc">Mutex</span><span class="o">&lt;</span><span class="n">Timeout</span><span class="o">&gt;</span><span class="p">,</span><span class="w">			</span><span class="c1">// 等待时延
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">errno</span>: <span class="nc">Mutex</span><span class="o">&lt;</span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">Errno</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">		</span><span class="c1">// 错误码
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">io_uring</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">IoUring</span><span class="o">&gt;</span><span class="p">,</span><span class="w">				</span><span class="c1">// socket 绑定的 IoUring 实例
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">phantom_data</span>: <span class="nc">PhantomData</span><span class="o">&lt;</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">)</span><span class="o">&gt;</span><span class="p">,</span><span class="w">	</span><span class="c1">// 标识 Common 结构体拥有和泛型一样的生命周期
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>common 中主要就是维护一些 socket 共有的属性和方法，同时也封装了除去 IO 相关的系统调用，例如 do_bind、do_close 等。</p>
+<h2 id="6-datagram-socket">6. Datagram Socket</h2>
+<p>在 Occlum 中 Datagram 类型的 socket 实现如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="c1">// 泛型类型和 Common 类似
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">pub</span><span class="w"> </span><span class="k">struct</span> <span class="nc">DatagramSocket</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">&#39;static</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>: <span class="nc">Runtime</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">common</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Common</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">	</span><span class="c1">// 持有一个 common 结构
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">state</span>: <span class="nc">RwLock</span><span class="o">&lt;</span><span class="n">State</span><span class="o">&gt;</span><span class="p">,</span><span class="w">				</span><span class="c1">// 当前 DG socket 的状态，包含绑定状态和是否连接
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">sender</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Sender</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">	</span><span class="c1">// socket 的发送端，封装发送行为，对应 output 事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">receiver</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Receiver</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">	</span><span class="c1">// socket 的接受端，封装接收行为，对应 input 事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">struct</span> <span class="nc">State</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">bind_state</span>: <span class="nc">BindState</span><span class="p">,</span><span class="w">	</span><span class="c1">// 这里的绑定状态有三种：没有绑定、显式和隐式
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">is_connected</span>: <span class="kt">bool</span><span class="p">,</span><span class="w">			</span><span class="c1">// 是否建立连接
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="61-state-的转化">6.1 State 的转化</h3>
+<p><strong>没有绑定的状态：</strong></p>
+<ol>
+<li>new 方法：在初次创建 socket 时，BoundState 为 unbound，is_connected 为 false</li>
+<li>new_connection方法：BoundState 为 unbound，is_connected 为 true</li>
+</ol>
+<blockquote>
+<p>new_connection 方法主要是为了创建一个具有连接的 socket 对，此时这个连接就应该是固定的，不需要 bind 一个地址，有任何其他的 socket 向这个 socket 对的任何一个发送数据。</p></blockquote>
+<p>当创建一个 Datagram socket 以后，我们可以通过 bind，将 socket 和一个 Addr 进行绑定，之后其他的 socket 就可以向这个地址发送数据，绑定 addr 的 socket 负责接收数据。在这里这种绑定分为显式和隐式两种。一个 Datagram socket 只能绑定一次，在没有显式绑定的情况下，一些方法的调用会触发隐式绑定，在这之后，再进行显式绑定返回错误。</p>
+<p><strong>显式绑定：</strong></p>
+<p>通过 bind 函数，显式设置当前 socket 绑定的地址，并修改 state：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">fn</span> <span class="nf">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">addr</span>: <span class="kp">&amp;</span><span class="nc">A</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">state</span><span class="p">.</span><span class="n">write</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">is_bound</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="fm">return_errno!</span><span class="p">(</span><span class="no">EINVAL</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;The socket is already bound to an address&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">do_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">host_fd</span><span class="p">(),</span><span class="w"> </span><span class="n">addr</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="bp">self</span><span class="p">.</span><span class="n">common</span><span class="p">.</span><span class="n">set_addr</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">state</span><span class="p">.</span><span class="n">mark_explicit_bind</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c1">// Start async recv after explicit binding or implicit binding
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="bp">self</span><span class="p">.</span><span class="n">receiver</span><span class="p">.</span><span class="n">initiate_async_recv</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nb">Ok</span><span class="p">(())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>所谓绑定，就是设置 common inner 中的 addr 的值。</p>
+<p><strong>隐式绑定：</strong></p>
+<p>当调用 connect、sendto、sendmsg 会触发隐式绑定。直接将 BoundState 设置成隐式绑定，具体的端口分配应该是有 host os 完成，在这之后 socket 就不能再使用 bind 绑定显式的地址。</p>
+<h3 id="62-sender--receiver">6.2 Sender &amp;&amp; Receiver</h3>
+<p><strong>数据接收：</strong></p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241116133759836.png" alt="image-20241116133759836"></p>
+<p>整个数据的接收流程如下：</p>
+<ol>
+<li>在显式绑定或者隐式绑定之后，Datagram socket 会对内核发送一个 recv 请求，也就是说在没有进行 recvmsg 调用之前，IoUring 已经开始接收网卡数据，并且保留在缓冲区中。</li>
+<li>之后当应用真的调用 recvmsg 之后，会通过 try_recvmsg 方法尝试从 recv_buf 中拷贝数据</li>
+<li>如果没有拷贝到数据，则判断是否出错或特殊处理，如果都不是则继续调用 do_recv</li>
+</ol>
+<p>对于整个请求的构造，其结构如图：</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241116142457541.png" alt="image-20241116142457541"></p>
+<p>在 Receiver 的 Inner 中包含了数据缓冲区和控制信息缓冲区，构造一条 request msg 到内核中的方式如下：</p>
+<ol>
+<li>初始化 recv_buf，msg_control</li>
+<li>构造一个 RecvReq，包含 msghdr、iovec、addr，其中 iovec 指向 recv_buf，缓存接收的数据，addr 保存原地址信息，msghdr 用于提交到 host os，传递 recv 的数据</li>
+<li>在 iouring recv 事件完成后，msghdr 中 msg_iovec（指向 recv_buf）保存了数据，msg_name（指向 addr）保存了数据的源地址、msg_control（指向 inner 的 msg_control）保存控制信息，后续可以直接通过 Inner 获取到对应的数据，完成 recv。</li>
+</ol>
+<p><strong>数据发送：</strong></p>
+<p>整个数据结构的组织如下：</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241116185953561.png" alt="image-20241116185953561"></p>
+<p>对于应用来说，当 sendmsg 将数据写到 DataMsg 中的 send_buf 之后，会有 io_uring 将 msg 给到 host os 的内核进行实际的 send 系统调用。所有的发送数据被组织到一个 MsgQueue 中，队列先进先出，io_uring 中每完成一次 send 操作会 pop 出当前的队头，然后继续执行队列中后续数据的发送的操作。</p>
+<h2 id="7-stream-socket">7. Stream Socket</h2>
+<p>StreamSocket 的实现是面向连接的，因此，这里实现了一个状态机，按照连接中的 socket 的不同状态将 socket 分为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">struct</span> <span class="nc">StreamSocket</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">&#39;static</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>: <span class="nc">Runtime</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">state</span>: <span class="nc">RwLock</span><span class="o">&lt;</span><span class="n">State</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">common</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Common</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">enum</span> <span class="nc">State</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">&#39;static</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>: <span class="nc">Runtime</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// Start state 初始状态
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">Init</span><span class="p">(</span><span class="n">Arc</span><span class="o">&lt;</span><span class="n">InitStream</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// Intermediate state 瞬时状态
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">Connect</span><span class="p">(</span><span class="n">Arc</span><span class="o">&lt;</span><span class="n">ConnectingStream</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// Final state 1 终态 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">Connected</span><span class="p">(</span><span class="n">Arc</span><span class="o">&lt;</span><span class="n">ConnectedStream</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// Final state 2 终态 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">Listen</span><span class="p">(</span><span class="n">Arc</span><span class="o">&lt;</span><span class="n">ListenerStream</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>下面先介绍各个状态的实现和方法：</p>
+<p><strong>Init Stream 状态：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">struct</span> <span class="nc">InitStream</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">&#39;static</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>: <span class="nc">Runtime</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">common</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Common</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">inner</span>: <span class="nc">Mutex</span><span class="o">&lt;</span><span class="n">Inner</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">struct</span> <span class="nc">Inner</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">has_bound</span>: <span class="kt">bool</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>在调用了构造方法之后，一个 Stream Socket 的初始状态为 InitStream，InitStream 只有是否 bind 的标识。</p>
+<p><strong>Connecting Stream 状态：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">struct</span> <span class="nc">ConnectingStream</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">&#39;static</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>: <span class="nc">Runtime</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">common</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Common</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">peer_addr</span>: <span class="nc">A</span><span class="p">,</span><span class="w">	</span><span class="c1">// 连接对侧地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">req</span>: <span class="nc">Mutex</span><span class="o">&lt;</span><span class="n">ConnectReq</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">	</span><span class="c1">// 连接请求
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">connected</span>: <span class="nc">AtomicBool</span><span class="p">,</span><span class="w"> </span><span class="c1">// Mainly use for nonblocking socket to update status asynchronously
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">struct</span> <span class="nc">ConnectReq</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">io_handle</span>: <span class="nb">Option</span><span class="o">&lt;</span><span class="n">IoHandle</span><span class="o">&gt;</span><span class="p">,</span><span class="w">	</span><span class="c1">// 请求的 io_handle
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">c_addr</span>: <span class="nc">UntrustedBox</span><span class="o">&lt;</span><span class="n">libc</span>::<span class="n">sockaddr_storage</span><span class="o">&gt;</span><span class="p">,</span><span class="w">	</span><span class="c1">// socket 地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">c_addr_len</span>: <span class="kt">usize</span><span class="p">,</span><span class="w">	</span><span class="c1">// 地址长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">errno</span>: <span class="nb">Option</span><span class="o">&lt;</span><span class="n">Errno</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">phantom_data</span>: <span class="nc">PhantomData</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>这是一个瞬时状态，会在建立连接的请求后发生改变，所以整个状态过程中就是发送建立连接的请求。在传入 peer_addr 创建 Connecting Stream 之后，可以调用 connect 方法发送连接请求，其具体实现在 initiate_async_connect 中：</p>
+<ol>
+<li>根据传入的 Addr 翻译为 C 的 addr，然后向 io_uring 注册一个 connect IO 请求。</li>
+<li>请求的 callback 为：
+<ol>
+<li>正常，则将 connected 参数设置为 true 标识连接建立成功</li>
+<li>有错误码，根据具体的错误码，向 common 中的 pollee 添加事件，比如重置连接</li>
+</ol>
+</li>
+</ol>
+<p><strong>Connected Stream 状态：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">struct</span> <span class="nc">ConnectedStream</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">&#39;static</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>: <span class="nc">Runtime</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">common</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Common</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">sender</span>: <span class="nc">Sender</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">receiver</span>: <span class="nc">Receiver</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>在建立连接之后，进入 ConnectStream 状态，通过 sender 和 receiver 进行数据的发送和接收，这个在之后详细解释。</p>
+<p><strong>Listener Stream 状态：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">struct</span> <span class="nc">ListenerStream</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">&#39;static</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>: <span class="nc">Runtime</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">common</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Common</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">inner</span>: <span class="nc">Mutex</span><span class="o">&lt;</span><span class="n">Inner</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">struct</span> <span class="nc">Inner</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">backlog</span>: <span class="nc">Backlog</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">fatal</span>: <span class="nb">Option</span><span class="o">&lt;</span><span class="n">Errno</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">struct</span> <span class="nc">Backlog</span><span class="o">&lt;</span><span class="n">A</span>: <span class="nc">Addr</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// The entries in the backlog.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">entries</span>: <span class="nb">Box</span><span class="o">&lt;</span><span class="p">[</span><span class="n">Entry</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// Arguments of the io_uring requests submitted for the entries in the backlog.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">reqs</span>: <span class="nc">UntrustedBox</span><span class="o">&lt;</span><span class="p">[</span><span class="n">AcceptReq</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// The indexes of completed entries.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">completed</span>: <span class="nc">VecDeque</span><span class="o">&lt;</span><span class="kt">usize</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// The number of free entries.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">num_free</span>: <span class="kt">usize</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">phantom_data</span>: <span class="nc">PhantomData</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>进入 Listener Stream 状态的 socket 等待即将到来的 connect，主要维护了一组 backlog，即还未 connect 成功的 socket。</p>
+<h3 id="71-状态转化">7.1 状态转化</h3>
+<p>状态转化如下图所示：</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241117234937815.png" alt="image-20241117234937815"></p>
+<p>重点解析 connect 方法，首先将 connect 方法分成两部分来看，第一部分，转变瞬时状态 connecting：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">init_stream</span><span class="p">,</span><span class="w"> </span><span class="n">connecting_stream</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">state</span><span class="p">.</span><span class="n">write</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">match</span><span class="w"> </span><span class="o">&amp;*</span><span class="n">state</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">State</span>::<span class="n">Init</span><span class="p">(</span><span class="n">init_stream</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="kd">let</span><span class="w"> </span><span class="n">connecting_stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">common</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">init_stream</span><span class="p">.</span><span class="n">common</span><span class="p">().</span><span class="n">clone</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ConnectingStream</span>::<span class="n">new</span><span class="p">(</span><span class="n">peer_addr</span><span class="p">,</span><span class="w"> </span><span class="n">common</span><span class="p">)</span><span class="o">?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="kd">let</span><span class="w"> </span><span class="n">init_stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">init_stream</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="o">*</span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">State</span>::<span class="n">Connect</span><span class="p">(</span><span class="n">connecting_stream</span><span class="p">.</span><span class="n">clone</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">(</span><span class="n">init_stream</span><span class="p">,</span><span class="w"> </span><span class="n">connecting_stream</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">State</span>::<span class="n">Connect</span><span class="p">(</span><span class="n">connecting_stream</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">connected_stream</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="bp">Self</span>::<span class="n">try_switch_to_connected_state</span><span class="p">(</span><span class="n">connecting_stream</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="o">*</span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">State</span>::<span class="n">Connected</span><span class="p">(</span><span class="n">connected_stream</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="fm">return_errno!</span><span class="p">(</span><span class="no">EISCONN</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;the socket is already connected&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Not connected, keep the connecting state and try connect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">init_stream</span><span class="w"> </span><span class="o">=</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">InitStream</span>::<span class="n">new_with_common</span><span class="p">(</span><span class="n">connecting_stream</span><span class="p">.</span><span class="n">common</span><span class="p">().</span><span class="n">clone</span><span class="p">())</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">(</span><span class="n">init_stream</span><span class="p">,</span><span class="w"> </span><span class="n">connecting_stream</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">State</span>::<span class="n">Connected</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="fm">return_errno!</span><span class="p">(</span><span class="no">EISCONN</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;the socket is already connected&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">State</span>::<span class="n">Listen</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="fm">return_errno!</span><span class="p">(</span><span class="no">EINVAL</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;the socket is listening&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">};</span><span class="w">
+</span></span></span></code></pre></div><p>由于 Stream Socket 的 connect 方法是一个耗时任务，需要连接到远程的 socket 地址，所以创建了 connecting 表示一个连接的请求发出后 socket 所处的状态。对于一个 Stream Socket 对于 connect 的调用，将情况分为三种：</p>
+<ol>
+<li>Init 状态下：创建出新的瞬时状态 connecting</li>
+<li>Connecting 状态：已经有 connect 请求发出，这里先检查是否已经建立连接，若有则直接返回，没有则创建出一个 Init 状态，为防止之后连接失败状态回退</li>
+<li>其他：返回不同的错误</li>
+</ol>
+<p>在创建完瞬时状态后，进入第二部分，发起 connect 的异步请求：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="kd">let</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">connecting_stream</span><span class="p">.</span><span class="n">connect</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c1">// If success, then the state is switched to connected; otherwise, for blocking socket
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="c1">// the state is restored to the init state, and for non-blocking socket, the state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="c1">// keeps in connecting state.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="k">match</span><span class="w"> </span><span class="o">&amp;</span><span class="n">res</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="kd">let</span><span class="w"> </span><span class="n">connected_stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">common</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">init_stream</span><span class="p">.</span><span class="n">common</span><span class="p">().</span><span class="n">clone</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">common</span><span class="p">.</span><span class="n">set_peer_addr</span><span class="p">(</span><span class="n">peer_addr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ConnectedStream</span>::<span class="n">new</span><span class="p">(</span><span class="n">common</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">state</span><span class="p">.</span><span class="n">write</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="o">*</span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">State</span>::<span class="n">Connected</span><span class="p">(</span><span class="n">connected_stream</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nb">Err</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">!</span><span class="n">connecting_stream</span><span class="p">.</span><span class="n">common</span><span class="p">().</span><span class="n">nonblocking</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">state</span><span class="p">.</span><span class="n">write</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="o">*</span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">State</span>::<span class="n">Init</span><span class="p">(</span><span class="n">init_stream</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>如果请求成功，则进入 connected 状态可以进行收发数据。对于阻塞式的 socket，不成功会进入 Init 状态，非阻塞则进入 connecting。</p>
+<h3 id="72-listenerstream">7.2 ListenerStream</h3>
+<p>从构造函数开始：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">pub</span><span class="w"> </span><span class="k">fn</span> <span class="nf">new</span><span class="p">(</span><span class="n">backlog</span>: <span class="kt">u32</span><span class="p">,</span><span class="w"> </span><span class="n">common</span>: <span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Common</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="n">Arc</span><span class="o">&lt;</span><span class="bp">Self</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c1">// Here we use different variables for the backlog. For the libos, as we will issue async accept request
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="c1">// ahead of time, and cacel when the socket closes, we set the libos backlog to a reasonable value which
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="c1">// is no greater than the max value we set to save resources and make it more efficient. For the host,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="c1">// we just use the backlog value for maximum connection.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">libos_backlog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span>::<span class="n">cmp</span>::<span class="n">min</span><span class="p">(</span><span class="n">backlog</span><span class="p">,</span><span class="w"> </span><span class="no">PENDING_ASYNC_ACCEPT_NUM_MAX</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u32</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">host_backlog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backlog</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Inner</span>::<span class="n">new</span><span class="p">(</span><span class="n">libos_backlog</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="bp">Self</span>::<span class="n">do_listen</span><span class="p">(</span><span class="n">common</span><span class="p">.</span><span class="n">host_fd</span><span class="p">(),</span><span class="w"> </span><span class="n">host_backlog</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">common</span><span class="p">.</span><span class="n">pollee</span><span class="p">().</span><span class="n">reset_events</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">new_self</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span>::<span class="n">new</span><span class="p">(</span><span class="bp">Self</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">common</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">inner</span>: <span class="nc">Mutex</span>::<span class="n">new</span><span class="p">(</span><span class="n">inner</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c1">// Start async accept requests right as early as possible to improve performance
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">  </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_self</span><span class="p">.</span><span class="n">inner</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">new_self</span><span class="p">.</span><span class="n">initiate_async_accepts</span><span class="p">(</span><span class="n">inner</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nb">Ok</span><span class="p">(</span><span class="n">new_self</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>这里的 backlog 有两个，一个是 libos_backlog，用于系统调用，并且在 Listener Stream 的 inner 中作为监听队列的长度，模拟内核，存储还未被 accept 的连接，一个是 host_backlog，表示在 listen 时传入的 backlog 参数。在创建本状态时，就会调用 listen 接收连接，并且调用 initiate_async_accepts 将所有处在空闲状态的 Entry 都进行 accept 请求，以便之后的 accept 调用，和之前的 Datagram 的 recv 类似，都是预先操作。</p>
+<p><img src="https://raw.githubusercontent.com/charming-c/image-host/master/img/image-20241118004032893.png" alt="image-20241118004032893"></p>
+<p>在 new 之后，所有的 Backlog entry 都会发送 accept 请求到 IoUring，然后转化为 pending 状态，在连接进入之后，其回调如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="c1">// 部分
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span><span class="w"> </span><span class="n">host_fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">retval</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">FileDesc</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">inner</span><span class="p">.</span><span class="n">backlog</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">entry_idx</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Entry</span>::<span class="n">Completed</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">host_fd</span><span class="w"> </span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">inner</span><span class="p">.</span><span class="n">backlog</span><span class="p">.</span><span class="n">completed</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">entry_idx</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">stream</span><span class="p">.</span><span class="n">common</span><span class="p">.</span><span class="n">pollee</span><span class="p">().</span><span class="n">add_events</span><span class="p">(</span><span class="n">IoEvents</span>::<span class="no">IN</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">stream</span><span class="p">.</span><span class="n">initiate_async_accepts</span><span class="p">(</span><span class="n">inner</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>pending 转化为 completed，并且继续让所有的 free entry 向 IoUring 提交 accept 请求。对于外部调用的 accept 方法，并不发起请求，而是直接向已完成的 compelted queue 中拿到 fd 和 addr，如果没有则阻塞等待，知道有连接到达，在 callback 中添加唤醒事件。</p>
+<h3 id="73-connectedstream">7.3 ConnectedStream</h3>
+<p>在这个状态下进行数据的收发，主要实现和 DataGram 类似，不同的是在组装 request 时，不是简单的将缓冲区的地址写到 msg，而是需要在缓冲区记录位置偏移量，且在必要的时候更新缓冲区。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/charming-c" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="jiam.cai@outlook.com" target="_blank" rel="noopener noreferrer me"
+    title="Email">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 21" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+    <polyline points="22,6 12,13 2,6"></polyline>
+</svg>
+</a>
+<a href="index.xml" target="_blank" rel="noopener noreferrer me"
+    title="Rss">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 11a9 9 0 0 1 9 9" />
+    <path d="M4 4a16 16 0 0 1 16 16" />
+    <circle cx="5" cy="19" r="1" />
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2025 charming-c.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="Go to top" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
 
 
-/**
-     * Set the activity content from a layout resource.  The resource will be
-     * inflated, adding all top-level views to the activity.
-     *
-     * @param layoutResID Resource ID to be inflated.
-     *
-     * @see #setContentView(android.view.View)
-     * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
-     */
-    public void setContentView(@LayoutRes int layoutResID) {
-        getWindow().setContentView(layoutResID);
-        initWindowDecorActionBar();
-    }
+    
 
 
-这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 mWindow = new PhoneWindow(this, window, activityConfigCallback); 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法："><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Charming</a></div><div class=mobile-navbar-icon><span></span>
-<span></span>
-<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Charming</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><div class=post-content><h1 id=浅谈viewactivitywindow>浅谈view、activity、window</h1><h2 id=1从-setcontentview出发>1、从 setContentView（）出发</h2><p>对于activity的添加一个布局我们一般都会使用这个方法，我们尝试从源码的角度去解读这样的一方法的工作流程</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=cm>/**
-</span></span></span><span class=line><span class=cl><span class=cm>     * Set the activity content from a layout resource.  The resource will be
-</span></span></span><span class=line><span class=cl><span class=cm>     * inflated, adding all top-level views to the activity.
-</span></span></span><span class=line><span class=cl><span class=cm>     *
-</span></span></span><span class=line><span class=cl><span class=cm>     * @param layoutResID Resource ID to be inflated.
-</span></span></span><span class=line><span class=cl><span class=cm>     *
-</span></span></span><span class=line><span class=cl><span class=cm>     * @see #setContentView(android.view.View)
-</span></span></span><span class=line><span class=cl><span class=cm>     * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
-</span></span></span><span class=line><span class=cl><span class=cm>     */</span>
-</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>setContentView</span><span class=o>(</span><span class=nd>@LayoutRes</span> <span class=kt>int</span> <span class=n>layoutResID</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>getWindow</span><span class=o>().</span><span class=na>setContentView</span><span class=o>(</span><span class=n>layoutResID</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>        <span class=n>initWindowDecorActionBar</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>    <span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>这里就可以看到，我们的布局文件其实并不是加载进activity中的，而是调用了当前 activity 所持有的一个 Window 对象，然后调用该对象 mWindow 的 setContenView() 方法，而这个 mWindow 是在 attach 方法里赋的初值 <code>mWindow = new PhoneWindow(this, window, activityConfigCallback);</code> 他实际是一个 PhoneWindow 的 对象，对于 PhoneWindow的方法：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span> <span class=kt>void</span> <span class=nf>setContentView</span><span class=o>(</span><span class=kt>int</span> <span class=n>layoutResID</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>        <span class=c1>// Note: FEATURE_CONTENT_TRANSITIONS may be set in the process of installing the window
-</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// decor, when theme attributes and the like are crystalized. Do not check the feature
-</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// before this happens.
-</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>mContentParent</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>installDecor</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span> <span class=k>else</span> <span class=k>if</span> <span class=o>(!</span><span class=n>hasFeature</span><span class=o>(</span><span class=n>FEATURE_CONTENT_TRANSITIONS</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>          <span class=c1>//移除该mContentParent下的所有View
-</span></span></span><span class=line><span class=cl><span class=c1></span>          <span class=c1>//又因为这个的存在  我们可以多次使用setContentView()
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=n>mContentParent</span><span class=o>.</span><span class=na>removeAllViews</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>hasFeature</span><span class=o>(</span><span class=n>FEATURE_CONTENT_TRANSITIONS</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>          <span class=c1>//设置动画场景
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=kd>final</span> <span class=n>Scene</span> <span class=n>newScene</span> <span class=o>=</span> <span class=n>Scene</span><span class=o>.</span><span class=na>getSceneForLayout</span><span class=o>(</span><span class=n>mContentParent</span><span class=o>,</span> <span class=n>layoutResID</span><span class=o>,</span>
-</span></span><span class=line><span class=cl>                    <span class=n>getContext</span><span class=o>());</span>
-</span></span><span class=line><span class=cl>            <span class=n>transitionTo</span><span class=o>(</span><span class=n>newScene</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>mLayoutInflater</span><span class=o>.</span><span class=na>inflate</span><span class=o>(</span><span class=n>layoutResID</span><span class=o>,</span> <span class=n>mContentParent</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=n>mContentParent</span><span class=o>.</span><span class=na>requestApplyInsets</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>        <span class=kd>final</span> <span class=n>Callback</span> <span class=n>cb</span> <span class=o>=</span> <span class=n>getCallback</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>cb</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=o>!</span><span class=n>isDestroyed</span><span class=o>())</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>cb</span><span class=o>.</span><span class=na>onContentChanged</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=n>mContentParentExplicitlySet</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>    <span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>所以最终调用的是上面的一个setContentView方法，解释一下上面的一套流程和参数：</p><ul><li><p>mContentParent：一个ViewGroup对象，里面存放的就是我们要绘制和显示的view，所以我们在activity中添加显示的view只是默认的ViewGroup的一个子view</p></li><li><p>installDector()：这个方法主要就是初始一个DecorView</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span> <span class=kt>void</span> <span class=nf>installDecor</span><span class=o>()</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>mForceDecorInstall</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>mDecor</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>mDecor</span> <span class=o>=</span> <span class=n>generateDecor</span><span class=o>(-</span><span class=n>1</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>            <span class=n>mDecor</span><span class=o>.</span><span class=na>setDescendantFocusability</span><span class=o>(</span><span class=n>ViewGroup</span><span class=o>.</span><span class=na>FOCUS_AFTER_DESCENDANTS</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>            <span class=n>mDecor</span><span class=o>.</span><span class=na>setIsRootNamespace</span><span class=o>(</span><span class=kc>true</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(!</span><span class=n>mInvalidatePanelMenuPosted</span> <span class=o>&amp;&amp;</span> <span class=n>mInvalidatePanelMenuFeatures</span> <span class=o>!=</span> <span class=n>0</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>mDecor</span><span class=o>.</span><span class=na>postOnAnimation</span><span class=o>(</span><span class=n>mInvalidatePanelMenuRunnable</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>mDecor</span><span class=o>.</span><span class=na>setWindow</span><span class=o>(</span><span class=k>this</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>mContentParent</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>mContentParent</span> <span class=o>=</span> <span class=n>generateLayout</span><span class=o>(</span><span class=n>mDecor</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>		<span class=o>...</span>
-</span></span></code></pre></td></tr></table></div></div><p>检查mDecor 是否为空，是则初始化一个DecorView，否，则将当前的window与初始化的decorView绑定，下面的generateLayout注意到DectorView本身的主题theme，style其实也被加载了，最后返回所有的子view到phoneWindow的mContentParent这样的一个ViewGroup属性里。</p></li></ul><p>第二个方法<code>initWindowDecorActionBar()</code>则是将decorView中的actorBar子控件全部初始化</p><p>简单梳理一下这样一个方法的调用流程：</p><p><img src=https://tva1.sinaimg.cn/large/008i3skNgy1gvhoo2mz3ej60v70rsjvd02.jpg alt=image-20211017015058281></p><p>这里就可以讲解一下关于这三样东西的功能：</p><ul><li>Activity是一个工人，它来控制Window；Window是一面显示屏，用来显示信息；View就是要显示在显示屏上的信息，这些View都是层层重叠在一起（通过infalte()和addView()）放到Window显示屏上的。</li><li>Activity并不负责视图控制，它只是控制生命周期和处理事件，真正控制视图的是Window。一个Activity包含了一个Window，Window才是真正代表一个窗口，Window 中持有一个 DecorView，而这个DecorView才是 view 的根布局。</li><li>DecorView可以被认为是Android视图树的根节点视图。DecorView作为顶级View，一般情况下它上面的是标题栏，下面的是内容栏。在Activity中通过setContentView所设置的布局文件其实就是被加到内容栏之中的，而内容栏的id是content，在代码中可以通过ViewGroup content = （ViewGroup)findViewById(R.android.id.content)来得到content对应的layout。</li></ul><p><img src=https://tva1.sinaimg.cn/large/008i3skNgy1gvhosj6dpej60eq0eqdgg02.jpg alt=img></p><h1 id=motionevent-事件>MotionEvent 事件</h1><p>单点触控事件：</p><table><thead><tr><th>事件</th><th>简介</th></tr></thead><tbody><tr><td>ACTION_DOWN</td><td>手指初次触碰屏幕时触发</td></tr><tr><td>ACTION_MOVE</td><td>手指在屏幕上滑动时会触发，可多次触发</td></tr><tr><td>ACTION_UP</td><td>手指离开屏幕时触发</td></tr><tr><td>ACTION_CACEL</td><td>事件被上层拦截时触发</td></tr><tr><td>ACTION_OUTSIDE</td><td>手指不在控件区域时触发</td></tr></tbody></table><p>一般来说，从ACTION_DOWN 到ACTION_UP结束为一个事件序列</p><h2 id=从一个例子出发>从一个例子出发：</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>MainActivity</span> <span class=kd>extends</span> <span class=n>AppCompatActivity</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>    <span class=n>Button</span> <span class=n>button</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>time</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
-</span></span><span class=line><span class=cl>    <span class=kd>protected</span> <span class=kt>void</span> <span class=nf>onCreate</span><span class=o>(</span><span class=n>Bundle</span> <span class=n>savedInstanceState</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>        <span class=kd>super</span><span class=o>.</span><span class=na>onCreate</span><span class=o>(</span><span class=n>savedInstanceState</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>        <span class=n>setContentView</span><span class=o>(</span><span class=n>R</span><span class=o>.</span><span class=na>layout</span><span class=o>.</span><span class=na>activity_main</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>        <span class=n>button</span> <span class=o>=</span> <span class=n>findViewById</span><span class=o>(</span><span class=n>R</span><span class=o>.</span><span class=na>id</span><span class=o>.</span><span class=na>button</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>        <span class=n>button</span><span class=o>.</span><span class=na>setOnClickListener</span><span class=o>(</span><span class=k>new</span> <span class=n>View</span><span class=o>.</span><span class=na>OnClickListener</span><span class=o>()</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=nd>@Override</span>
-</span></span><span class=line><span class=cl>            <span class=kd>public</span> <span class=kt>void</span> <span class=nf>onClick</span><span class=o>(</span><span class=n>View</span> <span class=n>v</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>Log</span><span class=o>.</span><span class=na>e</span><span class=o>(</span><span class=s>&#34;clickEvent&#34;</span><span class=o>,</span><span class=s>&#34;time&#34;</span><span class=o>+</span><span class=n>time</span><span class=o>++);</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=o>});</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>        <span class=n>button</span><span class=o>.</span><span class=na>setOnTouchListener</span><span class=o>(</span><span class=k>new</span> <span class=n>View</span><span class=o>.</span><span class=na>OnTouchListener</span><span class=o>()</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>            <span class=nd>@SuppressLint</span><span class=o>(</span><span class=s>&#34;ClickableViewAccessibility&#34;</span><span class=o>)</span>
-</span></span><span class=line><span class=cl>            <span class=nd>@Override</span>
-</span></span><span class=line><span class=cl>            <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>onTouch</span><span class=o>(</span><span class=n>View</span> <span class=n>v</span><span class=o>,</span> <span class=n>MotionEvent</span> <span class=n>event</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>Log</span><span class=o>.</span><span class=na>e</span><span class=o>(</span><span class=s>&#34;touchEvent&#34;</span><span class=o>,</span><span class=s>&#34;time&#34;</span><span class=o>+</span><span class=n>time</span><span class=o>++);</span>
-</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=o>});</span>
-</span></span><span class=line><span class=cl>    <span class=o>}</span>
-</span></span><span class=line><span class=cl><span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>点击事件的响应结果：</p><p><img src=https://tva1.sinaimg.cn/large/008i3skNgy1gvhpovelsbj60sm07gdi902.jpg alt=image-20211017022624260></p><p>无论点击按钮多少下，其实最终调用的都是onTouch方法，而没有调用onClick方法而这里的原因就可以从这里的return true 找起。</p><p>检查一下onTouch方法的调用情况：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl> <span class=k>if</span> <span class=o>(</span><span class=n>onFilterTouchEventForSecurity</span><span class=o>(</span><span class=n>event</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>((</span><span class=n>mViewFlags</span> <span class=o>&amp;</span> <span class=n>ENABLED_MASK</span><span class=o>)</span> <span class=o>==</span> <span class=n>ENABLED</span> <span class=o>&amp;&amp;</span> <span class=n>handleScrollBarDragging</span><span class=o>(</span><span class=n>event</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>result</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>            <span class=c1>//noinspection SimplifiableIfStatement
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=n>ListenerInfo</span> <span class=n>li</span> <span class=o>=</span> <span class=n>mListenerInfo</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(</span><span class=n>li</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>li</span><span class=o>.</span><span class=na>mOnTouchListener</span> <span class=o>!=</span> <span class=kc>null</span>
-</span></span><span class=line><span class=cl>                    <span class=o>&amp;&amp;</span> <span class=o>(</span><span class=n>mViewFlags</span> <span class=o>&amp;</span> <span class=n>ENABLED_MASK</span><span class=o>)</span> <span class=o>==</span> <span class=n>ENABLED</span>
-</span></span><span class=line><span class=cl>                    <span class=o>&amp;&amp;</span> <span class=n>li</span><span class=o>.</span><span class=na>mOnTouchListener</span><span class=o>.</span><span class=na>onTouch</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>event</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>result</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(!</span><span class=n>result</span> <span class=o>&amp;&amp;</span> <span class=n>onTouchEvent</span><span class=o>(</span><span class=n>event</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>result</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>在view的<code>public boolean dispatchTouchEvent(MotionEvent event)</code>方法里onTouch方法被调用，可知，当一个安全的事件发生时，先判断View是否是可用的，并前当前操作是为了操作滚动条的，如果是，就先将返回值确定为true，然后初始化ListenInfo，可以发现，当我们重写了onTouch方法返回true以后，这里的result也被赋值为true，再下面一行的onTouchEvent就不会被调用，而我们去看看这个方法会发现：</p><p><img src=https://tva1.sinaimg.cn/large/008i3skNgy1gvhqnj2mbbj60yw0oiad602.jpg alt=image-20211017025942977></p><p><img src=https://tva1.sinaimg.cn/large/008i3skNgy1gvhqo8pf5aj61920fcwgg02.jpg alt=image-20211017030022973></p><p><img src=https://tva1.sinaimg.cn/large/008i3skNgy1gvhqqks6ukj60v40beq4002.jpg alt=image-20211017030239010></p><p>onclick方法其实是在onTouchEvent的某个条件下出发的，这也就是上面为什么会出现不调用onclick方法的原因。</p><p>从上面的例子我门引出一个事件是如何在各级的view实现分发的。</p><p>首先我们需要了解三个方法：</p><blockquote><ul><li><strong>public boolean dispatchTouchEvent(MotionEvent event)</strong>
-通过方法名我们不难猜测，它就是事件分发的重要方法。那么很明显，如果一个MotionEvent传递给了View，那么dispatchTouchEvent方法一定会被调用！
-<strong>返回值：表示是否消费了当前事件。可能是View本身的onTouchEvent方法消费，也可能是子View的dispatchTouchEvent方法中消费。返回true表示事件被消费，本次的事件终止。返回false表示View以及子View均没有消费事件，将调用父View的onTouchEvent方法</strong></li></ul></blockquote><blockquote><ul><li><strong>public boolean onInterceptTouchEvent(MotionEvent ev)</strong>
-事件拦截，当一个ViewGroup在接到MotionEvent事件序列时候，首先会调用此方法判断是否需要拦截。<strong>特别注意，这是ViewGroup特有的方法，View并没有拦截方法</strong>
-<strong>返回值：是否拦截事件传递，返回true表示拦截了事件，那么事件将不再向下分发而是调用View本身的onTouchEvent方法。返回false表示不做拦截，事件将向下分发到子View的dispatchTouchEvent方法。</strong></li></ul></blockquote><blockquote><ul><li><strong>public boolean onTouchEvent(MotionEvent ev)</strong>
-真正对MotionEvent进行处理或者说消费的方法。在dispatchTouchEvent进行调用。
-<strong>返回值：返回true表示事件被消费，本次的事件终止。返回false表示事件没有被消费，将调用父View的onTouchEvent方法</strong></li></ul></blockquote><p>从最开始的内容中我们了解，activity才是处理事件的用来处理事件的，所以我们首先从activity的dispatchTouchEvent看起：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span><span class=lnt>8
-</span><span class=lnt>9
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>dispatchTouchEvent</span><span class=o>(</span><span class=n>MotionEvent</span> <span class=n>ev</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>ev</span><span class=o>.</span><span class=na>getAction</span><span class=o>()</span> <span class=o>==</span> <span class=n>MotionEvent</span><span class=o>.</span><span class=na>ACTION_DOWN</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>onUserInteraction</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(</span><span class=n>getWindow</span><span class=o>().</span><span class=na>superDispatchTouchEvent</span><span class=o>(</span><span class=n>ev</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>onTouchEvent</span><span class=o>(</span><span class=n>ev</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>    <span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>通过上面的代码我们可以发现，事件会给Activity附属的Window进行分发。如果返回true，那么事件被消费。如果返回false表示事件发下去却没有View可以进行处理，则最后return Activity自己的onTouchEvent方法。</p><p>跟进getWindow().superDispatchTouchEvent(ev)方法发现是Window类当中的一个抽象方法</p><p>查看PhoneWindow类，因为这个getWindow返回的其实就是他的一个对象：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@Override</span>
-</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>superDispatchTouchEvent</span><span class=o>(</span><span class=n>MotionEvent</span> <span class=n>event</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>mDecor</span><span class=o>.</span><span class=na>superDispatchTouchEvent</span><span class=o>(</span><span class=n>event</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>    <span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>这里其实又调用了decorView的方法：(吐槽一句，真是套娃)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>superDispatchTouchEvent</span><span class=o>(</span><span class=n>MotionEvent</span> <span class=n>event</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=kd>super</span><span class=o>.</span><span class=na>dispatchTouchEvent</span><span class=o>(</span><span class=n>event</span><span class=o>);</span>
-</span></span><span class=line><span class=cl><span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>而我们知道decorView其实是继承自frameLayout，而它又继承自ViewGroup，而在viewGroup类中，我们才找到相应的</p><p>dispatchTouchEvent方法，接下来简单分析一下这个方法：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span><span class=lnt>37
-</span><span class=lnt>38
-</span><span class=lnt>39
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=k>if</span> <span class=o>(</span><span class=n>onFilterTouchEventForSecurity</span><span class=o>(</span><span class=n>ev</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=kd>final</span> <span class=kt>int</span> <span class=n>action</span> <span class=o>=</span> <span class=n>ev</span><span class=o>.</span><span class=na>getAction</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>            <span class=kd>final</span> <span class=kt>int</span> <span class=n>actionMasked</span> <span class=o>=</span> <span class=n>action</span> <span class=o>&amp;</span> <span class=n>MotionEvent</span><span class=o>.</span><span class=na>ACTION_MASK</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>            <span class=c1>// Handle an initial down.
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>actionMasked</span> <span class=o>==</span> <span class=n>MotionEvent</span><span class=o>.</span><span class=na>ACTION_DOWN</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=c1>// Throw away all previous state when starting a new touch gesture.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=c1>// The framework may have dropped the up or cancel event for the previous gesture
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=c1>// due to an app switch, ANR, or some other state change.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=n>cancelAndClearTouchTargets</span><span class=o>(</span><span class=n>ev</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                <span class=n>resetTouchState</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>            <span class=c1>// Check for interception.
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=kd>final</span> <span class=kt>boolean</span> <span class=n>intercepted</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(</span><span class=n>actionMasked</span> <span class=o>==</span> <span class=n>MotionEvent</span><span class=o>.</span><span class=na>ACTION_DOWN</span>
-</span></span><span class=line><span class=cl>                    <span class=o>||</span> <span class=n>mFirstTouchTarget</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>              <span class=c1>//FLAG_DISALLOW_INTERCEPT是子View通过
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=c1>//requestDisallowInterceptTouchEvent方法进行设置的
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=kd>final</span> <span class=kt>boolean</span> <span class=n>disallowIntercept</span> <span class=o>=</span> <span class=o>(</span><span class=n>mGroupFlags</span> <span class=o>&amp;</span> <span class=n>FLAG_DISALLOW_INTERCEPT</span><span class=o>)</span> <span class=o>!=</span> <span class=n>0</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>              <span class=c1>// 允许拦截  
-</span></span></span><span class=line><span class=cl><span class=c1></span>              <span class=k>if</span> <span class=o>(!</span><span class=n>disallowIntercept</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>              <span class=c1>//调用onInterceptTouchEvent方法判断是否拦截
-</span></span></span><span class=line><span class=cl><span class=c1></span>                    <span class=n>intercepted</span> <span class=o>=</span> <span class=n>onInterceptTouchEvent</span><span class=o>(</span><span class=n>ev</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                    <span class=n>ev</span><span class=o>.</span><span class=na>setAction</span><span class=o>(</span><span class=n>action</span><span class=o>);</span> <span class=c1>// restore action in case it was changed
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                    <span class=n>intercepted</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                <span class=o>}</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=c1>// There are no touch targets and this action is not an initial down
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=c1>// so this view group continues to intercept touches.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=n>intercepted</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>            <span class=c1>// If intercepted, start normal event dispatch. Also if there is already
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=c1>// a view that is handling the gesture, do normal event dispatch.
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>intercepted</span> <span class=o>||</span> <span class=n>mFirstTouchTarget</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>ev</span><span class=o>.</span><span class=na>setTargetAccessibilityFocus</span><span class=o>(</span><span class=kc>false</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>对于每个安全的事件，都会判断是否被拦截，如果子view要求viewGroup不拦截，则不会调用拦截的方法，反之，则viewGroup拦截，不再向下分发事件。当ViewGroup决定拦截事件后，后续事件将默认交给它处理并且不会再调用onInterceptTouchEvent方法来判断是否拦截。子View可以通过设置FLAG_DISALLOW_INTERCEPT标志位来不让ViewGroup拦截除ACTION_DOWN以外的事件。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span><span class=lnt>37
-</span><span class=lnt>38
-</span><span class=lnt>39
-</span><span class=lnt>40
-</span><span class=lnt>41
-</span><span class=lnt>42
-</span><span class=lnt>43
-</span><span class=lnt>44
-</span><span class=lnt>45
-</span><span class=lnt>46
-</span><span class=lnt>47
-</span><span class=lnt>48
-</span><span class=lnt>49
-</span><span class=lnt>50
-</span><span class=lnt>51
-</span><span class=lnt>52
-</span><span class=lnt>53
-</span><span class=lnt>54
-</span><span class=lnt>55
-</span><span class=lnt>56
-</span><span class=lnt>57
-</span><span class=lnt>58
-</span><span class=lnt>59
-</span><span class=lnt>60
-</span><span class=lnt>61
-</span><span class=lnt>62
-</span><span class=lnt>63
-</span><span class=lnt>64
-</span><span class=lnt>65
-</span><span class=lnt>66
-</span><span class=lnt>67
-</span><span class=lnt>68
-</span><span class=lnt>69
-</span><span class=lnt>70
-</span><span class=lnt>71
-</span><span class=lnt>72
-</span><span class=lnt>73
-</span><span class=lnt>74
-</span><span class=lnt>75
-</span><span class=lnt>76
-</span><span class=lnt>77
-</span><span class=lnt>78
-</span><span class=lnt>79
-</span><span class=lnt>80
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(!</span><span class=n>canceled</span> <span class=o>&amp;&amp;</span> <span class=o>!</span><span class=n>intercepted</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=c1>// If the event is targeting accessibility focus we give it to the
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=c1>// view that has accessibility focus and if it does not handle it
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=c1>// we clear the flag and dispatch the event to all children as usual.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=c1>// We are looking up the accessibility focused host to avoid keeping
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=c1>// state since these events are very rare.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=n>View</span> <span class=n>childWithAccessibilityFocus</span> <span class=o>=</span> <span class=n>ev</span><span class=o>.</span><span class=na>isTargetAccessibilityFocus</span><span class=o>()</span>
-</span></span><span class=line><span class=cl>                        <span class=o>?</span> <span class=n>findChildWithAccessibilityFocus</span><span class=o>()</span> <span class=o>:</span> <span class=kc>null</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>                <span class=k>if</span> <span class=o>(</span><span class=n>actionMasked</span> <span class=o>==</span> <span class=n>MotionEvent</span><span class=o>.</span><span class=na>ACTION_DOWN</span>
-</span></span><span class=line><span class=cl>                        <span class=o>||</span> <span class=o>(</span><span class=n>split</span> <span class=o>&amp;&amp;</span> <span class=n>actionMasked</span> <span class=o>==</span> <span class=n>MotionEvent</span><span class=o>.</span><span class=na>ACTION_POINTER_DOWN</span><span class=o>)</span>
-</span></span><span class=line><span class=cl>                        <span class=o>||</span> <span class=n>actionMasked</span> <span class=o>==</span> <span class=n>MotionEvent</span><span class=o>.</span><span class=na>ACTION_HOVER_MOVE</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                    <span class=kd>final</span> <span class=kt>int</span> <span class=n>actionIndex</span> <span class=o>=</span> <span class=n>ev</span><span class=o>.</span><span class=na>getActionIndex</span><span class=o>();</span> <span class=c1>// always 0 for down
-</span></span></span><span class=line><span class=cl><span class=c1></span>                    <span class=kd>final</span> <span class=kt>int</span> <span class=n>idBitsToAssign</span> <span class=o>=</span> <span class=n>split</span> <span class=o>?</span> <span class=n>1</span> <span class=o>&lt;&lt;</span> <span class=n>ev</span><span class=o>.</span><span class=na>getPointerId</span><span class=o>(</span><span class=n>actionIndex</span><span class=o>)</span>
-</span></span><span class=line><span class=cl>                            <span class=o>:</span> <span class=n>TouchTarget</span><span class=o>.</span><span class=na>ALL_POINTER_IDS</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>                    <span class=c1>// Clean up earlier touch targets for this pointer id in case they
-</span></span></span><span class=line><span class=cl><span class=c1></span>                    <span class=c1>// have become out of sync.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                    <span class=n>removePointersFromTouchTargets</span><span class=o>(</span><span class=n>idBitsToAssign</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>                    <span class=kd>final</span> <span class=kt>int</span> <span class=n>childrenCount</span> <span class=o>=</span> <span class=n>mChildrenCount</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                  <span class=c1>// 触摸到的目标不为空，子view数量不为零，开始分发
-</span></span></span><span class=line><span class=cl><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>newTouchTarget</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>childrenCount</span> <span class=o>!=</span> <span class=n>0</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                        <span class=kd>final</span> <span class=kt>float</span> <span class=n>x</span> <span class=o>=</span>
-</span></span><span class=line><span class=cl>                                <span class=n>isMouseEvent</span> <span class=o>?</span> <span class=n>ev</span><span class=o>.</span><span class=na>getXCursorPosition</span><span class=o>()</span> <span class=o>:</span> <span class=n>ev</span><span class=o>.</span><span class=na>getX</span><span class=o>(</span><span class=n>actionIndex</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                        <span class=kd>final</span> <span class=kt>float</span> <span class=n>y</span> <span class=o>=</span>
-</span></span><span class=line><span class=cl>                                <span class=n>isMouseEvent</span> <span class=o>?</span> <span class=n>ev</span><span class=o>.</span><span class=na>getYCursorPosition</span><span class=o>()</span> <span class=o>:</span> <span class=n>ev</span><span class=o>.</span><span class=na>getY</span><span class=o>(</span><span class=n>actionIndex</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                        <span class=c1>// Find a child that can receive the event.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                        <span class=c1>// Scan children from front to back.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                        <span class=kd>final</span> <span class=n>ArrayList</span><span class=o>&lt;</span><span class=n>View</span><span class=o>&gt;</span> <span class=n>preorderedList</span> <span class=o>=</span> <span class=n>buildTouchDispatchChildList</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>                        <span class=kd>final</span> <span class=kt>boolean</span> <span class=n>customOrder</span> <span class=o>=</span> <span class=n>preorderedList</span> <span class=o>==</span> <span class=kc>null</span>
-</span></span><span class=line><span class=cl>                                <span class=o>&amp;&amp;</span> <span class=n>isChildrenDrawingOrderEnabled</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>                        <span class=kd>final</span> <span class=n>View</span><span class=o>[]</span> <span class=n>children</span> <span class=o>=</span> <span class=n>mChildren</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                        <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=n>childrenCount</span> <span class=o>-</span> <span class=n>1</span><span class=o>;</span> <span class=n>i</span> <span class=o>&gt;=</span> <span class=n>0</span><span class=o>;</span> <span class=n>i</span><span class=o>--)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                            <span class=kd>final</span> <span class=kt>int</span> <span class=n>childIndex</span> <span class=o>=</span> <span class=n>getAndVerifyPreorderedIndex</span><span class=o>(</span>
-</span></span><span class=line><span class=cl>                                    <span class=n>childrenCount</span><span class=o>,</span> <span class=n>i</span><span class=o>,</span> <span class=n>customOrder</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                            <span class=kd>final</span> <span class=n>View</span> <span class=n>child</span> <span class=o>=</span> <span class=n>getAndVerifyPreorderedView</span><span class=o>(</span>
-</span></span><span class=line><span class=cl>                                    <span class=n>preorderedList</span><span class=o>,</span> <span class=n>children</span><span class=o>,</span> <span class=n>childIndex</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                          <span class=c1>//判断1，View可见并且没有播放动画。2，点击事件的坐标落在View的范围内
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=c1>//如果上述两个条件有一项不满足则continue继续循环下一个View
-</span></span></span><span class=line><span class=cl><span class=c1></span>                            <span class=k>if</span> <span class=o>(!</span><span class=n>child</span><span class=o>.</span><span class=na>canReceivePointerEvents</span><span class=o>()</span>
-</span></span><span class=line><span class=cl>                                    <span class=o>||</span> <span class=o>!</span><span class=n>isTransformedTouchPointInView</span><span class=o>(</span><span class=n>x</span><span class=o>,</span> <span class=n>y</span><span class=o>,</span> <span class=n>child</span><span class=o>,</span> <span class=kc>null</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                                <span class=k>continue</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                            <span class=o>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>                            <span class=n>newTouchTarget</span> <span class=o>=</span> <span class=n>getTouchTarget</span><span class=o>(</span><span class=n>child</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                           <span class=c1>//如果有子View处理即newTouchTarget 不为null则跳出循环。
-</span></span></span><span class=line><span class=cl><span class=c1></span>                            <span class=k>if</span> <span class=o>(</span><span class=n>newTouchTarget</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                                <span class=c1>// Child is already receiving touch within its bounds.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                                <span class=c1>// Give it the new pointer in addition to the ones it is handling.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                                <span class=n>newTouchTarget</span><span class=o>.</span><span class=na>pointerIdBits</span> <span class=o>|=</span> <span class=n>idBitsToAssign</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                                <span class=k>break</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                            <span class=o>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>                            <span class=n>resetCancelNextUpFlag</span><span class=o>(</span><span class=n>child</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                           <span class=c1>//dispatchTransformedTouchEvent第三个参数child这里不为null
-</span></span></span><span class=line><span class=cl><span class=c1></span>            							<span class=c1>//实际调用的是child的dispatchTouchEvent方法
-</span></span></span><span class=line><span class=cl><span class=c1></span>                            <span class=k>if</span> <span class=o>(</span><span class=n>dispatchTransformedTouchEvent</span><span class=o>(</span><span class=n>ev</span><span class=o>,</span> <span class=kc>false</span><span class=o>,</span> <span class=n>child</span><span class=o>,</span> <span class=n>idBitsToAssign</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                                <span class=c1>// Child wants to receive touch within its bounds.
-</span></span></span><span class=line><span class=cl><span class=c1></span>                                <span class=n>mLastTouchDownTime</span> <span class=o>=</span> <span class=n>ev</span><span class=o>.</span><span class=na>getDownTime</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>                                <span class=k>if</span> <span class=o>(</span><span class=n>preorderedList</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                                    <span class=c1>// childIndex points into presorted list, find original index
-</span></span></span><span class=line><span class=cl><span class=c1></span>                                    <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>j</span> <span class=o>=</span> <span class=n>0</span><span class=o>;</span> <span class=n>j</span> <span class=o>&lt;</span> <span class=n>childrenCount</span><span class=o>;</span> <span class=n>j</span><span class=o>++)</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                                        <span class=k>if</span> <span class=o>(</span><span class=n>children</span><span class=o>[</span><span class=n>childIndex</span><span class=o>]</span> <span class=o>==</span> <span class=n>mChildren</span><span class=o>[</span><span class=n>j</span><span class=o>])</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                                            <span class=n>mLastTouchDownIndex</span> <span class=o>=</span> <span class=n>j</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                                            <span class=k>break</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                                        <span class=o>}</span>
-</span></span><span class=line><span class=cl>                                    <span class=o>}</span>
-</span></span><span class=line><span class=cl>                                <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                                    <span class=n>mLastTouchDownIndex</span> <span class=o>=</span> <span class=n>childIndex</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                                <span class=o>}</span>
-</span></span><span class=line><span class=cl>                                <span class=n>mLastTouchDownX</span> <span class=o>=</span> <span class=n>ev</span><span class=o>.</span><span class=na>getX</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>                                <span class=n>mLastTouchDownY</span> <span class=o>=</span> <span class=n>ev</span><span class=o>.</span><span class=na>getY</span><span class=o>();</span>
-</span></span><span class=line><span class=cl>                                <span class=n>newTouchTarget</span> <span class=o>=</span> <span class=n>addTouchTarget</span><span class=o>(</span><span class=n>child</span><span class=o>,</span> <span class=n>idBitsToAssign</span><span class=o>);</span>
-</span></span><span class=line><span class=cl>                                <span class=n>alreadyDispatchedToNewTouchTarget</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                                <span class=c1>//子View处理了事件，然后就跳出了for循环
-</span></span></span><span class=line><span class=cl><span class=c1></span>                                <span class=k>break</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>                            <span class=o>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>如果没有被取消也没有被拦截的话，则要把这个事件分发给子view去处理了，循环判断是否可以处理这个事件，如果有子view处理，已经处理完毕，跳出大循环</p><p>总结一下：</p><p><strong>ViewGroup会遍历所有子View去寻找能够处理点击事件的子View（可见，没有播放动画，点击事件坐标落在子View内部）最终调用子View的dispatchTouchEvent方法处理事件</strong>，<strong>当子View处理了事件则mFirstTouchTarget 被赋值，并终止子View的遍历。</strong></p><h2 id=view-对事件的处理>view 对事件的处理</h2><p>从上面的viewGroup的事件分发可以看出来，其实view最终对时间的处理使用的也是dispatchTouchEvent方法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl>        <span class=c1>//如果窗口没有被遮盖
-</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>onFilterTouchEventForSecurity</span><span class=o>(</span><span class=n>event</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>((</span><span class=n>mViewFlags</span> <span class=o>&amp;</span> <span class=n>ENABLED_MASK</span><span class=o>)</span> <span class=o>==</span> <span class=n>ENABLED</span> <span class=o>&amp;&amp;</span> <span class=n>handleScrollBarDragging</span><span class=o>(</span><span class=n>event</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>result</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>            <span class=c1>//noinspection SimplifiableIfStatement
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=c1>//当前监听事件
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=n>ListenerInfo</span> <span class=n>li</span> <span class=o>=</span> <span class=n>mListenerInfo</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=c1>//需要特别注意这个判断当中的li.mOnTouchListener.onTouch(this, event)条件
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>li</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>li</span><span class=o>.</span><span class=na>mOnTouchListener</span> <span class=o>!=</span> <span class=kc>null</span>
-</span></span><span class=line><span class=cl>                    <span class=o>&amp;&amp;</span> <span class=o>(</span><span class=n>mViewFlags</span> <span class=o>&amp;</span> <span class=n>ENABLED_MASK</span><span class=o>)</span> <span class=o>==</span> <span class=n>ENABLED</span>
-</span></span><span class=line><span class=cl>                    <span class=o>&amp;&amp;</span> <span class=n>li</span><span class=o>.</span><span class=na>mOnTouchListener</span><span class=o>.</span><span class=na>onTouch</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>event</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>result</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>            <span class=c1>//result为false调用自己的onTouchEvent方法处理
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=k>if</span> <span class=o>(!</span><span class=n>result</span> <span class=o>&amp;&amp;</span> <span class=n>onTouchEvent</span><span class=o>(</span><span class=n>event</span><span class=o>))</span> <span class=o>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>result</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
-</span></span><span class=line><span class=cl>            <span class=o>}</span>
-</span></span><span class=line><span class=cl>        <span class=o>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>这个就是之前看过那部分代码，通过上面代码我们可以看到View会先判断是否设置了OnTouchListener，<strong>如果设置了OnTouchListener并且onTouch方法返回了true，那么onTouchEvent不会被调用。</strong>
-当没有设置OnTouchListener或者设置了OnTouchListener但是onTouch方法返回false则会调用View自己的onTouchEvent方法。而一些时间的消费和对应的处理都封装在onTouchEvent方法中了，这里就不详细阐述了。</p><p><img src=https://tva1.sinaimg.cn/large/008i3skNgy1gvhswsrlrrj60i50z5jt102.jpg alt=img></p></div></article></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:your@email.com class="iconfont icon-email" title=email></a>
-<a href=https://github.com/charming-c class="iconfont icon-github" title=github></a>
-<a href=https://charming-c.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
-<span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
-<span class=copyright-year>&copy;
-2022<span class=heart><i class="iconfont icon-heart"></i></span><span>charming</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
-<script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script></body></html>
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/js/main.js" ></script>
+
+    
+
+</body>
+</html>
