@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Charming Zone</title>
-    <link>https://example.org/posts/</link>
+    <link>https://charming-c.github.io/posts/</link>
     <description>Recent content in Posts on Charming Zone</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 19 Jan 2025 21:26:44 +0800</lastBuildDate><atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 19 Jan 2025 21:26:44 +0800</lastBuildDate><atom:link href="https://charming-c.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>浅析 io_uring provided buffers 的两种模式</title>
-      <link>https://example.org/posts/%E6%B5%85%E6%9E%90-io_uring-peovided-buffers-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F/</link>
+      <link>https://charming-c.github.io/posts/%E6%B5%85%E6%9E%90-io_uring-peovided-buffers-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F/</link>
       <pubDate>Sun, 19 Jan 2025 21:26:44 +0800</pubDate>
       
-      <guid>https://example.org/posts/%E6%B5%85%E6%9E%90-io_uring-peovided-buffers-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F/</guid>
+      <guid>https://charming-c.github.io/posts/%E6%B5%85%E6%9E%90-io_uring-peovided-buffers-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F/</guid>
       
       <description>&lt;h2 id=&#34;一echo-serverprovided-buffer&#34;&gt;一、echo server（provided buffer）&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/frevib/io_uring-echo-server&#34;&gt;这里&lt;/a&gt;实现了一个通过 provided buffer 特性的 echo server，其中采用了 liburing 封装了 io_uring 中针对 provided buffer 特性的接口，本文从这个实例出发，介绍 provided buffer 特性。&lt;/p&gt;
@@ -48,10 +48,10 @@
     
     <item>
       <title>Occlum 异步网络框架</title>
-      <link>https://example.org/posts/%E8%AF%A6%E8%A7%A3-occlum-%E5%BC%82%E6%AD%A5%E7%BD%91%E7%BB%9C%E6%A1%86%E6%9E%B6/</link>
+      <link>https://charming-c.github.io/posts/%E8%AF%A6%E8%A7%A3-occlum-%E5%BC%82%E6%AD%A5%E7%BD%91%E7%BB%9C%E6%A1%86%E6%9E%B6/</link>
       <pubDate>Fri, 11 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>https://example.org/posts/%E8%AF%A6%E8%A7%A3-occlum-%E5%BC%82%E6%AD%A5%E7%BD%91%E7%BB%9C%E6%A1%86%E6%9E%B6/</guid>
+      <guid>https://charming-c.github.io/posts/%E8%AF%A6%E8%A7%A3-occlum-%E5%BC%82%E6%AD%A5%E7%BD%91%E7%BB%9C%E6%A1%86%E6%9E%B6/</guid>
       
       <description>&lt;h2 id=&#34;1-io_uring_callback&#34;&gt;1. io_uring_callback&lt;/h2&gt;
 &lt;p&gt;这是 libos 中对 occlum io_uring 的进一步封装。对于原始的 occlum io_uring，他最大的缺点是，使用者必须手动的从 CQ 中获得 CQE，然后映射到对应的 SQE 的请求进行处理，这使得整个使用流程略显繁琐。io_uring_callback 提供了用户更加友好的 io_uring api，其特点主要表现在下面三个方面：&lt;/p&gt;
@@ -86,10 +86,10 @@
     
     <item>
       <title>Linux io_uring 分析</title>
-      <link>https://example.org/posts/linux-io_uring-%E5%88%86%E6%9E%90/</link>
+      <link>https://charming-c.github.io/posts/linux-io_uring-%E5%88%86%E6%9E%90/</link>
       <pubDate>Wed, 02 Oct 2024 16:42:34 +0800</pubDate>
       
-      <guid>https://example.org/posts/linux-io_uring-%E5%88%86%E6%9E%90/</guid>
+      <guid>https://charming-c.github.io/posts/linux-io_uring-%E5%88%86%E6%9E%90/</guid>
       
       <description>&lt;h2 id=&#34;一网络-io&#34;&gt;一、网络 IO&lt;/h2&gt;
 &lt;p&gt;下图是一个 UDP 连接中 socket 的 IO 流程：&lt;/p&gt;
@@ -118,10 +118,10 @@
     
     <item>
       <title>浅谈 Rust 内存机制</title>
-      <link>https://example.org/posts/rust-%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6/</link>
+      <link>https://charming-c.github.io/posts/rust-%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6/</link>
       <pubDate>Thu, 15 Aug 2024 21:26:17 +0800</pubDate>
       
-      <guid>https://example.org/posts/rust-%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6/</guid>
+      <guid>https://charming-c.github.io/posts/rust-%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6/</guid>
       
       <description>&lt;blockquote&gt;
 &lt;p&gt;本文主要从内存的角度，简析 Rust 的 所有权 Ownership 和 引用 Reference。&lt;/p&gt;&lt;/blockquote&gt;
@@ -141,10 +141,10 @@
     
     <item>
       <title>6.s081 trap lab</title>
-      <link>https://example.org/posts/6.s081-trap-lab/</link>
+      <link>https://charming-c.github.io/posts/6.s081-trap-lab/</link>
       <pubDate>Wed, 03 Jul 2024 21:26:17 +0800</pubDate>
       
-      <guid>https://example.org/posts/6.s081-trap-lab/</guid>
+      <guid>https://charming-c.github.io/posts/6.s081-trap-lab/</guid>
       
       <description>&lt;p&gt;trap 机制，是由 ecall，sret，mret 这样的指令控制的，硬件 CPU 只会使用几个关键寄存器，其他的所有内容由软件（OS）完成。&lt;/p&gt;
 &lt;h2 id=&#34;一xv6-trap-机制&#34;&gt;一、xv6 trap 机制&lt;/h2&gt;
@@ -229,10 +229,10 @@ uservec:
     
     <item>
       <title>6.s081 pgtbl lab</title>
-      <link>https://example.org/posts/6.s081-pgtbl-lab/</link>
+      <link>https://charming-c.github.io/posts/6.s081-pgtbl-lab/</link>
       <pubDate>Mon, 01 Jul 2024 21:26:17 +0800</pubDate>
       
-      <guid>https://example.org/posts/6.s081-pgtbl-lab/</guid>
+      <guid>https://charming-c.github.io/posts/6.s081-pgtbl-lab/</guid>
       
       <description>&lt;h2 id=&#34;一xv6-boot&#34;&gt;一、xv6 boot&lt;/h2&gt;
 &lt;p&gt;首先要介绍一下xv6中的页表设置，我们从xv6的boot入口开始分析。首先是kernel.ld链接脚本，负责将os的镜像加载到内存中。截取其中的部分代码：&lt;/p&gt;
@@ -285,10 +285,10 @@ spin:
     
     <item>
       <title>浅谈 HTTPS 协议</title>
-      <link>https://example.org/posts/%E6%B5%85%E8%B0%88-https-%E5%8D%8F%E8%AE%AE/</link>
+      <link>https://charming-c.github.io/posts/%E6%B5%85%E8%B0%88-https-%E5%8D%8F%E8%AE%AE/</link>
       <pubDate>Fri, 15 Sep 2023 21:26:17 +0800</pubDate>
       
-      <guid>https://example.org/posts/%E6%B5%85%E8%B0%88-https-%E5%8D%8F%E8%AE%AE/</guid>
+      <guid>https://charming-c.github.io/posts/%E6%B5%85%E8%B0%88-https-%E5%8D%8F%E8%AE%AE/</guid>
       
       <description>&lt;h2 id=&#34;一http-的缺点&#34;&gt;一、HTTP 的缺点&lt;/h2&gt;
 &lt;p&gt;HTTP 主要有如下不足，例举如下：&lt;/p&gt;
@@ -342,10 +342,10 @@ spin:
     
     <item>
       <title>15-213 bomb lab</title>
-      <link>https://example.org/posts/15-213-bomb-lab/</link>
+      <link>https://charming-c.github.io/posts/15-213-bomb-lab/</link>
       <pubDate>Tue, 03 May 2022 21:26:17 +0800</pubDate>
       
-      <guid>https://example.org/posts/15-213-bomb-lab/</guid>
+      <guid>https://charming-c.github.io/posts/15-213-bomb-lab/</guid>
       
       <description>&lt;h2 id=&#34;1-phase_1&#34;&gt;1. phase_1&lt;/h2&gt;
 &lt;blockquote&gt;

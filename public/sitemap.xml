@@ -2,42 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/</loc>
+    <loc>https://charming-c.github.io/</loc>
     <lastmod>2025-01-19T21:26:44+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/</loc>
+    <loc>https://charming-c.github.io/posts/</loc>
     <lastmod>2025-01-19T21:26:44+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/%E6%B5%85%E6%9E%90-io_uring-peovided-buffers-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F/</loc>
+    <loc>https://charming-c.github.io/posts/%E6%B5%85%E6%9E%90-io_uring-peovided-buffers-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F/</loc>
     <lastmod>2025-01-19T21:26:44+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/%E8%AF%A6%E8%A7%A3-occlum-%E5%BC%82%E6%AD%A5%E7%BD%91%E7%BB%9C%E6%A1%86%E6%9E%B6/</loc>
+    <loc>https://charming-c.github.io/posts/%E8%AF%A6%E8%A7%A3-occlum-%E5%BC%82%E6%AD%A5%E7%BD%91%E7%BB%9C%E6%A1%86%E6%9E%B6/</loc>
     <lastmod>2024-10-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/linux-io_uring-%E5%88%86%E6%9E%90/</loc>
+    <loc>https://charming-c.github.io/posts/linux-io_uring-%E5%88%86%E6%9E%90/</loc>
     <lastmod>2024-10-02T16:42:34+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/rust-%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6/</loc>
+    <loc>https://charming-c.github.io/posts/rust-%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6/</loc>
     <lastmod>2024-08-15T21:26:17+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/6.s081-trap-lab/</loc>
+    <loc>https://charming-c.github.io/posts/6.s081-trap-lab/</loc>
     <lastmod>2024-07-03T21:26:17+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/6.s081-pgtbl-lab/</loc>
+    <loc>https://charming-c.github.io/posts/6.s081-pgtbl-lab/</loc>
     <lastmod>2024-07-01T21:26:17+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/%E6%B5%85%E8%B0%88-https-%E5%8D%8F%E8%AE%AE/</loc>
+    <loc>https://charming-c.github.io/posts/%E6%B5%85%E8%B0%88-https-%E5%8D%8F%E8%AE%AE/</loc>
     <lastmod>2023-09-15T21:26:17+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/15-213-bomb-lab/</loc>
+    <loc>https://charming-c.github.io/posts/15-213-bomb-lab/</loc>
     <lastmod>2022-05-03T21:26:17+08:00</lastmod>
   </url><url>
-    <loc>https://example.org/pages/about/</loc>
+    <loc>https://charming-c.github.io/pages/about/</loc>
   </url><url>
-    <loc>https://example.org/categories/</loc>
+    <loc>https://charming-c.github.io/categories/</loc>
   </url><url>
-    <loc>https://example.org/pages/</loc>
+    <loc>https://charming-c.github.io/pages/</loc>
   </url><url>
-    <loc>https://example.org/tags/</loc>
+    <loc>https://charming-c.github.io/tags/</loc>
   </url>
 </urlset>
